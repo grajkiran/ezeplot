@@ -1,0 +1,46 @@
+Refactor the code.
+Plot elements:
+	Quiver
+	Nullclines/isoclines
+	Trajectories -> static or animated
+	Start points -> markers, arrows, both
+	Fixed points, limit cycles, closed orbits, index theory, 3D, etc.
+
+Trajectory database:
+	db.get_trajectory(start, params)
+	db.add_trajectory(start, params)
+
+One arrow on the static trajectory at point of start (if bidirectional) or
+middle if unidirectional.
+
+Update param class:
+label, entry_field, spinbox
+entry_field: list of values. extract min, max, delta (minimum difference between any two entered values)
+scale/spinbox: min, max, resolution = delta
+
+When a point is picked, compute the trajectories for all values of the active parameter and the current values of the remaining parameters and store in db.
+traj_db[params] = [trajectories]
+
+Three aspects of the code:
+1. The dynamical system
+   * Computing trajectories, fixed points, limit cycles, orbit detection, etc.
+2. The GUI elements
+   * Setting parameters of the dynamic system, plot controls, start stop animation, etc.
+3. The plotting functionality
+   * Maintaining the figure window, updating plots, etc.
+
+
+Plotting:
+Cache only for animation. All other operations, use draw as usual.
+Adding an artist:
+	add artist to the dict
+	If has blit, add_artist and blit.
+	Else, add_artist, draw_idle
+Removing/updating an artist:
+	remove/update artist in the dict
+	clear the axes, add all the artists and draw_idle
+
+Animation:
+	if has blit, just before starting animation, cache the bg. Then at each time step, restore the bg, draw artist and blit.
+	if no blit, at each time step, clear axes, draw artist and draw_idle
+	
