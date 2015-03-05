@@ -1,6 +1,18 @@
 #!/usr/bin/python3
 import numpy as np
 
+def scale_domain(d, factor, about = None):
+    """Scales the domain by 'factor' maintaining 'about' at the same relative
+    location from either ends. 'about' defaults to the midpoint of the interval.
+    """
+    lower = min(d)
+    upper = max(d)
+    if about is None:
+        about = 0.5 * (lower + upper)
+    delta_l = factor * (about - lower)
+    delta_r = factor * (upper - about)
+    return about - delta_l, about + delta_r
+
 def freq_domain(times, amplitudes):
     """Perform and fft and return amplitude vs frequency."""
     from scipy.fftpack import fft

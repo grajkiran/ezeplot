@@ -1,26 +1,53 @@
 #!/usr/bin/python3
 import numpy as np
 from scipy.integrate import ode
+from scipy.interpolate import interp1d
 from math import isinf
 import helpers
 
+def is_inside(p, limits):
+    if limits is None:
+        return True
+    for i in range(len(p)):
+        lower = min(limits[i])
+        upper = max(limits[i])
+        if p[i] < lower or p[i] > upper:
+            return False
+    return True
+
 class Trajectory:
-    def __init__(self, data, start = None):
-        self.t = data[:,0]
-        self.x = data[:,1]
-        self.y = data[:,2]
-        self.xy = data[:,1:]
-        self.data = data
-        self.start = start
-        if start is None:
-            self.start = self.data[0]
-        self.direction = 0
-        if self.start == self.data[0]:
-            self.direction = 1
-        elif self.start == self.data[-1]:
-            self.direction = -1
-        self.freq_x, self.amp_x = helpers.freq_domain(self.t, self.x)
-        self.freq_y, self.amp_y = helpers.freq_domain(self.t, self.y)
+    def __init__(self, data, startidx = 0):
+        self.startidx = startidx
+        self.data = np.array(data)
+        self.time = self.data[:,0]
+        self.dist = self.data[:,1]
+        self.points = self.data[:,2:]
+        self.t = self.time
+        self.x = self.points[:,0]
+        self.y = self.points[:,1]
+        self.s_ip = interp1d(self.time, self.dist)
+        self.t_ip = interp1d(self.dist, self.time)
+        self.x_ip = interp1d(self.time, self.x)
+        self.y_ip = interp1d(self.time, self.y)
+        self.start = self.points[startidx]
+        self.length = self.dist[-1] - self.dist[0]
+
+#class TrajAccumulator(list):
+#    def __init__(self, limits = None, threshold = 0.0):
+#        self.limits = limits
+#        self.threshold = abs(threshold)
+#
+#    def accumulate(self, t, pos):
+#        pos = list(pos)
+#        if len(self) == 0:
+#            self.append([t, 0.0] + pos)
+#            return 0
+#        pos_old = self[-1][2:]
+#        s = helpers.distance(pos_old, pos)
+#        self.append([t, s] + pos)
+#        if s < self.threshold or not is_inside(pos, self.limits):
+#            return -1
+#        return 0
 
 class DynamicSystem:
     """A 2D dynamic system"""
@@ -79,55 +106,44 @@ class DynamicSystem:
         y_dot = eval(code_y or self.__code_y, locals(), params or self.params)
         return [x_dot, y_dot]
 
-    def trajectory(self, start, direction = 1, **kwargs):
-        if 'reverse' in kwargs:
-            if kwargs.pop('reverse'):
-                direction = -1
-        if direction > 0:
-            t = self.__compute_trajectory(start, **kwargs)
-        elif direction < 0:
-            t = self.__compute_trajectory(start, reverse = True, **kwargs)
-        else:
-            t1 = self.__compute_trajectory(start, reverse = False, **kwargs)
-            t2 = self.__compute_trajectory(start, reverse = True, **kwargs)
-            t = np.append(t2, t1, 0)
-        return Trajectory(t, start)
+    def trajectory(self, start, tmax, limits = None, threshold = 0.0,
+            bidirectional = True, **kwargs):
+        t_forw = self.__compute_trajectory(start, tmax, limits,
+                threshold, **kwargs)
+        if not bidirectional:
+            return Trajectory(t_forw, 0)
+        # Remove the first element of the reversed trajectory as it is the
+        # start point that is already present in the forward trajectory.
+        t_back = self.__compute_trajectory(start, -tmax, limits,
+                threshold, **kwargs)[1:]
+        t_back.reverse()
+        return Trajectory(t_back+t_forw, len(t_back))
 
-    def __compute_trajectory(self, start, dt = 0.01, max_steps = 100, explicit = False,
-            xlim = None, ylim = None, ds_min = 1.0e-4, reverse = False, outer = 5):
-        def is_inside(v, lim):
-            if lim is None: return True
-            a, b = sorted(lim)
-            return v >= a and v <= b
-        if reverse: dt *= -1.0
-        traj = np.zeros((max_steps, 3))
-        traj[0] = 0.0, start[0], start[1]
-        rk4int = ode(lambda t, pos: self(pos)).set_integrator('dopri5')
-        rk4int.set_initial_value(start, 0.0)
-        ts_break = max_steps
-        for tstep in range(1, max_steps):
-            pos = np.array(traj[tstep-1][1:])
-            time = tstep * dt
-            if explicit:
-                x, y = pos + dt * np.array(self(pos))
+    def __compute_trajectory(self, start, tmax, limits, threshold, **kwargs):
+        traj = []
+        threshold = abs(threshold)
+        def accumulate(t, pos):
+            pos = list(pos)
+            if len(traj) == 0:
+                traj.append([t, 0.0] + pos)
+                return 0
+            s_old = traj[-1][1]
+            pos_old = traj[-1][2:]
+            s = helpers.distance(pos_old, pos)
+            if tmax > 0:
+                s_cum = s_old + s
             else:
-                x, y = rk4int.integrate(time)
-                traj[tstep] = time, x, y
-            # Break out if the trajectory crossed the limits more than 'outer'
-            # steps ago.
-            if is_inside(x, xlim) and is_inside(y, ylim):
-                ts_break = max_steps # We are inside the domain
-            else:
-                if tstep - ts_break > outer:
-                    break
-                # Set ts_break to the current tstep only if not already set
-                elif ts_break == max_steps:
-                    ts_break = tstep
-            # If the movement is very small, we must have reached a fixed point.
-            if helpers.distance(pos, (x, y)) < ds_min: break
-        if reverse:
-            return traj[tstep::-1]
-        return traj[:tstep+1]
+                s_cum = s_old - s
+            traj.append([t, s_cum] + pos)
+            if s < threshold or not is_inside(pos, limits):
+                return -1
+            return 0
+        #tdata = TrajAccumulator(limits, threshold)
+        rk4 = ode(lambda t, pos: self(pos)).set_integrator('dopri5', **kwargs)
+        rk4.set_solout(accumulate)
+        rk4.set_initial_value(start, 0.0)
+        rk4.integrate(tmax)
+        return traj
 
 presets = {
         'Linear System': (

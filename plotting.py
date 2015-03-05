@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+import helpers
 
 POLAR2D = 0
 POLAR3D = 1
@@ -12,18 +13,31 @@ CART2D = 3
 class FigureWindow:
     def __init__(self, mode = 1):
         self.fig = plt.figure()
-        self._blit = self.fig.canvas.supports_blit
+        self.canvas = self.fig.canvas
+        self._blit = True and self.fig.canvas.supports_blit
         self.ax_main = self.fig.add_subplot(111, label = 'main', xlim = (-5, 5), ylim=(-5, 5))
         self.ax_x = self.fig.add_subplot(222, label = 'x', visible = False)
         self.ax_y = self.fig.add_subplot(223, label = 'y', visible = False, sharex = self.ax_x)
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False, sharex = self.ax_x)
         self.bg = dict()
         # Dict of artists
-        self.artists = dict(nullx = None, nully = None, quiver = None,
-                picks = None, pquiver = None)
+        self.artists = dict()
         self.trajectories = list()
         self.fig.show()
         self.set_mode(mode)
+
+    def get_diagonal(self):
+        lim = self.get_limits()
+        p1, p2 = np.array(lim).transpose()
+        return helpers.distance(p1, p2)
+
+    def get_limits(self):
+        xlim = self.ax_main.get_xlim()
+        ylim = self.ax_main.get_ylim()
+        if not hasattr(self.ax_main, 'get_zlim'):
+            return xlim, ylim
+        zlim = self.ax_main.get_zlim()
+        return xlim, ylim, zlim
 
     def bind(self, event, handler):
         self.fig.canvas.mpl_connect(event, handler)
@@ -33,16 +47,20 @@ class FigureWindow:
         # TODO: Empty the trajectories dict as well.
         self.update_bg()
 
-    def save(self, axes):
-        if self._blit:
-            for ax in axes:
-                self.bg[ax] = self.fig.canvas.copy_from_bbox(ax.bbox)
+    def save(self, *axes):
+        if not self._blit: return
+        if len(axes) == 0:
+            axes = self.fig.get_axes()
+        for ax in axes:
+            self.bg[ax] = self.fig.canvas.copy_from_bbox(ax.bbox)
 
-    def restore(self, axes):
-        if self._blit:
-            for ax in axes:
-                if ax in self.bg:
-                    self.fig.canvas.restore_region(self.bg[ax])
+    def restore(self, *axes):
+        if not self._blit: return
+        if len(axes) == 0:
+            axes = self.fig.get_axes()
+        for ax in axes:
+            if ax in self.bg:
+                self.fig.canvas.restore_region(self.bg[ax])
 
     def _discard_artists(self, *names):
         """Remove the specified artists from the list to be updated on each draw"""
@@ -52,10 +70,10 @@ class FigureWindow:
             if name in self.artists and self.artists[name] is not None:
                 self.artists[name].set_visible(False)
                 self.artists[name].remove()
-                self.artists[name] = None
+                del self.artists[name]
 
     def _draw_artist(self, artist, ax = None):
-        """Draws the given artists"""
+        """Draws the given artists. First adds it to the list of artists in the axes"""
         if artist is None:
             return
         if ax is None:
@@ -103,8 +121,10 @@ class FigureWindow:
         for artist in self.artists.values():
             if artist is not None:
                 self._draw_artist(artist)
+        for traj in self.trajectories:
+            self.draw_trajectory(traj)
         self.fig.canvas.draw()
-        self.save(axes)
+        self.save(*axes)
 
     def nullclines(self, field = None):
         """Plots the nullclines of the given field and stores the results.
@@ -130,13 +150,48 @@ class FigureWindow:
             self.artists['quiver'] = self.ax_main.quiver(x, y, u, v, **opts)
         self.update_bg()
 
-    def add_trajectory(self, traj, style = 'r-', mfc = 'none', marker = 'o'):
+    def anim_update(self, time):
+        self.restore(self.ax_main)
+        for traj in self.trajectories:
+            if time > traj.t[-1]: continue
+            x, y = traj.x_ip(time), traj.y_ip(time)
+            traj.marker_anim.set_xdata([x])
+            traj.marker_anim.set_ydata([y])
+            traj.marker_anim.set_visible(True)
+            self._draw_artist(traj.marker_anim)
+        self.update()
+
+    def remove_trajectory(self, traj):
+        # FIXME
+        for a in traj.line, traj.arrow, traj.marker_start, traj.marker_anim:
+            a.set_visible(False)
+            a.remove()
+
+    def add_trajectory(self, traj, *args, **kwargs):
         self.trajectories.append(traj)
-        traj.line, = self.ax_main.plot(traj.x, traj.y, style)
-        traj.marker_start, = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
+        self.restore()
+        self.init_trajectory(traj, *args, **kwargs)
+        self.update()
+        self.save()
+    def draw_trajectory(self, traj):
         self._draw_artist(traj.line)
         self._draw_artist(traj.marker_start)
-        self.update()
+        self._draw_artist(traj.arrow)
+    def init_trajectory(self, traj, style = 'r-', mfc = 'none', marker = 'o'):
+        traj.line, = self.ax_main.plot(traj.x, traj.y, style)
+        traj.marker_start, = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
+        traj.marker_anim, = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
+        traj.marker_anim.set_visible(False)
+        # Add arrow at about 10% diagonal length from the start location
+        diag = self.get_diagonal()
+        arrow_len = diag / 1000.0
+        arrow_start = min(self.get_diagonal()/10.0, traj.dist[-1]/4.0)
+        arrow_end = arrow_start + arrow_len
+        t_start, t_end = traj.t_ip([arrow_start, arrow_end])
+        x1, x2 = traj.x_ip([t_start, t_end])
+        y1, y2 = traj.y_ip([t_start, t_end])
+        traj.arrow = self.ax_main.annotate("", xy = (x2, y2), xytext = (x1, y1),
+                arrowprops = dict(arrowstyle = "->"))
 
 def test_fw(root):
     import functools, itertools

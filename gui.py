@@ -6,14 +6,122 @@ try:
 except:
     import Tkinter as tk
 import numpy as np
-from gui import *
+from widgets import *
 
-class AppWindow(root):
-    def __init__(self, system):
+class Options(dict):
+    __getattr__ = dict.__getitem__
+    __setattr__ = dict.__setitem__
+
+class AppWindow():
+    def __init__(self, root, system, fig):
         self.system = system
+        self.root = root
+        self.fig = fig
+        self.opts = self._init_options()
+        self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
+        self.anim_info    = tk.StringVar(self.root, "")
+        self.anim_running = tk.BooleanVar(self.root, False)
+        self.anim_tstep   = tk.IntVar(self.root, 0)
+        self.anim_time    = tk.DoubleVar(self.root, 0.0)
+        self.anim_timer.add_callback(self.anim_update)
+        self.root.columnconfigure(0, weight=1)
+        self.fig.bind('button_release_event', self.handle_mouse)
+        self._add_widgets(self.root)
 
+    def _init_options(self, fname = None):
+        opts = Options()
+        opts.tmax           = tk.DoubleVar(self.root, 5)
+        opts.dt             = tk.DoubleVar(self.root, 0.05)
+        opts.coarsen        = tk.IntVar(self.root, 1)
+        opts.quiver         = tk.BooleanVar(self.root, False)
+        opts.quiver_scale   = tk.BooleanVar(self.root, True)
+        opts.nullclines     = tk.BooleanVar(self.root, True)
+        opts.spacing        = tk.DoubleVar(self.root, 0.3)
+        opts.temporal       = tk.BooleanVar(self.root, False)
+        opts.polar          = tk.BooleanVar(self.root, False)
+        return opts
 
-class VectorField:
+    def nullclines(self, *args):
+        field = None
+        if self.opts.nullclines.get():
+            field = compute_field()
+        fig.nullclines(field)
+
+    def quiver(self, *args):
+        field = None
+        if self.opts.quiver.get():
+            field = compute_field()
+        fig.quiver(field, self.opts.quiver_scale.get())
+
+    def _set_mode(*args): pass
+    def _reset_plot(*args): pass
+    def update_trajectories(*args): pass
+
+    def anim_update(self):
+        tstep = self.anim_tstep.get()
+        anim_time = tstep * self.opts.dt.get()
+        if anim_time > self.opts.tmax.get():
+            anim_time = 0.0
+            self.anim_tstep.set(0)
+        else:
+            self.anim_tstep.set(tstep+1)
+        self.anim_info.set("%0.3f" % anim_time)
+        self.fig.anim_update(anim_time)
+
+    def toggle_traj_animation(self):
+        if not self.anim_running.get():
+            self.anim_timer.stop()
+        else:
+            self.anim_timer.start()
+
+    def handle_mouse(self, evt):
+        # >HACK< Ignore if we are panning/zooming using the toolbar.
+        if evt.button != 1:
+            return
+        if self.fig.canvas.toolbar.mode != '':
+            return
+        if not evt.inaxes is self.fig.ax_main:
+            return
+        pos = evt.xdata, evt.ydata
+        traj1 = self.system.trajectory(pos, 50, threshold = 1e-4,
+                limits = self.fig.get_limits(), bidirectional = True)
+        self.fig.add_trajectory(traj1, style = 'r-')
+
+    def _add_widgets(self, frame):
+        f_system = DSFrame(frame, self.system, command = self.update_trajectories)
+        f_system.grid(sticky = tk.W + tk.E)
+
+        f_controls = tk.Frame(frame)
+        f_controls.grid(sticky = tk.W + tk.E)
+        tk.Checkbutton(f_controls, text = "Nullclines", variable = self.opts.nullclines,
+                command = self.nullclines).grid(row=0, column=0)
+        tk.Checkbutton(f_controls, text = "Quiver", variable = self.opts.quiver,
+                command = self.quiver).grid(row = 0, column = 1)
+        tk.Checkbutton(f_controls, text = "Uniform",
+                variable = self.opts.quiver_scale).grid(row = 0, column = 2)
+        tk.Checkbutton(f_controls, text = "Polar mode", variable = self.opts.polar,
+                command = self._set_mode).grid(columnspan = 2)
+        tk.Button(f_controls, text = "Reset", underline = 0,
+                command = self._reset_plot).grid(row=1,column=2)
+
+        row = 0
+        f_traj = tk.LabelFrame(frame, text = "Trajectories:")
+        f_traj.grid(sticky = tk.E+tk.W)
+        f_traj.columnconfigure(2,weight=1)
+        row += 1
+        tk.Label(f_traj, text = "Time step:").grid(row = row, column = 0)
+        VEntry(f_traj, textvariable = self.opts.dt, width = 5).grid(row = row, column = 1)
+        row += 1
+        tk.Label(f_traj, text = "Tmax:").grid(row = row, column = 0)
+        VEntry(f_traj, textvariable = self.opts.tmax, width = 5).grid(row = row, column = 1)
+        tk.Label(f_traj, textvariable = self.anim_info).grid(row = row, column = 2)
+        row += 1
+        tk.Button(f_traj, text = "Update", command = self.update_trajectories).grid(row = row, column = 0)
+        tk.Button(f_traj, text = "Restart", command = lambda: self.anim_tstep.set(0)).grid(row = row, column = 1)
+        tk.Checkbutton(f_traj, text = "Animated", variable = self.anim_running,
+                command = self.toggle_traj_animation).grid(sticky = tk.E + tk.W, row = row, column = 2)
+
+class VectorFieldOLD:
     def __init__(self, system, xlim = (-1.0, 1.0), ylim = (-1.0, 1.0)):
         self.system = system
         self.trajectories = []
@@ -56,136 +164,6 @@ class VectorField:
         self.fig.canvas.mpl_connect("button_press_event", self.handle_mouse)
         self.fig.canvas.mpl_connect("scroll_event", self.handle_scroll)
 
-    def _set_mode(self):
-        polar_mode = self.polar.get()
-        if polar_mode:
-            self.ax_polar.set_visible(True)
-            self.ax_rect.set_visible(False)
-            self.ax_rect.zorder = 0
-            self.ax_polar.zorder = 1
-            self.ax = self.ax_polar
-        else:
-            self.ax = self.ax_rect
-            self.ax_rect.set_visible(True)
-            self.ax_polar.set_visible(False)
-            self.ax_rect.zorder = 1
-            self.ax_polar.zorder = 0
-        if self.temporal.get():
-            # enable all four axes
-            self.ax.change_geometry(2, 2, 1)
-            #self.ax_vis.set_visible(True)
-            self.ax_tx.set_visible(True)
-            self.ax_ty.set_visible(True)
-        else:
-            # enable phase plot and disable rest.
-            self.ax.change_geometry(1, 1, 1)
-            self.ax_vis.set_visible(False)
-            self.ax_tx.set_visible(False)
-            self.ax_ty.set_visible(False)
-        self._reset_plot()
-
-    def _add_widgets(self):
-        self.cwidget = self.fig.canvas.get_tk_widget()
-        self.cwidget.pack_configure(side = 'left')
-        self.root = self.cwidget.master
-        self.frame = tk.Frame(master = self.root, bd = 2, relief = tk.RIDGE)
-        self.frame.pack()
-
-        f_system = DSFrame(self.frame, self.system, command = self.update_trajectories)
-        f_system.grid(sticky = tk.W + tk.E)
-
-        f_controls = tk.Frame(self.frame)
-        f_controls.grid(sticky = tk.W + tk.E)
-        tk.Checkbutton(f_controls, text = "Nullclines", variable = self.nullclines,
-                command = self.add_nullclines).grid(row=0, column=0)
-        tk.Checkbutton(f_controls, text = "Quiver", variable = self.quiver,
-                command = self.add_quiver).grid(row = 0, column = 1)
-        tk.Checkbutton(f_controls, text = "Uniform",
-                variable = self.quiver_scale).grid(row = 0, column = 2)
-        tk.Checkbutton(f_controls, text = "Polar mode", variable = self.polar,
-                command = self._set_mode).grid(columnspan = 2)
-        tk.Button(f_controls, text = "Reset", underline = 0,
-                command = self._reset_plot).grid(row=1,column=2)
-
-        f_traj = tk.LabelFrame(self.frame, text = "Trajectories:")
-        f_traj.grid(sticky = tk.E+tk.W)
-        f_traj.columnconfigure(2,weight=1)
-        tk.Checkbutton(f_traj, text = "Auto plot", variable = self.auto_plot).grid(row=0, column = 1)
-        tk.Button(f_traj, text = "Plot", command = self.plot_trajectories).grid(row=0, column = 0)
-        tk.Checkbutton(f_traj, text = "View all", variable = self.temporal, command = self._set_mode).grid(row=0, column = 2)
-        FloatEntry(f_traj, label = "Spacing:", min = 0.01, max = 1.0,
-                default = self.spacing.get(), onchange = self.spacing.set).grid(columnspan=2)
-        FloatEntry(f_traj, label = "Time step:", default = self.anim_dt.get(),
-                onchange = self.anim_dt.set).grid(columnspan = 2)
-        IntEntry(f_traj, label = "Max steps:", default = self.anim_tsteps.get(),
-                onchange = self.anim_tsteps.set).grid(columnspan = 2)
-        tk.Label(f_traj, textvariable = self.anim_info).grid(row = 3, column = 2)
-        tk.Button(f_traj, text = "Update", command = self.update_trajectories).grid(row = 4, column = 0)
-        tk.Button(f_traj, text = "Restart", command = lambda: setattr(self, 'anim_curr_step', 0)).grid(row = 4, column = 1)
-        tk.Button(f_traj, textvariable = self.anim_cmd, width = 6,
-                command = self.toggle_traj_animation).grid(sticky = tk.E + tk.W, row = 4, column = 2)
-
-#        f_panim = PAFrame(self.frame, self, text = "Parameter Animation")
-#        f_panim.grid(sticky = tk.E + tk.W)
-
-    def _clear_axes_temporal(self, evt = None):
-        x1, x2 = self.ax.get_xlim()
-        y1, y2 = self.ax.get_ylim()
-        tmax = self.anim_dt.get() * self.anim_tsteps.get()
-        for ax in (self.ax_tx, self.ax_ty):
-            ax.clear()
-            ax.grid()
-            ax.set_xlim((0, tmax))
-        self.ax_tx.set_ylim((x1, x2))
-        self.ax_tx.set_title("X vs time")
-        self.ax_ty.set_ylim((y1, y2))
-        self.ax_ty.set_title("Y vs time")
-        if x1 < 0.0 and x2 > 0.0:
-            self.ax_tx.spines['bottom'].set_position('zero')
-            self.ax_tx.spines['top'].set_color('none')
-        if y1 < 0.0 and y2 > 0.0:
-            self.ax_ty.spines['bottom'].set_position('zero')
-            self.ax_ty.spines['top'].set_color('none')
-
-    def _clear_axes(self, evt = None, temporal = False, draw = True):
-        if temporal:
-            self._clear_axes_temporal()
-        self.ax.clear()
-        self.ax.set_title("Phase Plane")
-        self.ax.grid(True)
-        xlim = self.ax.get_xlim()
-        ylim = self.ax.get_ylim()
-        if not self.polar.get():
-            self.ax.set_xlim(xlim)
-            self.ax.set_ylim(ylim)
-            x1, x2 = self.ax.get_xlim()
-            y1, y2 = self.ax.get_ylim()
-            if x1 < 0.0 and x2 > 0.0:
-                self.ax.spines['left'].set_position('zero')
-                self.ax.spines['right'].set_color('none')
-            if y1 < 0.0 and y2 > 0.0:
-                self.ax.spines['bottom'].set_position('zero')
-                self.ax.spines['top'].set_color('none')
-        else:
-            self.ax.set_xlim(xlim)
-            self.ax.set_ylim(0, abs(max(ylim)))
-        self.add_quiver()
-        self.add_nullclines()
-        if draw:
-            self.fig.canvas.draw()
-        if self._blit:
-            self.blank_bg = self.fig.canvas.copy_from_bbox(self.ax.bbox)
-            if temporal:
-                self.blank_tx = self.fig.canvas.copy_from_bbox(self.ax_tx.bbox)
-                self.blank_ty = self.fig.canvas.copy_from_bbox(self.ax_ty.bbox)
-
-    def _reset_plot(self):
-        self.anim_timer.stop()
-        self.anim_curr_step = 0
-        self.anim_info.set(0)
-        self.trajectories = []
-        self._clear_axes(temporal = True)
-
     def handle_scroll(self, evt):
         def extend_limits(lim, ratio = 1.0):
             a, b = lim
@@ -205,53 +183,6 @@ class VectorField:
             self.ax.set_xlim(extend_limits(xlim, scale))
             self.ax.set_ylim(extend_limits(ylim, scale))
         self.fig.canvas.draw()
-
-    def handle_mouse(self, evt):
-        # >HACK< Ignore if we are panning/zooming using the toolbar.
-        if evt.button != 1:
-            return
-        if self.fig.canvas.toolbar.mode != '':
-            return
-        self.cwidget.focus_set()
-        if not evt.inaxes is self.ax:
-            return
-        pos = evt.xdata, evt.ydata
-        self.add_points([pos])
-        #self.lasso_picker = LSelect(self.ax, pos,
-        #        callback = self.finish_select)
-
-    #def finish_select(self, points):
-    #    self.fig.canvas.restore_region(self.lasso_picker.background)
-    #    points = np.array([(x, y) for (x,y) in points if x is not None])
-    #    ind, x, y = curve_resample(points[:,0], points[:,1], delta = self.spacing.get())
-    #    new_points = np.array([x, y]).transpose()
-    #    self.add_points(new_points)
-
-    def add_points(self, points = None):
-        if self.auto_plot.get():
-            direction = 0
-            full_traj = True
-        else:
-            direction = 1
-            full_traj = False
-        if points is None:
-            points = self.random(25)
-        for p in points:
-            traj = self.initialize_trajectory(p, direction = direction)
-            self.trajectories.append(traj)
-            if full_traj:
-                self.draw_trajectory(traj, 0, arrows = 3, marker = False)
-            else:
-                self.draw_trajectory(traj, 1, marker = True)
-            self.draw_temporal(traj)
-            self.blit()
-
-    def plot_trajectories(self):
-        self._clear_axes(temporal = True)
-        for t in self.trajectories:
-            self.draw_trajectory(t, arrows = 3)
-            self.draw_temporal(t)
-            self.blit()
 
     def update_trajectories(self):
         for i, t in enumerate(self.trajectories):
