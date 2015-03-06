@@ -71,33 +71,33 @@ class Param(tk.Frame):
         self.label.configure(state = tk.DISABLED, text = "")
         self.entry.configure(state = tk.DISABLED)
 
-class Param_dyn(tk.LabelFrame):
-    def __init__(self, master, name, value = 1.0, command = None):
-        tk.LabelFrame.__init__(self, master, text = name)
-        self.name = name
-        self.command = command
-        self.columnconfigure(0, weight=1)
-        self.entry = VEntry(self, tk.StringVar(master, str(value)), debug = True,
-                validator = self.__validate)
-        self.entry.grid(sticky = tk.E + tk.W)
-        self.scale = tk.Scale(self, from_ = value, to = value, command = self.__update,
-                orient = tk.HORIZONTAL, resolution = 0.1)
-        self.scale.grid(sticky = tk.E + tk.W)
-        self.min = value
-        self.max = value
-        self.values = [value]
-        self.get = self.scale.get
-    def set(self, value):
-        self.entry.set(value)
-        self.scale.configure(from_ = value, to = value)
-    def __update(self, value):
-        if callable(self.command):
-            self.command(self.name, value)
-    def __validate(self, value):
-        self.values = np.array(value.split(), dtype = float)
-        self.min = min(self.values)
-        self.max = max(self.values)
-        self.scale.configure(from_ = self.min, to = self.max)
+#class Param_dyn(tk.LabelFrame):
+#    def __init__(self, master, name, value = 1.0, command = None):
+#        tk.LabelFrame.__init__(self, master, text = name)
+#        self.name = name
+#        self.command = command
+#        self.columnconfigure(0, weight=1)
+#        self.entry = VEntry(self, tk.StringVar(master, str(value)), debug = True,
+#                validator = self.__validate)
+#        self.entry.grid(sticky = tk.E + tk.W)
+#        self.scale = tk.Scale(self, from_ = value, to = value, command = self.__update,
+#                orient = tk.HORIZONTAL, resolution = 0.1)
+#        self.scale.grid(sticky = tk.E + tk.W)
+#        self.min = value
+#        self.max = value
+#        self.values = [value]
+#        self.get = self.scale.get
+#    def set(self, value):
+#        self.entry.set(value)
+#        self.scale.configure(from_ = value, to = value)
+#    def __update(self, value):
+#        if callable(self.command):
+#            self.command(self.name, value)
+#    def __validate(self, value):
+#        self.values = np.array(value.split(), dtype = float)
+#        self.min = min(self.values)
+#        self.max = max(self.values)
+#        self.scale.configure(from_ = self.min, to = self.max)
 
 class LSelect(matplotlib.widgets.Lasso):
     def onrelease(self, event):
@@ -131,7 +131,6 @@ class DSFrame(tk.LabelFrame):
         self.entry_y = VEntry(self, self.eqn_y, command = self.command,
                 validator = self._update_system)
         self.entry_y.grid(row=2, column = 1, sticky = tk.E + tk.W)
-        #self.params = dict()
         self.params = list()
         pframe = tk.Frame(self)
         pframe.grid(columnspan = 2, sticky = tk.E + tk.W)
@@ -166,12 +165,6 @@ class DSFrame(tk.LabelFrame):
             if name in self.system.params:
                 self.system.params[name] = value
 
-    def _update_system_params_dyn(self, *args):
-        for p in self.params:
-            self.system.params[p] = self.params[p].get()
-        if callable(self.command):
-            self.command()
-
     def _update_params(self, *args):
         i = 0
         for p in sorted(self.system.params.keys()):
@@ -180,17 +173,23 @@ class DSFrame(tk.LabelFrame):
         for pe in self.params[i:]:
             pe.disable()
 
-    def _update_params_dyn(self, *args):
-        for p in list(self.params.keys()):
-            if not p in self.system.params:
-                self.params[p].destroy()
-                del self.params[p]
-        for p in sorted(self.system.params):
-            if not p in self.params:
-                pe = Param(self, p, self.system.params[p],
-                        command = self._update_system_params)
-                pe.grid(columnspan = 2, sticky = tk.E+tk.W)
-                self.params[p] = pe
+#    def _update_system_params_dyn(self, *args):
+#        for p in self.params:
+#            self.system.params[p] = self.params[p].get()
+#        if callable(self.command):
+#            self.command()
+#
+#    def _update_params_dyn(self, *args):
+#        for p in list(self.params.keys()):
+#            if not p in self.system.params:
+#                self.params[p].destroy()
+#                del self.params[p]
+#        for p in sorted(self.system.params):
+#            if not p in self.params:
+#                pe = Param(self, p, self.system.params[p],
+#                        command = self._update_system_params)
+#                pe.grid(columnspan = 2, sticky = tk.E+tk.W)
+#                self.params[p] = pe
 
 def test_system():
     x = e1.get()
