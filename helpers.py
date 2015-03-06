@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import numpy as np
+from math import sqrt
 
 def scale_domain(d, factor, about = None):
     """Scales the domain by 'factor' maintaining 'about' at the same relative
@@ -13,6 +14,16 @@ def scale_domain(d, factor, about = None):
     delta_r = factor * (upper - about)
     return about - delta_l, about + delta_r
 
+def is_inside(p, limits):
+    if limits is None:
+        return True
+    for i in range(len(p)):
+        lower = min(limits[i])
+        upper = max(limits[i])
+        if p[i] < lower or p[i] > upper:
+            return False
+    return True
+
 def freq_domain(times, amplitudes):
     """Perform and fft and return amplitude vs frequency."""
     from scipy.fftpack import fft
@@ -23,8 +34,13 @@ def freq_domain(times, amplitudes):
     amps = np.abs(fft(amplitudes)) / n_freqs
     return freqs, amps[:n_freqs]
 
+def mag(vec):
+    sum_sqr = 0.0
+    for v in vec:
+        sum_sqr += v*v
+    return sqrt(sum_sqr)
+
 def distance(p1, p2):
-        from math import sqrt
         sum_sqr = 0.0
         for i, j in zip(p1, p2):
             sum_sqr += (i-j)*(i-j)
