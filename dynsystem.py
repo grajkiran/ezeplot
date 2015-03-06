@@ -5,16 +5,6 @@ from scipy.interpolate import interp1d
 from math import isinf
 import helpers
 
-def is_inside(p, limits):
-    if limits is None:
-        return True
-    for i in range(len(p)):
-        lower = min(limits[i])
-        upper = max(limits[i])
-        if p[i] < lower or p[i] > upper:
-            return False
-    return True
-
 class Trajectory:
     def __init__(self, data, startidx = 0):
         self.startidx = startidx
@@ -32,22 +22,26 @@ class Trajectory:
         self.start = self.points[startidx]
         self.length = self.dist[-1] - self.dist[0]
 
-#class TrajAccumulator(list):
-#    def __init__(self, limits = None, threshold = 0.0):
-#        self.limits = limits
-#        self.threshold = abs(threshold)
-#
-#    def accumulate(self, t, pos):
-#        pos = list(pos)
-#        if len(self) == 0:
-#            self.append([t, 0.0] + pos)
-#            return 0
-#        pos_old = self[-1][2:]
-#        s = helpers.distance(pos_old, pos)
-#        self.append([t, s] + pos)
-#        if s < self.threshold or not is_inside(pos, self.limits):
-#            return -1
-#        return 0
+    def prev_index(self, t):
+        """Returns the maximum index of the datapoint whose timestamp is not
+        more than t"""
+        if t < self.t[0] or t > self.t[-1]:
+            raise ValueError("t is out of bounds")
+        prev = 0
+        next = len(self.t)-1
+        if t == self.t[prev]:
+            return prev
+        if t == self.t[next]:
+            return next
+        while(next - prev > 1):
+            mid = (next+prev)//2
+            if self.t[mid] == t:
+                return mid
+            if t > self.t[mid]:
+                prev = mid
+            else:
+                next = mid
+        return prev
 
 class DynamicSystem:
     """A 2D dynamic system"""
@@ -135,10 +129,15 @@ class DynamicSystem:
             else:
                 s_cum = s_old - s
             traj.append([t, s_cum] + pos)
-            if s < threshold or not is_inside(pos, limits):
+            if not helpers.is_inside(pos, limits):
+                return -1
+            # Check if we are within threshold of a fixed point.
+            # We are if our velocity is decreasing and we have not moved much.
+            v_old = helpers.mag(self(pos_old))
+            v = helpers.mag(self(pos))
+            if s < threshold and v < v_old and len(traj) > 10:
                 return -1
             return 0
-        #tdata = TrajAccumulator(limits, threshold)
         rk4 = ode(lambda t, pos: self(pos)).set_integrator('dopri5', **kwargs)
         rk4.set_solout(accumulate)
         rk4.set_initial_value(start, 0.0)
