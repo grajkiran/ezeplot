@@ -1,28 +1,24 @@
 #!/usr/bin/python
 
+import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import helpers
 
-POLAR2D = 0
-POLAR3D = 1
-CART3D = 2
-CART2D = 3
+matplotlib.rcParams['toolbar'] = 'None'
 
 class FigureWindow:
-    def __init__(self, mode = 1):
+    def __init__(self, mode = 1, blit = True):
         self.fig = plt.figure()
         self.canvas = self.fig.canvas
-        self._blit = True and self.fig.canvas.supports_blit
+        self._blit = blit and self.fig.canvas.supports_blit
         self.ax_main = self.fig.add_subplot(111, label = 'main', xlim = (-5, 5), ylim=(-5, 5))
         self.ax_x = self.fig.add_subplot(222, label = 'x', visible = False)
         self.ax_y = self.fig.add_subplot(223, label = 'y', visible = False, sharex = self.ax_x)
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False, sharex = self.ax_x)
         self.bg = dict()
-        # Dict of artists
-        self.artists = dict()
-        self.trajectories = list()
+        self.trajectories = []
         self.fig.show()
         self.set_mode(mode)
 
@@ -42,11 +38,6 @@ class FigureWindow:
     def bind(self, event, handler):
         self.fig.canvas.mpl_connect(event, handler)
 
-    def reset(self):
-        self._discard_artists()
-        # TODO: Empty the trajectories dict as well.
-        self.update_bg()
-
     def save(self, *axes):
         if not self._blit: return
         if len(axes) == 0:
@@ -62,16 +53,6 @@ class FigureWindow:
             if ax in self.bg:
                 self.fig.canvas.restore_region(self.bg[ax])
 
-    def _discard_artists(self, *names):
-        """Remove the specified artists from the list to be updated on each draw"""
-        if len(names) == 0:
-            names = self.artists.keys()
-        for name in names:
-            if name in self.artists and self.artists[name] is not None:
-                self.artists[name].set_visible(False)
-                self.artists[name].remove()
-                del self.artists[name]
-
     def _draw_artist(self, artist, ax = None):
         """Draws the given artists. First adds it to the list of artists in the axes"""
         if artist is None:
@@ -83,17 +64,11 @@ class FigureWindow:
         if self._blit:
             ax.draw_artist(artist)
 
-    def update(self):
-        if self._blit:
-            self.fig.canvas.blit()
-        else:
-            self.fig.canvas.draw_idle()
-
     def set_proj(self, projection = 'rectilinear'):
         geom = self.ax_main.get_geometry()
         self.fig.delaxes(self.ax_main)
         self.ax_main = self.fig.add_subplot(*geom, projection = projection)
-        self.reset()
+        self.draw(force = True)
 
     def set_mode(self, mode = 1):
         if mode == 1:
@@ -108,76 +83,65 @@ class FigureWindow:
             self.ax_main.change_geometry(2, 2, 1)
         else:
             raise NotImplementedError("Unsupported mode: " + str(mode))
-        self.update_bg()
 
-    def update_bg(self, *axes):
-        if len(axes) == 0:
-            axes = self.fig.get_axes()
-        for a in axes:
+    def clear(self):
+        for a in self.fig.get_axes():
             a.clear()
             a.set_xlim(a.get_xlim())
             a.set_ylim(a.get_ylim())
             a.grid(True)
-        for artist in self.artists.values():
-            if artist is not None:
-                self._draw_artist(artist)
-        for traj in self.trajectories:
-            self.draw_trajectory(traj)
-        self.fig.canvas.draw()
-        self.save(*axes)
 
-    def nullclines(self, field = None):
-        """Plots the nullclines of the given field and stores the results.
-        If field is None, then existing nullclines are removed. Otherwise,
-        existing nullclines are updated.
-        """
-        self._discard_artists('nullx', 'nully')
-        # Create nullclines and set self.artists['nullclines']
-        if field is not None:
-            x, y, u, v = field
-            self.artists['nullx'] = self.ax_main.contour(x, y, u, [0.0]).collections[0]
-            self.artists['nully'] = self.ax_main.contour(x, y, v, [0.0]).collections[0]
-        self.update_bg()
+    def draw(self, force = False):
+        if force:
+            self.fig.canvas.draw()
+        if self._blit:
+            self.fig.canvas.blit()
+        else:
+            self.fig.canvas.draw_idle()
 
-    def quiver(self, field = None, unscaled = False, **opts):
-        self._discard_artists('quiver')
-        if field is not None:
-            x, y, u, v = field
-            if unscaled:
-                mag = np.ma.masked_less(np.sqrt(u*u+v*v), 1.0e-4)
-                u = u/mag
-                v = v/mag
-            self.artists['quiver'] = self.ax_main.quiver(x, y, u, v, **opts)
-        self.update_bg()
+    # NOTE: the draw_* functions must not call draw or blit. 
+    def draw_nullclines(self, field, **kwargs):
+        x, y, u, v = field
+        self.ax_main.contour(x, y, u, [0.0], **kwargs)
+        self.ax_main.contour(x, y, v, [0.0], **kwargs)
 
-    def anim_update(self, time):
-        self.restore(self.ax_main)
-        for traj in self.trajectories:
-            if time > traj.t[-1]: continue
-            x, y = traj.x_ip(time), traj.y_ip(time)
+    def draw_quiver(self, field, scaled = True, **kwargs):
+        x, y, u, v = field
+        if scaled:
+            mag = np.ma.masked_less(np.sqrt(u*u+v*v), 1.0e-4)
+            u = u/mag
+            v = v/mag
+        self.ax_main.quiver(x, y, u, v, **kwargs)
+
+    def draw_trajectory(self, traj, t_anim = None):
+        if t_anim is None:
+            traj.marker_start.set_visible(True)
+            traj.marker_anim.set_visible(False)
+            traj.arrow.set_visible(True)
+            traj.line.set_xdata(traj.x)
+            traj.line.set_ydata(traj.y)
+        else: # During animation
+            if t_anim > traj.t[-1]:
+                t_anim = traj.t[-1]
+            last = traj.prev_index(t_anim)+1
+            traj.line.set_xdata(traj.x[:last])
+            traj.line.set_ydata(traj.y[:last])
+            x = traj.x_ip(t_anim)
+            y = traj.y_ip(t_anim)
             traj.marker_anim.set_xdata([x])
             traj.marker_anim.set_ydata([y])
             traj.marker_anim.set_visible(True)
-            self._draw_artist(traj.marker_anim)
-        self.update()
-
-    def remove_trajectory(self, traj):
-        # FIXME
-        for a in traj.line, traj.arrow, traj.marker_start, traj.marker_anim:
-            a.set_visible(False)
-            a.remove()
+        self._draw_artist(traj.line)
+        self._draw_artist(traj.arrow)
+        self._draw_artist(traj.marker_start)
+        self._draw_artist(traj.marker_anim)
 
     def add_trajectory(self, traj, *args, **kwargs):
         self.trajectories.append(traj)
-        self.restore()
         self.init_trajectory(traj, *args, **kwargs)
-        self.update()
-        self.save()
-    def draw_trajectory(self, traj):
-        self._draw_artist(traj.line)
-        self._draw_artist(traj.marker_start)
-        self._draw_artist(traj.arrow)
+
     def init_trajectory(self, traj, style = 'r-', mfc = 'none', marker = 'o'):
+        """Creates the line, start marker, arrow and animation marker"""
         traj.line, = self.ax_main.plot(traj.x, traj.y, style)
         traj.marker_start, = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
         traj.marker_anim, = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
@@ -193,45 +157,11 @@ class FigureWindow:
         traj.arrow = self.ax_main.annotate("", xy = (x2, y2), xytext = (x1, y1),
                 arrowprops = dict(arrowstyle = "->"))
 
-def test_fw(root):
-    import functools, itertools
-    import dynsystem
-    import numpy as np
-    fw = FigureWindow()
-    system = dynsystem.DynamicSystem('y', '-x + mu * (1 - x*x)*y', dict(mu = 1.0))
-    x, y = np.meshgrid(np.linspace(-5, 5, 25), np.linspace(-5, 5, 25))
-    u, v = system((x,y))
-    field = x, y,  u, v
-    mode = itertools.cycle([1, 4])
-    proj = itertools.cycle(['rectilinear', 'polar', '3d'])
-    v_nullc = tk.IntVar(root, 0)
-    v_quiver = tk.IntVar(root, 0)
-    v_quiv_unscaled = tk.IntVar(root, 1)
-    next(mode), next(proj)
-    def handle_click(evt):
-        pos = evt.xdata, evt.ydata
-        traj = system.trajectory(pos, dt = 0.05, max_steps = 500, direction = 0)
-        fw.add_trajectory(traj)
-    def toggle_mode():
-        fw.set_mode(next(mode))
-    def toggle_proj():
-        fw.set_proj(next(proj))
-    def h_nullc():
-        if v_nullc.get():
-            fw.nullclines(field)
-        else:
-            fw.nullclines()
-    def h_quiver():
-        if v_quiver.get():
-            fw.quiver(field, unscaled = v_quiv_unscaled.get())
-        else:
-            fw.quiver()
-    tk.Button(root, text = 'mode', command = toggle_mode).pack()
-    tk.Button(root, text = 'projection', command = toggle_proj).pack()
-    tk.Checkbutton(root, text = "Nullclines", variable = v_nullc, command = h_nullc).pack()
-    tk.Checkbutton(root, text = "Quiver", variable = v_quiver, command = h_quiver).pack()
-    tk.Checkbutton(root, text = "Unscaled", variable = v_quiv_unscaled).pack()
-    fw.bind('button_release_event', handle_click)
+    def anim_update(self, time):
+        self.restore(self.ax_main)
+        for traj in self.trajectories:
+            self.draw_trajectory(traj, time)
+        self.draw()
 
 if __name__ == '__main__':
     try:
