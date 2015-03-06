@@ -44,7 +44,34 @@ class VEntry(tk.Entry):
             if self.debug:
                 sys.stderr.write("%s\n" % self.errmsg.get())
 
-class Param(tk.LabelFrame):
+class Param(tk.Frame):
+    def __init__(self, master, name, value = 1.0, validator = None,
+            command = None):
+        tk.Frame.__init__(self, master)
+        self.name = name
+        self.var = tk.DoubleVar(self, value)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.label = tk.Label(self, text = name, width = 6)
+        self.entry = VEntry(self, self.var, width = 6, validator = validator,
+                command = command)
+        self.label.grid(sticky = tk.E + tk.W)
+        self.entry.grid(row = 0, column = 1, sticky = tk.E+tk.W)
+        self.get = self.var.get
+        self.set = self.var.set
+    def enable(self, name = None, value = None):
+        self.label.configure(state = tk.NORMAL)
+        if name is None:
+            name = self.name
+        self.label.configure(text = name)
+        self.entry.configure(state = tk.NORMAL)
+        if value is not None:
+            self.var.set(value)
+    def disable(self):
+        self.label.configure(state = tk.DISABLED, text = "")
+        self.entry.configure(state = tk.DISABLED)
+
+class Param_dyn(tk.LabelFrame):
     def __init__(self, master, name, value = 1.0, command = None):
         tk.LabelFrame.__init__(self, master, text = name)
         self.name = name
@@ -60,6 +87,9 @@ class Param(tk.LabelFrame):
         self.max = value
         self.values = [value]
         self.get = self.scale.get
+    def set(self, value):
+        self.entry.set(value)
+        self.scale.configure(from_ = value, to = value)
     def __update(self, value):
         if callable(self.command):
             self.command(self.name, value)
@@ -81,26 +111,47 @@ class LSelect(matplotlib.widgets.Lasso):
         self.disconnect_events()
 
 class DSFrame(tk.LabelFrame):
-    def __init__(self, master, system, command = None, **kwargs):
+    def __init__(self, master, system, command = None, n_params = 10, **kwargs):
         tk.LabelFrame.__init__(self, master, text = "System", **kwargs)
-        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
         self.system = system
         self.command = command
         self.eqn_x = tk.StringVar(self, self.system.get(1))
         self.eqn_y = tk.StringVar(self, self.system.get(2))
-        self.params = dict()
         self.preset = tk.StringVar(self)
         choices = list(dynsystem.presets.keys())
         choices.sort()
         tk.OptionMenu(self, self.preset, *choices,
                 command = self._load_preset).grid(sticky = tk.E+ tk.W, columnspan = 2)
         tk.Label(self, text = "x_dot:").grid()
-        self.entry_x = VEntry(self, self.eqn_x, validator = self._update_system)
-        self.entry_x.grid(row=1, column = 1)
+        self.entry_x = VEntry(self, self.eqn_x, command = self.command,
+                validator = self._update_system)
+        self.entry_x.grid(row=1, column = 1, sticky = tk.E + tk.W)
         tk.Label(self, text = "y_dot:").grid()
-        self.entry_y = VEntry(self, self.eqn_y, validator = self._update_system)
-        self.entry_y.grid(row=2, column = 1)
+        self.entry_y = VEntry(self, self.eqn_y, command = self.command,
+                validator = self._update_system)
+        self.entry_y.grid(row=2, column = 1, sticky = tk.E + tk.W)
+        #self.params = dict()
+        self.params = list()
+        pframe = tk.Frame(self)
+        pframe.grid(columnspan = 2, sticky = tk.E + tk.W)
+        pframe.columnconfigure(0, weight=1)
+        pframe.columnconfigure(1, weight=1)
+        for row in range(n_params//2):
+            for col in 0, 1:
+                pe = Param(pframe, "", 0.0, command = self.command,
+                        validator = self._update_system_params)
+                pe.grid(row = row, column = col, sticky = tk.E + tk.W)
+                self.params.append(pe)
         self._load_preset(choices[-1])
+
+    def _load_preset(self, name):
+        self.preset.set(name)
+        x_dot, y_dot, params = dynsystem.presets[name]
+        self.system.params.update(params)
+        self.eqn_x.set(x_dot)
+        self.eqn_y.set(y_dot)
+        self._update_params()
 
     def _update_system(self, *args):
         x_dot = self.eqn_x.get()
@@ -109,28 +160,35 @@ class DSFrame(tk.LabelFrame):
         self._update_params()
 
     def _update_system_params(self, *args):
+        for pe in self.params:
+            name = pe.label.cget('text')
+            value = pe.get()
+            if name in self.system.params:
+                self.system.params[name] = value
+
+    def _update_system_params_dyn(self, *args):
         for p in self.params:
             self.system.params[p] = self.params[p].get()
         if callable(self.command):
             self.command()
 
-    def _load_preset(self, name):
-        self.preset.set(name)
-        x_dot, y_dot, params = dynsystem.presets[name]
-        self.system.params.update(params)
-        self.eqn_x.set(x_dot)
-        self.eqn_y.set(y_dot)
-        for p in params:
-            self.params[p].entry.set(params[p])
-
     def _update_params(self, *args):
+        i = 0
+        for p in sorted(self.system.params.keys()):
+            self.params[i].enable(name = p, value = self.system.params[p])
+            i += 1
+        for pe in self.params[i:]:
+            pe.disable()
+
+    def _update_params_dyn(self, *args):
         for p in list(self.params.keys()):
             if not p in self.system.params:
                 self.params[p].destroy()
                 del self.params[p]
         for p in sorted(self.system.params):
             if not p in self.params:
-                pe = Param(self, p, self.system.params[p], command = self._update_system_params)
+                pe = Param(self, p, self.system.params[p],
+                        command = self._update_system_params)
                 pe.grid(columnspan = 2, sticky = tk.E+tk.W)
                 self.params[p] = pe
 
