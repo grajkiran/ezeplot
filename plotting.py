@@ -1,17 +1,27 @@
 #!/usr/bin/python
 
+try:
+    import tkinter as tk
+except:
+    import Tkinter as tk
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import helpers
 
 matplotlib.rcParams['toolbar'] = 'None'
 
-class FigureWindow:
-    def __init__(self, mode = 1, blit = True):
-        self.fig = plt.figure()
-        self.canvas = self.fig.canvas
+class Figure:
+    def __init__(self, mode = 1, blit = True, master = None):
+        if master is not None:
+            self.fig = matplotlib.figure.Figure()
+            self.canvas = FigureCanvasTkAgg(self.fig, master = master)
+            self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
+        else:
+            self.fig = plt.figure()
+            self.canvas = self.fig.canvas
         self._blit = blit and self.fig.canvas.supports_blit
         self.ax_main = self.fig.add_subplot(111, label = 'main', xlim = (-5, 5), ylim=(-5, 5))
         self.ax_x = self.fig.add_subplot(222, label = 'x', visible = False)
@@ -19,7 +29,8 @@ class FigureWindow:
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False, sharex = self.ax_x)
         self.bg = dict()
         self.trajectories = []
-        self.fig.show()
+        if master is None:
+            self.fig.show()
         self.set_mode(mode)
 
     def get_diagonal(self):

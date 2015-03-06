@@ -8,16 +8,18 @@ except:
 import numpy as np
 from widgets import *
 import helpers
+import plotting
 
 class Options(dict):
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
 
 class AppWindow():
-    def __init__(self, root, system, fig):
+    def __init__(self, root, system, blit = True, embedded = False):
         self.system = system
         self.root = root
-        self.fig = fig
+        master = self.root if embedded else None
+        self.fig = plotting.Figure(blit = blit, master = master)
         self.opts = self._init_options()
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
         self.anim_info    = tk.StringVar(self.root, "")
@@ -28,14 +30,22 @@ class AppWindow():
         self.anim_timer.add_callback(self.anim_update)
         self.locations = []
         self.root.columnconfigure(0, weight=1)
-        self.fig.bind('button_release_event', self.handle_mouse)
+        self.fig.bind('button_press_event', self.button_press)
+        self.fig.bind('button_release_event', self.button_release)
+        self.fig.bind('scroll_event', self.button_scroll)
         self.fig.bind('resize_event', self.update_fig)
-        self._add_widgets(self.root)
+        if embedded:
+            cframe = tk.Frame(self.root)
+            cframe.pack()
+            self._add_widgets(cframe)
+        else:
+            self._add_widgets(self.root)
+            self.fig.bind('close_event', lambda evt: root.quit())
         self.update_fig()
 
     def _init_options(self, fname = None):
         opts = Options()
-        opts.tmax           = tk.DoubleVar(self.root, 45)
+        opts.tmax           = tk.DoubleVar(self.root, 25)
         opts.dt             = tk.DoubleVar(self.root, 0.05)
         opts.coarsen        = tk.IntVar(self.root, 1)
         opts.quiver         = tk.BooleanVar(self.root, False)
@@ -127,7 +137,11 @@ class AppWindow():
         self.fig.draw_trajectory(traj)
         self.fig.draw()
 
-    def handle_mouse(self, evt):
+    def button_scroll(self, evt):
+        pass
+    def button_press(self, evt):
+        pass
+    def button_release(self, evt):
         # >HACK< Ignore if we are panning/zooming using the toolbar.
         if evt.button != 1:
             return
@@ -153,6 +167,7 @@ class AppWindow():
         tk.Button(f_controls, text = "Reset", underline = 0,
                 command = self._reset_fig).grid(row=1,column=2)
 
+        # Trajectories frame.
         row = 0
         f_traj = tk.LabelFrame(frame, text = "Trajectories:")
         f_traj.grid(sticky = tk.E+tk.W)
