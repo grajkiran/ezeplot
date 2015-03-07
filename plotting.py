@@ -23,6 +23,7 @@ class Figure:
             self.fig = plt.figure()
             self.canvas = self.fig.canvas
         self._blit = blit and self.fig.canvas.supports_blit
+        self.canvas.mpl_connect('scroll_event', self.scale_view)
         self.ax_rect = self.fig.add_subplot(111, label = 'rect', xlim = (-5, 5), ylim=(-5, 5))
         self.ax_3d = self.fig.add_subplot(111, label = '3d', projection = '3d', zlim = (-1, 1))
         self.ax_polar = self.fig.add_subplot(111, label = 'polar', projection = 'polar')
@@ -121,22 +122,48 @@ class Figure:
         xlim = self.ax_rect.get_xlim()
         ylim = self.ax_rect.get_ylim()
         zlim = self.ax_3d.get_zlim()
+        tlim = 0.0, tmax
         for a in (self.ax_rect, self.ax_3d, self.ax_polar,
                 self.ax_x, self.ax_y, self.ax_z):
             a.clear()
             a.grid(True)
+        # The t-limit (time axis) is shared between ax_x, ax_y and ax_z
+        self.ax_x.set_xlim(tlim)
+        #self.ax_polar.set_xlim(self.ax_polar.get_xlim())
+        self.ax_polar.set_ylim(self.ax_polar.get_ylim())
+        self.set_limits(xlim, ylim, zlim)
+
+    def set_limits(self, xlim, ylim, zlim):
         self.ax_rect.set_xlim(xlim)
         self.ax_rect.set_ylim(ylim)
         self.ax_3d.set_xlim(xlim)
         self.ax_3d.set_ylim(ylim)
         self.ax_3d.set_zlim(zlim)
-        # The x-limit (time axis) is shared between ax_x, ax_y and ax_z
-        self.ax_x.set_xlim((0, tmax))
         self.ax_x.set_ylim(xlim)
         self.ax_y.set_ylim(ylim)
         self.ax_z.set_ylim(zlim)
-        self.ax_polar.set_xlim(self.ax_polar.get_xlim())
-        self.ax_polar.set_ylim(self.ax_polar.get_ylim())
+
+    def scale_view(self, evt):
+        if evt.inaxes is self.ax_3d:
+            return
+        if not evt.inaxes is self.ax_main:
+            return
+        if evt.button == "up":
+            scale = 0.8
+        else:
+            scale = 1.25
+        pos = evt.xdata, evt.ydata
+        xlim, ylim, zlim = self.get_limits()
+        if evt.inaxes is self.ax_polar:
+            rlim = 0.0, scale*ylim[1]
+            self.ax_polar.set_ylim(rlim)
+            return
+        if evt.key is None or evt.key == 'x':
+            xlim = helpers.scale_domain(xlim, scale, evt.xdata)
+        if evt.key is None or evt.key == 'y':
+            ylim = helpers.scale_domain(ylim, scale, evt.ydata)
+        self.set_limits(xlim, ylim, zlim)
+        self.draw(force = True)
 
     def draw(self, force = False):
         if force:
@@ -223,7 +250,7 @@ class Figure:
         self.trajectories.append(traj)
         self.init_trajectory(traj, *args, **kwargs)
 
-    def init_trajectory(self, traj, style = 'r-', mfc = 'none', marker = 'o'):
+    def init_trajectory(self, traj, style = 'r-', mfc = 'none', marker = 'bo'):
         """Creates the line, start marker, arrow and animation marker"""
         traj.line = dict()
         traj.marker = dict()
@@ -235,9 +262,9 @@ class Figure:
         traj.marker["start"], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
         traj.marker["3d"], = self.ax_3d.plot([traj.start[0]], [traj.start[1]], [traj.start[2]], marker)
         traj.marker[0], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
-        traj.marker[1], = self.ax_x.plot([0.0], [traj.start[0]], marker, mfc = mfc)
-        traj.marker[2], = self.ax_y.plot([0.0], [traj.start[1]], marker, mfc = mfc)
-        traj.marker[3], = self.ax_z.plot([0.0], [traj.start[2]], marker, mfc = mfc)
+        traj.marker[1], = self.ax_x.plot([0.0], [traj.start[0]], marker)
+        traj.marker[2], = self.ax_y.plot([0.0], [traj.start[1]], marker)
+        traj.marker[3], = self.ax_z.plot([0.0], [traj.start[2]], marker)
         for m in range(4):
             traj.marker[m].set_visible(False)
         #traj.marker_anim.set_visible(False)

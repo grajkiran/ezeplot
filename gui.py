@@ -34,7 +34,6 @@ class AppWindow():
         self.root.columnconfigure(0, weight=1)
         self.fig.bind('button_press_event', self.button_press)
         self.fig.bind('button_release_event', self.button_release)
-        self.fig.bind('scroll_event', self.button_scroll)
         self.fig.bind('resize_event', self.update_fig)
         if embedded:
             cframe = tk.Frame(self.root)
@@ -73,7 +72,7 @@ class AppWindow():
         self.fig.trajectories = []
         self.anim_tmax = 0.0
         for pos in picked:
-            self.handle_pick(pos)
+            self.add_location(pos)
         self.update_fig()
 
     def update_fig(self, *args):
@@ -113,7 +112,7 @@ class AppWindow():
     def _set_proj(self, *args):
         proj = self.opts.projection.get()
         self.fig.set_proj(PROJECTIONS[proj])
-        self._reset_fig()
+        self.update_fig()
 
     def anim_update(self):
         tstep = self.anim_tstep.get()
@@ -132,7 +131,7 @@ class AppWindow():
         else:
             self.anim_timer.start()
 
-    def handle_pick(self, pos):
+    def add_location(self, pos):
         threshold = 1e-4
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
@@ -147,21 +146,15 @@ class AppWindow():
         self.fig.draw_trajectory(traj)
         self.fig.draw()
 
-    def button_scroll(self, evt):
-        pass
     def button_press(self, evt):
         pass
     def button_release(self, evt):
-        # >HACK< Ignore if we are panning/zooming using the toolbar.
         if evt.button != 1:
             return
-        #if self.fig.canvas.toolbar.mode != '':
-        #    return
         if not evt.inaxes is self.fig.ax_main:
             return
         pos = evt.xdata, evt.ydata
-        print(pos)
-        self.handle_pick(pos)
+        self.add_location(pos)
 
     def _add_widgets(self, frame):
         f_system = DSFrame(frame, self.system, command = self.update_trajectories)
