@@ -1,13 +1,13 @@
-1. Remove bar below parameter entry value.
-2. Fix 0,0 location in Cartesian graph
-3. Remove uniform option, keep it as default.
-4. Introduce isocline.
-5. Introduce X-t, Y-t, X-Y, X-Y-Z check buttons on front panel
-6. Polar not Polar mode
-7. Disallow more than 10 parameters.
-8. Increase size of Update button and place at bottom of panel
-9. Put axis numbers outside the graph.
-10. Remove "Phase plane" from top.
-11. Get rid of icons at bottom from Python.
-12. Graph spacing is mismatched for X-t, Y-t plots, check.
-13. Bug ! Check coordinate system info on bottom right in X-t, Y-t graphs.
+done  1. Remove bar below parameter entry value.
+done  2. Fix 0,0 location in Cartesian graph
+done  3. Remove uniform option, keep it as default.
+      4. Introduce isocline.
+      5. Introduce X-t, Y-t, X-Y, X-Y-Z check buttons on front panel
+done  6. Polar not Polar mode
+done  7. Disallow more than 10 parameters.
+      8. Increase size of Update button and place at bottom of panel
+done  9. Put axis numbers outside the graph.
+done  10. Remove "Phase plane" from top.
+done  11. Get rid of icons at bottom from Python.
+      12. Graph spacing is mismatched for X-t, Y-t plots, check.
+      13. Bug ! Check coordinate system info on bottom right in X-t, Y-t graphs.

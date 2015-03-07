@@ -6,12 +6,7 @@ Plot elements:
 	Start points -> markers, arrows, both
 	Fixed points, limit cycles, closed orbits, index theory, 3D, etc.
 
-Trajectory database:
-	db.get_trajectory(start, params)
-	db.add_trajectory(start, params)
-
-One arrow on the static trajectory at point of start (if bidirectional) or
-middle if unidirectional.
+One arrow on the static trajectory a little ahead of the point of start.
 
 Update param class:
 label, entry_field, spinbox
@@ -29,18 +24,11 @@ Three aspects of the code:
 3. The plotting functionality
    * Maintaining the figure window, updating plots, etc.
 
+Two figure windows:
+1. x-y phase plane + optionally the 3 temporal variations
+2. 3D projection showing the complete orbits.
 
-Plotting:
-Cache only for animation. All other operations, use draw as usual.
-Adding an artist:
-	add artist to the dict
-	If has blit, add_artist and blit.
-	Else, add_artist, draw_idle
-Removing/updating an artist:
-	remove/update artist in the dict
-	clear the axes, add all the artists and draw_idle
+Dynamic trajectory visualization mode. Start point follows mouse around:
 
-Animation:
-	if has blit, just before starting animation, cache the bg. Then at each time step, restore the bg, draw artist and blit.
-	if no blit, at each time step, clear axes, draw artist and draw_idle
-	
+Picking a point in 3D: Start at z = 0. get xy from location.
+Then move mouse to change the z-coordinate up or down.

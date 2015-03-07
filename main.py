@@ -4,6 +4,8 @@ try:
     import tkinter as tk
 except ImportError:
     import Tkinter as tk
+import matplotlib
+matplotlib.use('TkAgg')
 import sys
 from optparse import OptionParser
 
