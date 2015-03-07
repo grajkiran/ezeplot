@@ -8,6 +8,12 @@ import helpers
 class Trajectory:
     def __init__(self, data, startidx = 0):
         self.startidx = startidx
+        self.set_data(data, startidx)
+
+    def set_data(self, data, startidx = None):
+        if startidx is None:
+            startidx = self.startidx
+        self.startidx = startidx
         self.data = np.array(data)
         self.time = self.data[:,0]
         self.dist = self.data[:,1]
