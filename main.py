@@ -21,7 +21,7 @@ parser.add_option("-b", "--blit", action = "store_true", default = True)
 parser.add_option("-n", "--no-blit", action = "store_false", dest = "blit")
 opts, args = parser.parse_args()
 
-system = DynamicSystem('y', '-x + mu * (1 - x*x)*y', dict(mu = 1.0))
+system = DynamicSystem('y', '-x + mu * (1 - x*x)*y', params = dict(mu = 1.0))
 #fig = Figure(blit = opts.blit)
 root = tk.Tk()
 root.protocol('WM_DELETE_WINDOW', root.quit)

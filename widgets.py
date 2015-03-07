@@ -118,6 +118,7 @@ class DSFrame(tk.LabelFrame):
         self.command = command
         self.eqn_x = tk.StringVar(self, self.system.get(1))
         self.eqn_y = tk.StringVar(self, self.system.get(2))
+        self.eqn_z = tk.StringVar(self, self.system.get(3))
         self.preset = tk.StringVar(self)
         choices = list(dynsystem.presets.keys())
         choices.sort()
@@ -131,6 +132,10 @@ class DSFrame(tk.LabelFrame):
         self.entry_y = VEntry(self, self.eqn_y, command = self.command,
                 validator = self._update_system)
         self.entry_y.grid(row=2, column = 1, sticky = tk.E + tk.W)
+        tk.Label(self, text = "z_dot:").grid()
+        self.entry_z = VEntry(self, self.eqn_z, command = self.command,
+                validator = self._update_system)
+        self.entry_z.grid(row=3, column = 1, sticky = tk.E + tk.W)
         self.params = list()
         pframe = tk.Frame(self)
         pframe.grid(columnspan = 2, sticky = tk.E + tk.W)
@@ -146,16 +151,18 @@ class DSFrame(tk.LabelFrame):
 
     def _load_preset(self, name):
         self.preset.set(name)
-        x_dot, y_dot, params = dynsystem.presets[name]
+        x_dot, y_dot, z_dot, params = dynsystem.presets[name]
         self.system.params.update(params)
         self.eqn_x.set(x_dot)
         self.eqn_y.set(y_dot)
+        self.eqn_z.set(z_dot)
         self._update_params()
 
     def _update_system(self, *args):
         x_dot = self.eqn_x.get()
         y_dot = self.eqn_y.get()
-        self.system.update(x_dot, y_dot)
+        z_dot = self.eqn_z.get()
+        self.system.update(x_dot, y_dot, z_dot)
         self._update_params()
 
     def _update_system_params(self, *args):
@@ -172,24 +179,6 @@ class DSFrame(tk.LabelFrame):
             i += 1
         for pe in self.params[i:]:
             pe.disable()
-
-#    def _update_system_params_dyn(self, *args):
-#        for p in self.params:
-#            self.system.params[p] = self.params[p].get()
-#        if callable(self.command):
-#            self.command()
-#
-#    def _update_params_dyn(self, *args):
-#        for p in list(self.params.keys()):
-#            if not p in self.system.params:
-#                self.params[p].destroy()
-#                del self.params[p]
-#        for p in sorted(self.system.params):
-#            if not p in self.params:
-#                pe = Param(self, p, self.system.params[p],
-#                        command = self._update_system_params)
-#                pe.grid(columnspan = 2, sticky = tk.E+tk.W)
-#                self.params[p] = pe
 
 def test_system():
     x = e1.get()

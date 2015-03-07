@@ -18,6 +18,8 @@ def is_inside(p, limits):
     if limits is None:
         return True
     for i in range(len(p)):
+        if limits[i] is None:
+            continue
         lower = min(limits[i])
         upper = max(limits[i])
         if p[i] < lower or p[i] > upper:

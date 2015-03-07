@@ -10,6 +10,8 @@ from widgets import *
 import helpers
 import plotting
 
+PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar', '3D': '3d'})
+
 class Options(dict):
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
@@ -53,7 +55,7 @@ class AppWindow():
         opts.nullclines     = tk.BooleanVar(self.root, True)
         opts.spacing        = tk.DoubleVar(self.root, 0.3)
         opts.temporal       = tk.BooleanVar(self.root, False)
-        opts.polar          = tk.BooleanVar(self.root, False)
+        opts.projection     = tk.StringVar(self.root, '2D')
         opts.domain_factor  = tk.DoubleVar(self.root, 1.5)
         return opts
 
@@ -75,10 +77,10 @@ class AppWindow():
         self.update_fig()
 
     def update_fig(self, *args):
-        self.fig.clear()
+        self.fig.clear(tmax = self.opts.tmax.get())
         (x1, x2), (y1, y2) = self._computational_domain()[:2]
         x, y = np.meshgrid(np.linspace(x1, x2, 100), np.linspace(y1, y2, 100))
-        u, v = self.system((x,y))
+        u, v, w = self.system((x,y))
         field = x, y, u, v
         field_quiv = [f[::4, ::4] for f in field]
         if self.opts.nullclines.get():
@@ -97,14 +99,20 @@ class AppWindow():
         self.anim_timer.stop()
         self.locations = []
         self.fig.trajectories = []
-        self.fig.clear()
+        self.anim_tmax = 0.0
+        self.fig.clear(tmax = self.opts.tmax.get())
+        self.update_fig()
+
+    def _set_temporal(self, *args):
+        if self.opts.temporal.get():
+            self.fig.set_mode(4)
+        else:
+            self.fig.set_mode(1)
         self.update_fig()
 
     def _set_proj(self, *args):
-        if self.opts.polar.get():
-            self.fig.set_proj('polar')
-        else:
-            self.fig.set_proj('rectilinear')
+        proj = self.opts.projection.get()
+        self.fig.set_proj(PROJECTIONS[proj])
         self._reset_fig()
 
     def anim_update(self):
@@ -126,6 +134,8 @@ class AppWindow():
 
     def handle_pick(self, pos):
         threshold = 1e-4
+        if len(pos) == 2:
+            pos = pos[0], pos[1], 0.0
         self.locations.append(pos)
         traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
                 limits = self._computational_domain(), bidirectional = True)
@@ -150,6 +160,7 @@ class AppWindow():
         if not evt.inaxes is self.fig.ax_main:
             return
         pos = evt.xdata, evt.ydata
+        print(pos)
         self.handle_pick(pos)
 
     def _add_widgets(self, frame):
@@ -162,8 +173,12 @@ class AppWindow():
                 command = self.update_fig).grid(row=0, column=0)
         tk.Checkbutton(f_controls, text = "Quiver", variable = self.opts.quiver,
                 command = self.update_fig).grid(row = 0, column = 1)
-        tk.Checkbutton(f_controls, text = "Polar", variable = self.opts.polar,
-                command = self._set_proj).grid(columnspan = 2)
+        tk.Checkbutton(f_controls, text = "Temporal", variable = self.opts.temporal,
+                command = self._set_temporal).grid(row = 0, column = 2)
+        optmenu = tk.OptionMenu(f_controls, self.opts.projection,
+                *PROJECTIONS.keys(), command = self._set_proj)
+        optmenu.configure(width = 5)
+        optmenu.grid(columnspan = 2)
         tk.Button(f_controls, text = "Reset", underline = 0,
                 command = self._reset_fig).grid(row=1,column=2)
 

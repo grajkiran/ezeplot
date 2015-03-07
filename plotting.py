@@ -11,7 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import helpers
 
-matplotlib.rcParams['toolbar'] = 'None'
+#matplotlib.rcParams['toolbar'] = 'None'
 
 class Figure:
     def __init__(self, mode = 1, blit = True, master = None):
@@ -23,15 +23,21 @@ class Figure:
             self.fig = plt.figure()
             self.canvas = self.fig.canvas
         self._blit = blit and self.fig.canvas.supports_blit
-        self.ax_main = self.fig.add_subplot(111, label = 'main', xlim = (-5, 5), ylim=(-5, 5))
+        self.ax_rect = self.fig.add_subplot(111, label = 'rect', xlim = (-5, 5), ylim=(-5, 5))
+        self.ax_3d = self.fig.add_subplot(111, label = '3d', projection = '3d', zlim = (-1, 1))
+        self.ax_polar = self.fig.add_subplot(111, label = 'polar', projection = 'polar')
+        self.ax_main = self.ax_rect
         self.ax_x = self.fig.add_subplot(222, label = 'x', visible = False)
         self.ax_y = self.fig.add_subplot(223, label = 'y', visible = False, sharex = self.ax_x)
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False, sharex = self.ax_x)
+        self._3d = False
+        self.mode = mode
         self.bg = dict()
         self.trajectories = []
         if master is None:
             self.fig.show()
         self.set_mode(mode)
+        self.set_proj('rect')
 
     def get_diagonal(self):
         lim = self.get_limits()
@@ -42,7 +48,7 @@ class Figure:
         xlim = self.ax_main.get_xlim()
         ylim = self.ax_main.get_ylim()
         if not hasattr(self.ax_main, 'get_zlim'):
-            return xlim, ylim
+            return xlim, ylim, (-1.0, 1.0)
         zlim = self.ax_main.get_zlim()
         return xlim, ylim, zlim
 
@@ -75,10 +81,25 @@ class Figure:
         if self._blit:
             ax.draw_artist(artist)
 
-    def set_proj(self, projection = 'rectilinear'):
+    def set_proj(self, projection = 'rect'):
         geom = self.ax_main.get_geometry()
-        self.fig.delaxes(self.ax_main)
-        self.ax_main = self.fig.add_subplot(*geom, projection = projection)
+        self._3d = False
+        if projection == 'rect':
+            self.ax_main = self.ax_rect
+        elif projection == '3d':
+            self.ax_main = self.ax_3d
+            self._3d = True
+        elif projection == 'polar':
+            self.ax_main = self.ax_polar
+        else:
+            raise ValueError("Unknown projection: %s" % projection)
+        for ax in self.ax_rect, self.ax_3d, self.ax_polar:
+            if ax in self.fig.get_axes():
+                ax.set_visible(False)
+                self.fig.delaxes(ax)
+        self.ax_main.set_visible(True)
+        self.ax_main.change_geometry(*geom)
+        self.fig.add_subplot(self.ax_main)
         self.draw(force = True)
 
     def set_mode(self, mode = 1):
@@ -94,13 +115,28 @@ class Figure:
             self.ax_main.change_geometry(2, 2, 1)
         else:
             raise NotImplementedError("Unsupported mode: " + str(mode))
+        self.mode = mode
 
-    def clear(self):
-        for a in self.fig.get_axes():
+    def clear(self, tmax = 1.0):
+        xlim = self.ax_rect.get_xlim()
+        ylim = self.ax_rect.get_ylim()
+        zlim = self.ax_3d.get_zlim()
+        for a in (self.ax_rect, self.ax_3d, self.ax_polar,
+                self.ax_x, self.ax_y, self.ax_z):
             a.clear()
-            a.set_xlim(a.get_xlim())
-            a.set_ylim(a.get_ylim())
             a.grid(True)
+        self.ax_rect.set_xlim(xlim)
+        self.ax_rect.set_ylim(ylim)
+        self.ax_3d.set_xlim(xlim)
+        self.ax_3d.set_ylim(ylim)
+        self.ax_3d.set_zlim(zlim)
+        # The x-limit (time axis) is shared between ax_x, ax_y and ax_z
+        self.ax_x.set_xlim((0, tmax))
+        self.ax_x.set_ylim(xlim)
+        self.ax_y.set_ylim(ylim)
+        self.ax_z.set_ylim(zlim)
+        self.ax_polar.set_xlim(self.ax_polar.get_xlim())
+        self.ax_polar.set_ylim(self.ax_polar.get_ylim())
 
     def draw(self, force = False):
         if force:
@@ -112,11 +148,15 @@ class Figure:
 
     # NOTE: the draw_* functions must not call draw or blit. 
     def draw_nullclines(self, field, **kwargs):
+        if self.ax_main is self.ax_3d:
+            return
         x, y, u, v = field
         self.ax_main.contour(x, y, u, [0.0], **kwargs)
         self.ax_main.contour(x, y, v, [0.0], **kwargs)
 
     def draw_quiver(self, field, scaled = True, **kwargs):
+        if self.ax_main is self.ax_3d:
+            return
         x, y, u, v = field
         if scaled:
             mag = np.ma.masked_less(np.sqrt(u*u+v*v), 1.0e-4)
@@ -126,26 +166,58 @@ class Figure:
 
     def draw_trajectory(self, traj, t_anim = None):
         if t_anim is None:
-            traj.marker_start.set_visible(True)
-            traj.marker_anim.set_visible(False)
+            for m in range(4):
+                traj.marker[m].set_visible(False)
+            traj.marker["start"].set_visible(True)
+            traj.marker["3d"].set_visible(False)
             traj.arrow.set_visible(True)
-            traj.line.set_xdata(traj.x)
-            traj.line.set_ydata(traj.y)
+            traj.line[0].set_xdata(traj.x)
+            traj.line[0].set_ydata(traj.y)
+            for l in 1, 2, 3:
+                traj.line[l].set_xdata(traj.t)
+                traj.line[l].set_ydata(traj.points[:,l-1])
+            traj.line["3d"]._verts3d = (traj.x, traj.y, traj.z)
         else: # During animation
             if t_anim > traj.t[-1]:
                 t_anim = traj.t[-1]
             last = traj.prev_index(t_anim)+1
-            traj.line.set_xdata(traj.x[:last])
-            traj.line.set_ydata(traj.y[:last])
-            x = traj.x_ip(t_anim)
-            y = traj.y_ip(t_anim)
-            traj.marker_anim.set_xdata([x])
-            traj.marker_anim.set_ydata([y])
-            traj.marker_anim.set_visible(True)
-        self._draw_artist(traj.line)
-        self._draw_artist(traj.arrow)
-        self._draw_artist(traj.marker_start)
-        self._draw_artist(traj.marker_anim)
+            x, y, z = traj.x_ip(t_anim), traj.y_ip(t_anim), traj.z_ip(t_anim)
+            tdata = np.append(traj.t[:last], t_anim)
+            xdata = np.append(traj.x[:last], x)
+            ydata = np.append(traj.y[:last], y)
+            zdata = np.append(traj.z[:last], z)
+            traj.line[0].set_xdata(xdata)
+            traj.line[0].set_ydata(ydata)
+            for l in 1, 2, 3:
+                traj.line[l].set_xdata(tdata)
+            traj.line[1].set_ydata(xdata)
+            traj.line[2].set_ydata(ydata)
+            traj.line[3].set_ydata(zdata)
+            traj.marker[0].set_xdata([x])
+            traj.marker[0].set_ydata([y])
+            for m in 1, 2, 3:
+                traj.marker[m].set_xdata([t_anim])
+            traj.marker[1].set_ydata([x])
+            traj.marker[2].set_ydata([y])
+            traj.marker[3].set_ydata([z])
+            traj.marker["3d"]._verts3d = ([x], [y], [z])
+            for m in range(4):
+                traj.marker[m].set_visible(True)
+            traj.marker["start"].set_visible(True)
+            traj.marker["3d"].set_visible(True)
+        # Draw only the relevant artists
+        if not self._3d:
+            self._draw_artist(traj.line[0])
+            self._draw_artist(traj.arrow)
+            self._draw_artist(traj.marker["start"])
+            self._draw_artist(traj.marker[0])
+        else:
+            self._draw_artist(traj.line["3d"])
+            self._draw_artist(traj.marker["3d"])
+        if self.mode == 4:
+            for axis, axes in zip((1,2,3), (self.ax_x, self.ax_y, self.ax_z)):
+                self._draw_artist(traj.line[axis], axes)
+                self._draw_artist(traj.marker[axis], axes)
 
     def add_trajectory(self, traj, *args, **kwargs):
         self.trajectories.append(traj)
@@ -153,10 +225,22 @@ class Figure:
 
     def init_trajectory(self, traj, style = 'r-', mfc = 'none', marker = 'o'):
         """Creates the line, start marker, arrow and animation marker"""
-        traj.line, = self.ax_main.plot(traj.x, traj.y, style)
-        traj.marker_start, = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
-        traj.marker_anim, = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
-        traj.marker_anim.set_visible(False)
+        traj.line = dict()
+        traj.marker = dict()
+        traj.line[0], = self.ax_main.plot(traj.x, traj.y, style)
+        traj.line[1], = self.ax_x.plot(traj.t, traj.x, style)
+        traj.line[2], = self.ax_y.plot(traj.t, traj.y, style)
+        traj.line[3], = self.ax_z.plot(traj.t, traj.z, style)
+        traj.line["3d"], = self.ax_3d.plot(traj.x, traj.y, traj.z, style)
+        traj.marker["start"], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
+        traj.marker["3d"], = self.ax_3d.plot([traj.start[0]], [traj.start[1]], [traj.start[2]], marker)
+        traj.marker[0], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
+        traj.marker[1], = self.ax_x.plot([0.0], [traj.start[0]], marker, mfc = mfc)
+        traj.marker[2], = self.ax_y.plot([0.0], [traj.start[1]], marker, mfc = mfc)
+        traj.marker[3], = self.ax_z.plot([0.0], [traj.start[2]], marker, mfc = mfc)
+        for m in range(4):
+            traj.marker[m].set_visible(False)
+        #traj.marker_anim.set_visible(False)
         # Add arrow at about 10% diagonal length from the start location
         diag = self.get_diagonal()
         arrow_len = diag / 1000.0
@@ -169,7 +253,7 @@ class Figure:
                 arrowprops = dict(arrowstyle = "->"))
 
     def anim_update(self, time):
-        self.restore(self.ax_main)
+        self.restore()#self.ax_main)
         for traj in self.trajectories:
             self.draw_trajectory(traj, time)
         self.draw()

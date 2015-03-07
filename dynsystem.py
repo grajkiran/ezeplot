@@ -21,10 +21,12 @@ class Trajectory:
         self.t = self.time
         self.x = self.points[:,0]
         self.y = self.points[:,1]
+        self.z = self.points[:,2]
         self.s_ip = interp1d(self.time, self.dist)
         self.t_ip = interp1d(self.dist, self.time)
         self.x_ip = interp1d(self.time, self.x)
         self.y_ip = interp1d(self.time, self.y)
+        self.z_ip = interp1d(self.time, self.z)
         self.start = self.points[startidx]
         self.length = self.dist[-1] - self.dist[0]
 
@@ -50,10 +52,11 @@ class Trajectory:
         return prev
 
 class DynamicSystem:
-    """A 2D dynamic system"""
-    def __init__(self, x_dot = "x", y_dot = "y", params = dict()):
-        self.__x_dot = x_dot
-        self.__y_dot = y_dot
+    """A 3D dynamic system"""
+    def __init__(self, x_dot = "x", y_dot = "y", z_dot = "0.0", params = dict()):
+        self.__x_dot = str(x_dot)
+        self.__y_dot = str(y_dot)
+        self.__z_dot = str(z_dot)
         self.params = dict(params)
         self.update_handlers = []
         self.update()
@@ -63,33 +66,39 @@ class DynamicSystem:
             self.update_handlers.append(handler)
 
     def get(self, which = None):
-        if which == 1:
+        if which == 1 or which == 'x':
             return self.__x_dot
-        elif which == 2:
+        elif which == 2 or which == 'y':
             return self.__y_dot
-        return self.__x_dot, self.__y_dot
+        elif which == 3 or which == 'z':
+            return self.__z_dot
+        return self.__x_dot, self.__y_dot, self.__z_dot
 
-    def update(self, x_dot = None, y_dot = None):
+    def update(self, x_dot = None, y_dot = None, z_dot = None):
         if x_dot is None:
             x_dot = self.__x_dot
         if y_dot is None:
             y_dot = self.__y_dot
-        if '"' in x_dot+y_dot or "'" in x_dot+y_dot: return False
+        if z_dot is None:
+            z_dot = self.__z_dot
+        if '"' in (x_dot+y_dot+z_dot) or "'" in (x_dot+y_dot+z_dot): return False
         self.__code_x = compile(x_dot, '<string>', 'eval')
         self.__code_y = compile(y_dot, '<string>', 'eval')
+        self.__code_z = compile(z_dot, '<string>', 'eval')
         self.__x_dot = x_dot
         self.__y_dot = y_dot
+        self.__z_dot = z_dot
         self.__params_update()
-        self.__call__([0.8934,0.6572])
+        self.__call__([0.8934,0.6572,0.8723])
         for handler in self.update_handlers:
             handler()
-            #handler(x_dot, y_dot, self.params)
 
     def __params_update(self):
         from numpy import sqrt, sin, cos, tan, abs, exp, pi
-        x, y = 0.0, 0.0
+        x, y, z = 0.0, 0.0, 0.0
         req_params = set(self.__code_x.co_names)
         req_params.update(set(self.__code_y.co_names))
+        req_params.update(set(self.__code_z.co_names))
         req_params.difference_update(locals().keys())
         for p in req_params:
             if not p in self.params:
@@ -99,18 +108,25 @@ class DynamicSystem:
                 del self.params[p]
         return req_params
 
-    def __call__(self, x, code_x = None, code_y = None, params = None):
+    def __call__(self, x, params = None):
         from numpy import sqrt, sin, cos, tan, abs, exp, pi
-        x, y = np.array(x)
-        # We first initialize x_dot, y_dot to 1.0 and then scale them with the
-        # evaulated expression. This ensures that the resulting x_dot and y_dot
+        size = len(x)
+        if size == 2:
+            x, y = np.array(x)
+            z = np.zeros_like(x)
+        else:
+            x, y, z = np.array(x)
+        # We first initialize x_dot, y_dot, z_dot to 1.0 and then scale them with the
+        # evaulated expression. This ensures that the resulting *_dot 
         # are always numpy arrays and don't get clobbered if the user supplied
         # expression evaulates to a constant.
         x_dot = np.ones_like(x)
         y_dot = np.ones_like(y)
-        x_dot *= eval(code_x or self.__code_x, locals(), params or self.params)
-        y_dot *= eval(code_y or self.__code_y, locals(), params or self.params)
-        return [x_dot, y_dot]
+        z_dot = np.ones_like(z)
+        x_dot *= eval(self.__code_x, locals(), params or self.params)
+        y_dot *= eval(self.__code_y, locals(), params or self.params)
+        z_dot *= eval(self.__code_z, locals(), params or self.params)
+        return [x_dot, y_dot, z_dot]
 
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,
             bidirectional = True, **kwargs):
@@ -160,38 +176,47 @@ presets = {
         'Linear System': (
             'a*x + b*y',
             'c*x + d*y',
+            '0',
             dict(a = 2, b = 2, c = -2, d = -3)),
         'Simple Pendulum': (
             'y',
             'sin(x)',
+            '0',
             dict()),
         'Linear Oscillator':   (
             'y',
             '-omega * x - c * y',
+            '0',
             dict(c = 0.5, omega = 1.0)),
         'Van Der Pol Oscillator':  (
             'y',
             '-x + mu * (1 - x*x)*y',
+            '0',
             dict(mu = 1.0)),
         'Modified Van Der Pol':  (
             'y - mu * (x**3/3 - x)',
             '-x',
+            '0',
             dict(mu = 10.0)),
         'Glycolysis limit cycle':  (
             '-x + a*y+x**2*y',
             'b - a*y -x**2*y',
+            '0',
             dict(a = 0.05, b = 0.5)),
         'Non isolated FP': (
             'y',
             '-2*mu*y - omega**2 * x',
+            '0',
             dict(mu = 1.0, omega = 0.01)),
         'Glider problem': (
             '-cos(x)/y + y',
             '-sin(x) - D*y*y',
+            '0',
             dict(D = 0.0)),
         'Non linear center': (
             '-y + a*x*(x*x + y*y)',
             'x + a*y*(x*x + y*y)',
+            '0',
             dict(a = 0.0)),
         }
 
