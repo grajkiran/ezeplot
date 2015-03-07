@@ -101,9 +101,15 @@ class DynamicSystem:
 
     def __call__(self, x, code_x = None, code_y = None, params = None):
         from numpy import sqrt, sin, cos, tan, abs, exp, pi
-        x, y = x
-        x_dot = eval(code_x or self.__code_x, locals(), params or self.params)
-        y_dot = eval(code_y or self.__code_y, locals(), params or self.params)
+        x, y = np.array(x)
+        # We first initialize x_dot, y_dot to 1.0 and then scale them with the
+        # evaulated expression. This ensures that the resulting x_dot and y_dot
+        # are always numpy arrays and don't get clobbered if the user supplied
+        # expression evaulates to a constant.
+        x_dot = np.ones_like(x)
+        y_dot = np.ones_like(y)
+        x_dot *= eval(code_x or self.__code_x, locals(), params or self.params)
+        y_dot *= eval(code_y or self.__code_y, locals(), params or self.params)
         return [x_dot, y_dot]
 
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,
