@@ -7,7 +7,7 @@ except:
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import numpy as np
 import helpers
 
@@ -19,6 +19,8 @@ class Figure:
             self.fig = matplotlib.figure.Figure()
             self.canvas = FigureCanvasTkAgg(self.fig, master = master)
             self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
+            #self.toolbar = NavigationToolbar2TkAgg(self.canvas, master)
+            #self.toolbar.pack_configure(side=tk.BOTTOM)
         else:
             self.fig = plt.figure()
             self.canvas = self.fig.canvas
