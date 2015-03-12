@@ -31,9 +31,11 @@ class AppWindow():
         self.anim_tmax    = 0.0
         self.anim_timer.add_callback(self.anim_update)
         self.locations = []
+        self.mouse_mode = "pick" # pan, dynamic
         self.root.columnconfigure(0, weight=1)
         self.fig.bind('button_press_event', self.button_press)
         self.fig.bind('button_release_event', self.button_release)
+        self.fig.bind('motion_notify_event', self.mouse_move)
         self.fig.bind('resize_event', self.update_fig)
         if embedded:
             cframe = tk.Frame(self.root)
@@ -136,8 +138,11 @@ class AppWindow():
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
         self.locations.append(pos)
+        limits = self._computational_domain()
+        if self.opts.projection.get() == 'Polar':
+            limits[0] = None
         traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
-                limits = self._computational_domain(), bidirectional = True)
+                limits = limits, bidirectional = True, max_step = self.opts.dt.get())
         if traj.dist[-1] < 10*threshold:
             return
         if traj.t[-1] > self.anim_tmax:
@@ -147,14 +152,26 @@ class AppWindow():
         self.fig.draw()
 
     def button_press(self, evt):
-        pass
+        if evt.key == 'shift' and evt.inaxes is self.fig.ax_main:
+            self.mouse_mode = 'pan'
+            self.pan_loc = evt.xdata, evt.ydata
+        elif evt.key == 'control':
+            self.mouse_mode = 'dynamic'
+        else:
+            self.mouse_mode = 'pick'
+    def mouse_move(self, evt):
+        return
+        #print(evt.inaxes, evt.x, evt.y, evt.xdata, evt.ydata, evt.button)
     def button_release(self, evt):
         if evt.button != 1:
             return
         if not evt.inaxes is self.fig.ax_main:
             return
-        pos = evt.xdata, evt.ydata
-        self.add_location(pos)
+        if self.mouse_mode == 'pick':
+            pos = evt.xdata, evt.ydata
+            self.add_location(pos)
+        else:
+            self.mouse_mode = 'pick'
 
     def _add_widgets(self, frame):
         f_system = DSFrame(frame, self.system, command = self.update_trajectories)
