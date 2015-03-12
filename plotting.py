@@ -159,12 +159,12 @@ class Figure:
         if evt.inaxes is self.ax_polar:
             rlim = 0.0, scale*ylim[1]
             self.ax_polar.set_ylim(rlim)
-            return
-        if evt.key is None or evt.key == 'x':
-            xlim = helpers.scale_domain(xlim, scale, evt.xdata)
-        if evt.key is None or evt.key == 'y':
-            ylim = helpers.scale_domain(ylim, scale, evt.ydata)
-        self.set_limits(xlim, ylim, zlim)
+        else:
+            if evt.key is None or evt.key == 'x':
+                xlim = helpers.scale_domain(xlim, scale, evt.xdata)
+            if evt.key is None or evt.key == 'y':
+                ylim = helpers.scale_domain(ylim, scale, evt.ydata)
+            self.set_limits(xlim, ylim, zlim)
         self.draw(force = True)
 
     def draw(self, force = False):
