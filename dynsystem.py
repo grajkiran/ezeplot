@@ -4,6 +4,8 @@ from scipy.integrate import ode
 from scipy.interpolate import interp1d
 from math import isinf
 import helpers
+from numpy import *
+abs = absolute
 
 class Trajectory:
     def __init__(self, data, startidx = 0):
@@ -94,11 +96,12 @@ class DynamicSystem:
             handler()
 
     def __params_update(self):
-        from numpy import sqrt, sin, cos, tan, abs, exp, pi
+        #from numpy import sqrt, sin, cos, tan, abs, exp, pi
         x, y, z = 0.0, 0.0, 0.0
         req_params = set(self.__code_x.co_names)
         req_params.update(set(self.__code_y.co_names))
         req_params.update(set(self.__code_z.co_names))
+        req_params.difference_update(globals().keys())
         req_params.difference_update(locals().keys())
         for p in req_params:
             if not p in self.params:
@@ -109,7 +112,8 @@ class DynamicSystem:
         return req_params
 
     def __call__(self, x, params = None):
-        from numpy import sqrt, sin, cos, tan, abs, exp, pi
+        #from numpy import sqrt, sin, cos, tan, abs, exp, pi, log, arctan
+        f_params = globals()
         size = len(x)
         if size == 2:
             x, y = np.array(x)
@@ -123,9 +127,10 @@ class DynamicSystem:
         x_dot = np.ones_like(x)
         y_dot = np.ones_like(y)
         z_dot = np.ones_like(z)
-        x_dot *= eval(self.__code_x, locals(), params or self.params)
-        y_dot *= eval(self.__code_y, locals(), params or self.params)
-        z_dot *= eval(self.__code_z, locals(), params or self.params)
+        f_params.update(locals())
+        x_dot *= eval(self.__code_x, f_params, params or self.params)
+        y_dot *= eval(self.__code_y, f_params, params or self.params)
+        z_dot *= eval(self.__code_z, f_params, params or self.params)
         return [x_dot, y_dot, z_dot]
 
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,
