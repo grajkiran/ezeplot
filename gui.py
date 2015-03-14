@@ -10,7 +10,7 @@ from widgets import *
 import helpers
 import plotting
 
-PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar', '3D': '3d'})
+PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar'})#, '3D': '3d'})
 
 class Options(dict):
     __getattr__ = dict.__getitem__
@@ -137,12 +137,17 @@ class AppWindow():
         threshold = 1e-4
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
-        self.locations.append(pos)
         limits = self._computational_domain()
         if self.opts.projection.get() == 'Polar':
             limits[0] = None
-        traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
+        try:
+            traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
                 limits = limits, bidirectional = True, max_step = self.opts.dt.get())
+        except:
+            pos_str = ", ".join(map(str, pos))
+            sys.stderr.write("Could not compute trajectory from: %s\n" % pos_str)
+            return
+        self.locations.append(pos)
         if traj.dist[-1] < 10*threshold:
             return
         if traj.t[-1] > self.anim_tmax:
