@@ -16,7 +16,7 @@ from dynsystem import DynamicSystem
 
 
 parser = OptionParser()
-parser.add_option("-e", "--embed", action = "store_true", default = False)
+parser.add_option("-e", "--embed", action = "store_true", default = True)
 parser.add_option("-b", "--blit", action = "store_true", default = True)
 parser.add_option("-n", "--no-blit", action = "store_false", dest = "blit")
 opts, args = parser.parse_args()
