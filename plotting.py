@@ -129,6 +129,9 @@ class Figure:
                 self.ax_x, self.ax_y, self.ax_z):
             a.clear()
             a.grid(True)
+        self.ax_x.set_title('X')
+        self.ax_y.set_title('Y')
+        self.ax_z.set_title('Z')
         # The t-limit (time axis) is shared between ax_x, ax_y and ax_z
         self.ax_x.set_xlim(tlim)
         #self.ax_polar.set_xlim(self.ax_polar.get_xlim())
@@ -205,6 +208,8 @@ class Figure:
             for l in 1, 2, 3:
                 traj.line[l].set_xdata(traj.t)
                 traj.line[l].set_ydata(traj.points[:,l-1])
+            if self.ax_main is self.ax_polar:
+                traj.line[1].set_ydata(traj.points[:,0]%np.pi)
             traj.line["3d"]._verts3d = (traj.x, traj.y, traj.z)
         else: # During animation
             if t_anim > traj.t[-1]:
@@ -219,7 +224,10 @@ class Figure:
             traj.line[0].set_ydata(ydata)
             for l in 1, 2, 3:
                 traj.line[l].set_xdata(tdata)
-            traj.line[1].set_ydata(xdata)
+            if self.ax_main is self.ax_polar:
+                traj.line[1].set_ydata(xdata%np.pi)
+            else:
+                traj.line[1].set_ydata(xdata)
             traj.line[2].set_ydata(ydata)
             traj.line[3].set_ydata(zdata)
             traj.marker[0].set_xdata([x])
