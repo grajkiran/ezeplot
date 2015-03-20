@@ -157,18 +157,18 @@ class DynamicSystem:
 
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,
             bidirectional = True, **kwargs):
-        t_forw = self.__compute_trajectory(start, tmax, limits,
+        t_forw = self.__compute_trajectory(start, tmax,
                 threshold, **kwargs)
         if not bidirectional:
             return Trajectory(t_forw, 0)
         # Remove the first element of the reversed trajectory as it is the
         # start point that is already present in the forward trajectory.
-        t_back = self.__compute_trajectory(start, -tmax, limits,
+        t_back = self.__compute_trajectory(start, -tmax,
                 threshold, **kwargs)[1:]
         t_back.reverse()
         return Trajectory(t_back+t_forw, len(t_back))
 
-    def __compute_trajectory(self, start, tmax, limits, threshold, **kwargs):
+    def __compute_trajectory(self, start, tmax, threshold, **kwargs):
         traj = []
         threshold = abs(threshold)
         def accumulate(t, pos):
