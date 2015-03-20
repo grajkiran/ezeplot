@@ -51,7 +51,7 @@ class Figure:
         xlim = self.ax_main.get_xlim()
         ylim = self.ax_main.get_ylim()
         if not hasattr(self.ax_main, 'get_zlim'):
-            return xlim, ylim, (-1.0, 1.0)
+            return xlim, ylim, (-5.0, 5.0)
         zlim = self.ax_main.get_zlim()
         return xlim, ylim, zlim
 
