@@ -73,6 +73,13 @@ def curve_resample(x, y, count = 0, delta = 0.0, indices = False):
     y_out = interp1d(dist_in, y)(dist_out)
     return np.array(ind_zero, dtype = 'int'), x_out, y_out
 
+def parse_coords(string):
+    coords = list(map(float, string.split()))
+    if len(coords) > 3:
+        raise ValueError("Too many values.")
+    coords.extend([0.0, 0.0, 0.0])
+    return coords[:3]
+
 def curve_resample_old(points, count = 0, delta = 0.0):
     from scipy.interpolate import interp1d
     data = np.array(points)
