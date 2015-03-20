@@ -60,6 +60,8 @@ class DynamicSystem:
         self.__y_dot = str(y_dot)
         self.__z_dot = str(z_dot)
         self.params = dict(params)
+        self.limits = [None, None, None]
+        self.periodic = [False, False, False]
         self.update_handlers = []
         self.update()
 
@@ -111,6 +113,20 @@ class DynamicSystem:
                 del self.params[p]
         return req_params
 
+    @staticmethod
+    def normalize_coord(c, period):
+        if period is None:
+            return c
+        low, high = sorted(period)
+        mag = high - low
+        c = np.array(c, dtype='float64')
+        for x in np.nditer(c, op_flags=['readwrite']):
+            while x < low:
+                x += mag
+            while x > high:
+                x -= mag
+        return c
+
     def __call__(self, x, params = None):
         #from numpy import sqrt, sin, cos, tan, abs, exp, pi, log, arctan
         f_params = globals()
@@ -120,6 +136,12 @@ class DynamicSystem:
             z = np.zeros_like(x)
         else:
             x, y, z = np.array(x)
+        if self.periodic[0]:
+            x = self.normalize_coord(x, self.limits[0])
+        if self.periodic[1]:
+            y = self.normalize_coord(y, self.limits[1])
+        if self.periodic[2]:
+            z = self.normalize_coord(z, self.limits[2])
         # We first initialize x_dot, y_dot, z_dot to 1.0 and then scale them with the
         # evaulated expression. This ensures that the resulting *_dot 
         # are always numpy arrays and don't get clobbered if the user supplied
@@ -151,23 +173,28 @@ class DynamicSystem:
         threshold = abs(threshold)
         def accumulate(t, pos):
             pos = list(pos)
+            pos_norm = list(pos)
+            for i in range(len(pos)):
+                if self.periodic[i]:
+                    pos_norm[i] = self.normalize_coord(pos[i], self.limits[i])
             if len(traj) == 0:
-                traj.append([t, 0.0] + pos)
+                traj.append([t, 0.0] + pos_norm)
                 return 0
             s_old = traj[-1][1]
             pos_old = traj[-1][2:]
+            # We use the non-normalized position to compute the accumulated distance
             s = helpers.distance(pos_old, pos)
             if tmax > 0:
                 s_cum = s_old + s
             else:
                 s_cum = s_old - s
-            traj.append([t, s_cum] + pos)
-            if not helpers.is_inside(pos, limits):
+            traj.append([t, s_cum] + pos_norm)
+            if not helpers.is_inside(pos_norm, self.limits):
                 return -1
             # Check if we are within threshold of a fixed point.
             # We are if our velocity is decreasing and we have not moved much.
             v_old = helpers.mag(self(pos_old))
-            v = helpers.mag(self(pos))
+            v = helpers.mag(self(pos_norm))
             if s < threshold and v < v_old and len(traj) > 10:
                 return -1
             return 0
@@ -226,10 +253,11 @@ presets = {
         }
 
 def main():
-    d = DynamicSystem(x_dot = "sin(2)*x+mu*y+0", params = dict(mu = 0.5))
-    print(d.params.keys())
-    l = d.trajectory([1.4, 1.5], xlim = (-5,5), ylim = (-5,5), reverse = True)
-    print(l)
+    d = DynamicSystem()
+    p = [-5, 5]
+    #print d.normalize_coord(-5, p)
+    #for c in np.linspace(-50, 50):
+    #    print c, d.normalize_coord(c, p), d.normalize_coord(c, None)
 #    import IPython
 #    IPython.embed()
 
