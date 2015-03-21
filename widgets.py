@@ -24,11 +24,16 @@ class VEntry(tk.Entry):
         self.validator = validator
         self.errmsg = tk.StringVar(self, "")
         self.debug = debug
-        self.var.trace('w', self.__validate)
+        self.trace_id = self.var.trace('w', self.__validate)
+        self.bind('<Destroy>', self.__on_destroy)
         self.default_bg = self['bg']
         if callable(command):
             self.bind('<Return>', command)
         self.set = self.var.set
+
+    def __on_destroy(self, *args):
+        # Remove the added trace when the widget is destroyed
+        self.var.trace_vdelete('w', self.trace_id)
 
     def __validate(self, *args):
         try:
@@ -43,6 +48,48 @@ class VEntry(tk.Entry):
             self.errmsg.set(str(e))
             if self.debug:
                 sys.stderr.write("%s\n" % self.errmsg.get())
+
+class PlotLimits(tk.Toplevel):
+    def __init__(self, master, fig, limits):
+        tk.Toplevel.__init__(self, master)
+        self.fig = fig
+        self.limits = limits
+        frame = tk.Frame(self)
+        frame.pack()
+        self.title("Change limits")
+        self.transient(master)
+        #tk.Label(frame, text = "Axis").grid(row = 0, column = 0)
+        tk.Label(frame, text = "Min").grid(row = 0, column = 1)
+        tk.Label(frame, text = "Max").grid(row = 0, column = 2)
+        tk.Label(frame, text = "x:").grid(row = 1, column = 0)
+        VEntry(frame, textvariable = limits.xmin, width = 5).grid(row = 1, column = 1)
+        VEntry(frame, textvariable = limits.xmax, width = 5).grid(row = 1, column = 2)
+        tk.Label(frame, text = "y:").grid(row = 2, column = 0)
+        VEntry(frame, textvariable = limits.ymin, width = 5).grid(row = 2, column = 1)
+        VEntry(frame, textvariable = limits.ymax, width = 5).grid(row = 2, column = 2)
+        tk.Label(frame, text = "z:").grid(row = 3, column = 0)
+        VEntry(frame, textvariable = limits.zmin, width = 5).grid(row = 3, column = 1)
+        VEntry(frame, textvariable = limits.zmax, width = 5).grid(row = 3, column = 2)
+        #tk.Label(frame, text = "Periodicty:").grid(row = 4, columnspan = 3, sticky = tk.W)
+        #tk.Checkbutton(frame, text = "x", variable = limits.per_x).grid(row = 5, column = 0)
+        #tk.Checkbutton(frame, text = "y", variable = limits.per_y).grid(row = 5, column = 1)
+        #tk.Checkbutton(frame, text = "z", variable = limits.per_z).grid(row = 5, column = 2)
+        tk.Button(frame, text = "From plot", command = self.__from_plot).grid(row = 6, column = 0, columnspan = 2)
+        tk.Button(frame, text = "Close", command = self.destroy).grid(row = 6, column = 2)
+        self.protocol('WM_DELETE_WINDOW', self.destroy)
+        self.wait_window(self)
+
+    def __from_plot(self, *args):
+        limits = self.fig.get_limits()
+        xmin, xmax = limits[0]
+        ymin, ymax = limits[1]
+        zmin, zmax = limits[2]
+        self.limits.xmin.set(xmin)
+        self.limits.xmax.set(xmax)
+        self.limits.ymin.set(ymin)
+        self.limits.ymax.set(ymax)
+        self.limits.zmin.set(zmin)
+        self.limits.zmax.set(zmax)
 
 class Param(tk.Frame):
     def __init__(self, master, name, value = 1.0, validator = None,
@@ -152,10 +199,13 @@ class DSFrame(tk.LabelFrame):
     def _load_preset(self, name):
         self.preset.set(name)
         x_dot, y_dot, z_dot, params = dynsystem.presets[name]
-        self.system.params.update(params)
+        #self.system.params.update(params)
         self.eqn_x.set(x_dot)
         self.eqn_y.set(y_dot)
         self.eqn_z.set(z_dot)
+        self.system.params.update(params)
+        #print(params)
+        print(self.system.params)
         self._update_params()
 
     def _update_system(self, *args):
@@ -173,11 +223,10 @@ class DSFrame(tk.LabelFrame):
                 self.system.params[name] = value
 
     def _update_params(self, *args):
-        i = 0
-        for p in sorted(self.system.params.keys()):
-            self.params[i].enable(name = p, value = self.system.params[p])
-            i += 1
-        for pe in self.params[i:]:
+        items = sorted(self.system.params.items())
+        for i in range(len(items)):
+            self.params[i].enable(name = items[i][0], value = items[i][1])
+        for pe in self.params[len(items):]:
             pe.disable()
 
 def test_system():
