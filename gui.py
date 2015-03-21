@@ -10,7 +10,7 @@ from widgets import *
 import helpers
 import plotting
 
-PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar'})#, '3D': '3d'})
+PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar', '3D': '3d'})
 
 class Options(dict):
     __getattr__ = dict.__getitem__
@@ -23,6 +23,8 @@ class AppWindow():
         master = self.root if embedded else None
         self.fig = plotting.Figure(blit = blit, master = master)
         self.opts = self._init_options()
+        self._update_system_limits(prompt = False)
+        #self.limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
         self.anim_info    = tk.StringVar(self.root, "")
         self.anim_running = tk.BooleanVar(self.root, False)
@@ -31,6 +33,8 @@ class AppWindow():
         self.anim_tmax    = 0.0
         self.anim_timer.add_callback(self.anim_update)
         self.locations = []
+        # Used for manually adding a point.
+        self.location_str = tk.StringVar(self.root, "")
         self.mouse_mode = "pick" # pan, dynamic
         self.root.columnconfigure(0, weight=1)
         self.fig.bind('button_press_event', self.button_press)
@@ -57,16 +61,54 @@ class AppWindow():
         opts.spacing        = tk.DoubleVar(self.root, 0.3)
         opts.temporal       = tk.BooleanVar(self.root, False)
         opts.projection     = tk.StringVar(self.root, '2D')
-        opts.domain_factor  = tk.DoubleVar(self.root, 1.5)
+        #opts.domain_factor  = tk.DoubleVar(self.root, 1.5)
+        opts.limits         = Options()
+        opts.limits.factor  = tk.DoubleVar(self.root, 1.5)
+        opts.limits.xmin    = tk.DoubleVar(self.root, -5.0)
+        opts.limits.xmax    = tk.DoubleVar(self.root, 5.0)
+        opts.limits.ymin    = tk.DoubleVar(self.root, -5.0)
+        opts.limits.ymax    = tk.DoubleVar(self.root, 5.0)
+        opts.limits.zmin    = tk.DoubleVar(self.root, -5.0)
+        opts.limits.zmax    = tk.DoubleVar(self.root, 5.0)
+        opts.limits.per_x   = tk.BooleanVar(self.root, False)
+        opts.limits.per_y   = tk.BooleanVar(self.root, False)
+        opts.limits.per_z   = tk.BooleanVar(self.root, False)
         return opts
 
-    def _computational_domain(self):
-        graph_limits = self.fig.get_limits()
-        comp_limits = []
-        factor = self.opts.domain_factor.get()
-        for l in graph_limits:
-            comp_limits.append(helpers.scale_domain(l, factor))
-        return comp_limits
+    def _update_system_limits(self, *args, prompt = True):
+        if prompt:
+            limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
+        limits = self.opts.limits
+        xmin = limits.xmin.get()
+        xmax = limits.xmax.get()
+        ymin = limits.ymin.get()
+        ymax = limits.ymax.get()
+        zmin = limits.zmin.get()
+        zmax = limits.zmax.get()
+        factor = limits.factor.get()
+        plot_limits = [(xmin, xmax), (ymin, ymax), (zmin, zmax)]
+        periodic = [limits.per_x.get(), limits.per_y.get(), limits.per_z.get()]
+        self.fig.set_limits(*plot_limits)
+        self.fig.draw(force = True)
+        for i in range(3):
+            if periodic[i]:
+                self.system.limits[i] = plot_limits[i]
+            else:
+                self.system.limits[i] = helpers.scale_domain(plot_limits[i], factor)
+        self.system.periodic = periodic
+        if self.opts.projection.get() == 'Polar':
+            # Ignore xlim (theta) in polar mode.
+            self.system.limits[0] = None
+            self.system.periodic[0] = True
+
+#    def _computational_domain(self):
+#        graph_limits = self.fig.get_limits()
+#        comp_limits = []
+#        factor = self.opts.limits.factor.get()
+#        for l in graph_limits:
+#            comp_limits.append(helpers.scale_domain(l, factor))
+#        self.system.limits = comp_limits
+#        return comp_limits
 
     def update_trajectories(self, *args):
         picked = self.locations
@@ -79,7 +121,11 @@ class AppWindow():
 
     def update_fig(self, *args):
         self.fig.clear(tmax = self.opts.tmax.get())
-        (x1, x2), (y1, y2) = self._computational_domain()[:2]
+        #(x1, x2), (y1, y2) = self._computational_domain()[:2]
+        x1 = self.opts.limits.xmin.get()
+        x2 = self.opts.limits.xmax.get()
+        y1 = self.opts.limits.ymin.get()
+        y2 = self.opts.limits.ymax.get()
         x, y = np.meshgrid(np.linspace(x1, x2, 100), np.linspace(y1, y2, 100))
         u, v, w = self.system((x,y))
         field = x, y, u, v
@@ -115,6 +161,7 @@ class AppWindow():
         proj = self.opts.projection.get()
         self.fig.set_proj(PROJECTIONS[proj])
         self.update_fig()
+        self._update_system_limits(prompt = False)
 
     def anim_update(self):
         tstep = self.anim_tstep.get()
@@ -133,19 +180,26 @@ class AppWindow():
         else:
             self.anim_timer.start()
 
-    def add_location(self, pos):
+    def add_location(self, pos = None):
         threshold = 1e-4
+        if pos is None or isinstance(pos, tk.Event):
+            pos = helpers.parse_coords(self.location_str.get())
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
-        limits = self._computational_domain()
-        if self.opts.projection.get() == 'Polar':
-            limits[0] = None
+        if pos in self.locations:
+            print("Trajectory already exists.")
+            return
+#        limits = self._computational_domain()
+#        if self.opts.projection.get() == 'Polar':
+#            limits[0] = None
         try:
             traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
-                limits = limits, bidirectional = True, max_step = self.opts.dt.get())
+                bidirectional = True, nsteps = 5 * (self.opts.tmax.get()/self.opts.dt.get()),
+                max_step = self.opts.dt.get())
         except:
             pos_str = ", ".join(map(str, pos))
             sys.stderr.write("Could not compute trajectory from: %s\n" % pos_str)
+            print(sys.exc_info())
             return
         self.locations.append(pos)
         if traj.dist[-1] < 10*threshold:
@@ -172,6 +226,8 @@ class AppWindow():
             return
         if not evt.inaxes is self.fig.ax_main:
             return
+        if self.fig.ax_main is self.fig.ax_3d:
+            return
         if self.mouse_mode == 'pick':
             pos = evt.xdata, evt.ydata
             self.add_location(pos)
@@ -196,12 +252,18 @@ class AppWindow():
         optmenu.grid(columnspan = 2)
         tk.Button(f_controls, text = "Reset", underline = 0,
                 command = self._reset_fig).grid(row=1,column=2)
+        tk.Button(f_controls, text = "Change plot limits",
+                command = self._update_system_limits).grid(columnspan = 3)
 
         # Trajectories frame.
         row = 0
         f_traj = tk.LabelFrame(frame, text = "Trajectories:")
         f_traj.grid(sticky = tk.E+tk.W)
         f_traj.columnconfigure(2,weight=1)
+        tk.Label(f_traj, text = "Coords:").grid(row = row, column = 0)
+        VEntry(f_traj, textvariable = self.location_str, validator = helpers.parse_coords,
+                command = self.add_location, width = 12).grid(row = row, column = 1, columnspan = 2, sticky = tk.W)
+        tk.Button(f_traj, text = "Add", command = self.add_location).grid(row = row, column = 2, sticky = tk.E)
         row += 1
         tk.Label(f_traj, text = "Time step:").grid(row = row, column = 0)
         VEntry(f_traj, textvariable = self.opts.dt, width = 5).grid(row = row, column = 1)

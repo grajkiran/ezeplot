@@ -8,14 +8,6 @@ Plot elements:
 
 One arrow on the static trajectory a little ahead of the point of start.
 
-Update param class:
-label, entry_field, spinbox
-entry_field: list of values. extract min, max, delta (minimum difference between any two entered values)
-scale/spinbox: min, max, resolution = delta
-
-When a point is picked, compute the trajectories for all values of the active parameter and the current values of the remaining parameters and store in db.
-traj_db[params] = [trajectories]
-
 Three aspects of the code:
 1. The dynamical system
    * Computing trajectories, fixed points, limit cycles, orbit detection, etc.
@@ -32,3 +24,53 @@ Dynamic trajectory visualization mode. Start point follows mouse around:
 
 Picking a point in 3D: Start at z = 0. get xy from location.
 Then move mouse to change the z-coordinate up or down.
+
+Wishlist:
+~~~~~~~~~
+
+Arbitrary names for the independant variables
+Select plane of projection xy, yz or zx for the 2d case.
+
+BG elements:
+	Picked list, picked list direction arrows
+	Fixed points
+	Limit cycles / closed orbits
+
+Active parameter concept:
+	OptionMenu + Entry for values
+	Scale for selecting the values. Clicking on the scale in either
+	direction skips to the next value in that direction. sliding the bar
+	allows choosing arbitrary value.
+
+Click drag behaviour:
+	Dynamic trajectory preview
+	Continuously add locations at spacing intervals
+	Pan the plot area
+
+Middle click behaviour:
+	3 trajectories at location for min, max, curr of active variable
+
+Scroll behaviour:
+	Inside axes scale both x and y, otherwise scale either x or y
+	Use ax.transData.inverse() object to go from evt.x, evt.y to data coords.
+	if data_x, data_y = obj.transform_point((evt.x, evt.y)).
+	if data_x in xlim scale x, if data_y in ylim, scale_y
+	spine.get_window_extent() -> bbox, bbox.contains(point)
+	t = spine.get_data_transform().inverted()
+	t.transform_point([0, evt.y]) -> y in data coordinates
+
+***FIX: Changing axes_main upon mode change is messy. Try to remove axes_main
+and use the underlying axes directly.
+
+Closed orbit detection:
+	1. Compute the trajectory
+	2. Pick the last point, P0.
+	3. For each preceding point, P[-i], compute distance(P0, P[-i])
+	   This distance would increase as we move away from P0 and then
+	   decrease if the orbit reapproaches the P0. If this distance gows to
+	   zero, or becomes less than some tolerance, then we have a possible
+	   orbit.
+	4. Repeat 3 starting at the first point.
+	If the trajectory has a closed orbit, then 3 or 4 should find it.
+	*** Explore a vector from P0 to P[-i] and see if some properties of
+	    vectors might speed up the process or make it more robust.
