@@ -188,14 +188,21 @@ class DynamicSystem:
                 s_cum = s_old + s
             else:
                 s_cum = s_old - s
+# FIXME: insert none values for breaking the trajectory
+#            if pos != pos_norm:
+#                print(pos, "!=", pos_norm,)
+#                print("Inserting break at time:", t)
+#                traj.append([t, s_cum] + [None, None, None])
             traj.append([t, s_cum] + pos_norm)
             if not helpers.is_inside(pos_norm, self.limits):
+                print("Crossed domain - stopping integration.")
                 return -1
             # Check if we are within threshold of a fixed point.
             # We are if our velocity is decreasing and we have not moved much.
             v_old = helpers.mag(self(pos_old))
             v = helpers.mag(self(pos_norm))
             if s < threshold and v < v_old and len(traj) > 10:
+                print("No significant change - stopping integration.")
                 return -1
             return 0
         rk4 = ode(lambda t, pos: self(pos)).set_integrator('dopri5', **kwargs)
@@ -250,6 +257,11 @@ presets = {
             'x + a*y*(x*x + y*y)',
             '0',
             dict(a = 0.0)),
+        'Lorentz attractor': (
+            'sigma * (y-x)',
+            'x * (rho - z) - y',
+            'x*y - beta * z',
+            dict(sigma = 10.0, beta = 8.0/3, rho = 28.0)),
         }
 
 def main():
