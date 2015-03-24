@@ -70,6 +70,8 @@ class PlotLimits(tk.Toplevel):
         tk.Label(frame, text = "z:").grid(row = 3, column = 0)
         VEntry(frame, textvariable = limits.zmin, width = 5).grid(row = 3, column = 1)
         VEntry(frame, textvariable = limits.zmax, width = 5).grid(row = 3, column = 2)
+        tk.Label(frame, text = "Computation factor:").grid(row = 4, column = 0, columnspan = 2, sticky = tk.E)
+        VEntry(frame, textvariable = limits.factor, width = 5).grid(row = 4, column = 2)
         #tk.Label(frame, text = "Periodicty:").grid(row = 4, columnspan = 3, sticky = tk.W)
         #tk.Checkbutton(frame, text = "x", variable = limits.per_x).grid(row = 5, column = 0)
         #tk.Checkbutton(frame, text = "y", variable = limits.per_y).grid(row = 5, column = 1)
@@ -117,34 +119,6 @@ class Param(tk.Frame):
     def disable(self):
         self.label.configure(state = tk.DISABLED, text = "")
         self.entry.configure(state = tk.DISABLED)
-
-#class Param_dyn(tk.LabelFrame):
-#    def __init__(self, master, name, value = 1.0, command = None):
-#        tk.LabelFrame.__init__(self, master, text = name)
-#        self.name = name
-#        self.command = command
-#        self.columnconfigure(0, weight=1)
-#        self.entry = VEntry(self, tk.StringVar(master, str(value)), debug = True,
-#                validator = self.__validate)
-#        self.entry.grid(sticky = tk.E + tk.W)
-#        self.scale = tk.Scale(self, from_ = value, to = value, command = self.__update,
-#                orient = tk.HORIZONTAL, resolution = 0.1)
-#        self.scale.grid(sticky = tk.E + tk.W)
-#        self.min = value
-#        self.max = value
-#        self.values = [value]
-#        self.get = self.scale.get
-#    def set(self, value):
-#        self.entry.set(value)
-#        self.scale.configure(from_ = value, to = value)
-#    def __update(self, value):
-#        if callable(self.command):
-#            self.command(self.name, value)
-#    def __validate(self, value):
-#        self.values = np.array(value.split(), dtype = float)
-#        self.min = min(self.values)
-#        self.max = max(self.values)
-#        self.scale.configure(from_ = self.min, to = self.max)
 
 class LSelect(matplotlib.widgets.Lasso):
     def onrelease(self, event):
@@ -199,13 +173,10 @@ class DSFrame(tk.LabelFrame):
     def _load_preset(self, name):
         self.preset.set(name)
         x_dot, y_dot, z_dot, params = dynsystem.presets[name]
-        #self.system.params.update(params)
         self.eqn_x.set(x_dot)
         self.eqn_y.set(y_dot)
         self.eqn_z.set(z_dot)
         self.system.params.update(params)
-        #print(params)
-        print(self.system.params)
         self._update_params()
 
     def _update_system(self, *args):

@@ -25,7 +25,7 @@ class Figure:
             self.fig = plt.figure()
             self.canvas = self.fig.canvas
         self._blit = blit and self.fig.canvas.supports_blit
-        self.canvas.mpl_connect('scroll_event', self.scale_view)
+        #self.canvas.mpl_connect('scroll_event', self.scale_view)
         self.ax_rect = self.fig.add_subplot(111, label = 'rect', xlim = (-5, 5), ylim=(-5, 5))
         self.ax_3d = self.fig.add_subplot(111, label = '3d', projection = '3d', zlim = (-1, 1))
         self.ax_polar = self.fig.add_subplot(111, label = 'polar', projection = 'polar')
@@ -141,6 +141,8 @@ class Figure:
     def set_limits(self, xlim, ylim, zlim):
         self.ax_rect.set_xlim(xlim)
         self.ax_rect.set_ylim(ylim)
+        if max(ylim) > 0:
+            self.ax_polar.set_rlim([0, max(ylim)])
         self.ax_3d.set_xlim(xlim)
         self.ax_3d.set_ylim(ylim)
         self.ax_3d.set_zlim(zlim)

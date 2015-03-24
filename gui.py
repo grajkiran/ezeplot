@@ -24,7 +24,6 @@ class AppWindow():
         self.fig = plotting.Figure(blit = blit, master = master)
         self.opts = self._init_options()
         self._update_system_limits(prompt = False)
-        #self.limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
         self.anim_info    = tk.StringVar(self.root, "")
         self.anim_running = tk.BooleanVar(self.root, False)
@@ -32,6 +31,7 @@ class AppWindow():
         self.anim_time    = tk.DoubleVar(self.root, 0.0)
         self.anim_tmax    = 0.0
         self.anim_timer.add_callback(self.anim_update)
+        self.pointer_info = tk.StringVar(self.root, "")
         self.locations = []
         # Used for manually adding a point.
         self.location_str = tk.StringVar(self.root, "")
@@ -61,7 +61,6 @@ class AppWindow():
         opts.spacing        = tk.DoubleVar(self.root, 0.3)
         opts.temporal       = tk.BooleanVar(self.root, False)
         opts.projection     = tk.StringVar(self.root, '2D')
-        #opts.domain_factor  = tk.DoubleVar(self.root, 1.5)
         opts.limits         = Options()
         opts.limits.factor  = tk.DoubleVar(self.root, 1.5)
         opts.limits.xmin    = tk.DoubleVar(self.root, -5.0)
@@ -76,6 +75,7 @@ class AppWindow():
         return opts
 
     def _update_system_limits(self, *args, prompt = True):
+        print(self.fig.get_limits())
         if prompt:
             limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
         limits = self.opts.limits
@@ -101,15 +101,6 @@ class AppWindow():
             self.system.limits[0] = None
             self.system.periodic[0] = True
 
-#    def _computational_domain(self):
-#        graph_limits = self.fig.get_limits()
-#        comp_limits = []
-#        factor = self.opts.limits.factor.get()
-#        for l in graph_limits:
-#            comp_limits.append(helpers.scale_domain(l, factor))
-#        self.system.limits = comp_limits
-#        return comp_limits
-
     def update_trajectories(self, *args):
         picked = self.locations
         self.locations = []
@@ -121,7 +112,6 @@ class AppWindow():
 
     def update_fig(self, *args):
         self.fig.clear(tmax = self.opts.tmax.get())
-        #(x1, x2), (y1, y2) = self._computational_domain()[:2]
         x1 = self.opts.limits.xmin.get()
         x2 = self.opts.limits.xmax.get()
         y1 = self.opts.limits.ymin.get()
@@ -189,9 +179,6 @@ class AppWindow():
         if pos in self.locations:
             print("Trajectory already exists.")
             return
-#        limits = self._computational_domain()
-#        if self.opts.projection.get() == 'Polar':
-#            limits[0] = None
         try:
             traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
                 bidirectional = True, nsteps = 5 * (self.opts.tmax.get()/self.opts.dt.get()),
@@ -219,14 +206,22 @@ class AppWindow():
         else:
             self.mouse_mode = 'pick'
     def mouse_move(self, evt):
-        return
-        #print(evt.inaxes, evt.x, evt.y, evt.xdata, evt.ydata, evt.button)
+        s = ""
+        if evt.inaxes is None:
+            s = ""
+        elif evt.inaxes == self.fig.ax_3d:
+            s = ""
+        elif evt.inaxes == self.fig.ax_main:
+            s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
+        self.pointer_info.set(s)
+
     def button_release(self, evt):
         if evt.button != 1:
             return
         if not evt.inaxes is self.fig.ax_main:
             return
         if self.fig.ax_main is self.fig.ax_3d:
+            self.update_fig()
             return
         if self.mouse_mode == 'pick':
             pos = evt.xdata, evt.ydata
@@ -272,10 +267,11 @@ class AppWindow():
         VEntry(f_traj, textvariable = self.opts.tmax, width = 5).grid(row = row, column = 1)
         tk.Label(f_traj, textvariable = self.anim_info).grid(row = row, column = 2)
         row += 1
-        tk.Button(f_traj, text = "Update", command = self.update_trajectories).grid(row = row, column = 0)
         tk.Button(f_traj, text = "Restart", command = lambda: self.anim_tstep.set(0)).grid(row = row, column = 1)
         tk.Checkbutton(f_traj, text = "Animated", variable = self.anim_running,
                 command = self.toggle_traj_animation).grid(sticky = tk.E + tk.W, row = row, column = 2)
+        tk.Button(frame, text = "Update", height = 2, width = 10, command = self.update_trajectories).grid(row = row, column = 0, sticky = tk.S)
+        tk.Label(frame, textvariable = self.pointer_info).grid(sticky = tk.W)
 
 if __name__ == '__main__':
     np.seterr(invalid = 'print')
