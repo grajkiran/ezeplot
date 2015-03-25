@@ -233,6 +233,9 @@ class Figure:
                 traj.line[1].set_ydata(xdata)
             traj.line[2].set_ydata(ydata)
             traj.line[3].set_ydata(zdata)
+            traj.line['3d'].set_xdata(xdata)
+            traj.line['3d'].set_ydata(ydata)
+            traj.line['3d'].set_3d_properties(zdata)
             traj.marker[0].set_xdata([x])
             traj.marker[0].set_ydata([y])
             for m in 1, 2, 3:
