@@ -36,7 +36,7 @@ class Figure:
         self._3d = False
         self.mode = mode
         self.bg = dict()
-        self.trajectories = []
+        #self.trajectories = []
         if master is None:
             self.fig.show()
         self.set_mode(mode)
@@ -199,6 +199,7 @@ class Figure:
         self.ax_main.quiver(x, y, u, v, **kwargs)
 
     def draw_trajectory(self, traj, t_anim = None):
+        #print("Drawing trajectory:", traj)
         if t_anim is None:
             for m in range(4):
                 traj.marker[m].set_visible(False)
@@ -259,7 +260,7 @@ class Figure:
                 self._draw_artist(traj.marker[axis], axes)
 
     def add_trajectory(self, traj, *args, **kwargs):
-        self.trajectories.append(traj)
+        #self.trajectories.append(traj)
         self.init_trajectory(traj, *args, **kwargs)
 
     def init_trajectory(self, traj, style = 'r-', mfc = 'none', marker = 'bo'):
@@ -291,9 +292,9 @@ class Figure:
         traj.arrow = self.ax_main.annotate("", xy = (x2, y2), xytext = (x1, y1),
                 arrowprops = dict(arrowstyle = "->"))
 
-    def anim_update(self, time):
+    def anim_update(self, time, trajectories):
         self.restore()#self.ax_main)
-        for traj in self.trajectories:
+        for traj in trajectories:
             self.draw_trajectory(traj, time)
         self.draw()
 

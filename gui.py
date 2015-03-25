@@ -32,7 +32,7 @@ class AppWindow():
         self.anim_tmax    = 0.0
         self.anim_timer.add_callback(self.anim_update)
         self.pointer_info = tk.StringVar(self.root, "")
-        self.locations = []
+        self.trajectories = dict()
         # Used for manually adding a point.
         self.location_str = tk.StringVar(self.root, "")
         self.mouse_mode = "pick" # pan, dynamic
@@ -102,9 +102,8 @@ class AppWindow():
             self.system.periodic[0] = True
 
     def update_trajectories(self, *args):
-        picked = self.locations
-        self.locations = []
-        self.fig.trajectories = []
+        picked = list(self.trajectories.keys())
+        self.trajectories.clear()
         self.anim_tmax = 0.0
         for pos in picked:
             self.add_location(pos)
@@ -127,15 +126,14 @@ class AppWindow():
         #NOTE: Add other bg elements like FP, LC, here before draw and save.
         self.fig.draw(force = True)
         self.fig.save()
-        for t in self.fig.trajectories:
+        for t in self.trajectories.values():
             self.fig.draw_trajectory(t)
         self.fig.draw()
 
     def _reset_fig(self, *args):
         self.anim_running.set(False)
         self.anim_timer.stop()
-        self.locations = []
-        self.fig.trajectories = []
+        self.trajectories.clear()
         self.anim_tmax = 0.0
         self.fig.clear(tmax = self.opts.tmax.get())
         self.update_fig()
@@ -162,7 +160,7 @@ class AppWindow():
         else:
             self.anim_tstep.set(tstep+1)
         self.anim_info.set("%0.3f" % anim_time)
-        self.fig.anim_update(anim_time)
+        self.fig.anim_update(anim_time, self.trajectories.values())
 
     def toggle_traj_animation(self):
         if not self.anim_running.get():
@@ -176,7 +174,8 @@ class AppWindow():
             pos = helpers.parse_coords(self.location_str.get())
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
-        if pos in self.locations:
+        pos = tuple(pos)
+        if pos in self.trajectories:
             print("Trajectory already exists.")
             return
         try:
@@ -188,9 +187,9 @@ class AppWindow():
             sys.stderr.write("Could not compute trajectory from: %s\n" % pos_str)
             print(sys.exc_info())
             return
-        self.locations.append(pos)
         if traj.dist[-1] < 10*threshold:
             return
+        self.trajectories[pos] = traj
         if traj.t[-1] > self.anim_tmax:
             self.anim_tmax = traj.t[-1]
         self.fig.add_trajectory(traj, style = 'r-')
