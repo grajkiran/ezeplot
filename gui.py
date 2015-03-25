@@ -9,6 +9,7 @@ import numpy as np
 from widgets import *
 import helpers
 import plotting
+from poincare import PWindow
 
 PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar', '3D': '3d'})
 
@@ -100,6 +101,14 @@ class AppWindow():
             # Ignore xlim (theta) in polar mode.
             self.system.limits[0] = None
             self.system.periodic[0] = True
+
+    def show_poincare_dialog(self, *args):
+        l = self.opts.limits
+        x1, x2 = l.xmin.get(), l.xmax.get()
+        y1, y2 = l.ymin.get(), l.ymax.get()
+        z1, z2 = l.zmin.get(), l.zmax.get()
+        w = PWindow(self.root, self.trajectories,
+                ((x1, x2), (y1, y2), (z1, z2)))
 
     def update_trajectories(self, *args):
         picked = list(self.trajectories.keys())
@@ -246,8 +255,10 @@ class AppWindow():
         optmenu.grid(columnspan = 2)
         tk.Button(f_controls, text = "Reset", underline = 0,
                 command = self._reset_fig).grid(row=1,column=2)
-        tk.Button(f_controls, text = "Change plot limits",
-                command = self._update_system_limits).grid(columnspan = 3)
+        tk.Button(f_controls, text = "Plot limits",
+                command = self._update_system_limits).grid()
+        tk.Button(f_controls, text = "Poincare section",
+                command = self.show_poincare_dialog).grid(row = 2, column = 1, columnspan = 2)
 
         # Trajectories frame.
         row = 0
