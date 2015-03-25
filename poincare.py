@@ -1,4 +1,13 @@
 #!/usr/bin/python
+try:
+    import tkinter as tk
+except:
+    import Tkinter as tk
+import matplotlib
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from widgets import VEntry
+import numpy as np
 
 def sign(x):
     if x > 0: return 1
@@ -61,6 +70,60 @@ class PSection(Plane):
             s_prev = s
         return top2bot, bot2top
 
+class PWindow(tk.Toplevel):
+    def __init__(self, master, trajectories):
+        tk.Toplevel.__init__(self, master)
+        self.trajectories = trajectories
+        self.fig = matplotlib.figure.Figure()
+        self.canvas = FigureCanvasTkAgg(self.fig, master = self)
+        self.canvas.get_tk_widget().pack(side = tk.BOTTOM, fill = tk.BOTH, expand = 1)
+        self.fig.subplots_adjust(left = 0.0, right = 1.0, bottom = 0.0, top = 1.0)
+        self.ax = self.fig.add_subplot(111, projection = '3d')
+        #self.ax.axis('off')
+        self.a = tk.DoubleVar(self, 0.0)
+        self.b = tk.DoubleVar(self, 1.0)
+        self.c = tk.DoubleVar(self, 0.0)
+        self.d = tk.DoubleVar(self, 0.0)
+        cframe = tk.Frame(self)
+        cframe.pack()
+        self._add_widgets(cframe)
+
+    def _add_widgets(self, frame):
+        tk.Label(frame, text = "Equation of plane:").pack(side = tk.LEFT)
+        VEntry(frame, textvariable = self.a, width = 5).pack(side = tk.LEFT)
+        tk.Label(frame, text = "x + ").pack(side = tk.LEFT)
+        VEntry(frame, textvariable = self.b, width = 5).pack(side = tk.LEFT)
+        tk.Label(frame, text = "y + ").pack(side = tk.LEFT)
+        VEntry(frame, textvariable = self.c, width = 5).pack(side = tk.LEFT)
+        tk.Label(frame, text = "z + ").pack(side = tk.LEFT)
+        VEntry(frame, textvariable = self.d, width = 5).pack(side = tk.LEFT)
+        tk.Label(frame, text = " = 0").pack(side = tk.LEFT)
+
+def toroidal_trajectory(R = 5.0, r = 3.0, w1 = 1.0, w2 = 10.0, tmax = 10.0, intervals = 1000):
+    class traj: pass
+    times = np.linspace(0, tmax, intervals)
+    th1 = w1 * times
+    th2 = w2 * times
+    x = (R + r*np.cos(th2))*np.cos(th1)
+    y = (R + r*np.cos(th2))*np.sin(th1)
+    z = r * np.sin(th2)
+    t = traj()
+    traj.t = times
+    traj.x = x
+    traj.y = y
+    traj.z = z
+    return traj
+
+def torus(R = 2, r = 1, intervals = 50):
+    t1 = np.linspace(0, 2*np.pi, intervals)
+    t2 = np.linspace(0, 2*np.pi, intervals)
+    th1, th2 = np.meshgrid(t1, t2)
+    x = (R + r*np.cos(th2))*np.cos(th1)
+    y = (R + r*np.cos(th2))*np.sin(th1)
+    z = r * np.sin(th2)
+    print(len(th1))
+    return th1, th2, x, y, z
+
 def test_crossings():
     import math
     def traj_circle(radius, th_max = 10*math.pi, intervals = 100):
@@ -86,4 +149,17 @@ def test_crossings():
     plt.show()
 
 if __name__ == '__main__':
-    test_crossings()
+    #test_crossings()
+    root = tk.Tk()
+    w = PWindow(root, None)
+    t = toroidal_trajectory()
+    p = PSection(0.0, 2.0, 1.0, 0.0)
+    down, up = p.compute_crossings(t)
+    up = np.array(up)
+    down = np.array(down)
+    #w.ax.plot(t.x, t.y, t.z, 'r-')
+    #w.ax.plot(up[:,0], up[:,1], up[:,2], 'b*')
+    #w.ax.plot(down[:,0], down[:,1], down[:,2], 'go')
+    th1, th2, x, y, z = torus()
+    w.ax.plot_surface(x, y, z, rstride = 1, cstride = 1, shade = False)
+    w.mainloop()
