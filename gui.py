@@ -91,10 +91,11 @@ class AppWindow():
             z1, z2 = preset['zlim']
             opts.limits.zmin.set(z1)
             opts.limits.zmax.set(z2)
-        self._update_system_limits(prompt = False)
+        #self._update_system_limits(prompt = False)
+        self._set_proj()
         self.update_trajectories()
 
-    def _update_system_limits(self, *args, prompt = True):
+    def _update_system_limits(self, evt = None, prompt = True):
         print(self.fig.get_limits())
         if prompt:
             limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
