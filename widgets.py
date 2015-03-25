@@ -10,6 +10,7 @@ import dynsystem
 import numpy as np
 from traceback import print_exc
 import sys
+import presets
 
 class VEntry(tk.Entry):
     """A Validating Entry widget."""
@@ -133,16 +134,17 @@ class LSelect(matplotlib.widgets.Lasso):
         self.disconnect_events()
 
 class DSFrame(tk.LabelFrame):
-    def __init__(self, master, system, command = None, n_params = 10, **kwargs):
+    def __init__(self, master, system, command = None, n_params = 10, preset_cmd = None, **kwargs):
         tk.LabelFrame.__init__(self, master, text = "System", **kwargs)
         self.columnconfigure(1, weight=1)
         self.system = system
         self.command = command
+        self.preset_cmd = preset_cmd
         self.eqn_x = tk.StringVar(self, self.system.get(1))
         self.eqn_y = tk.StringVar(self, self.system.get(2))
         self.eqn_z = tk.StringVar(self, self.system.get(3))
         self.preset = tk.StringVar(self)
-        choices = list(dynsystem.presets.keys())
+        choices = list(presets.systems.keys())
         choices.sort()
         tk.OptionMenu(self, self.preset, *choices,
                 command = self._load_preset).grid(sticky = tk.E+ tk.W, columnspan = 2)
@@ -173,12 +175,19 @@ class DSFrame(tk.LabelFrame):
 
     def _load_preset(self, name):
         self.preset.set(name)
-        x_dot, y_dot, z_dot, params = dynsystem.presets[name]
+        preset = presets.systems[name]
+        #x_dot, y_dot, z_dot, params = dynsystem.presets[name]
+        x_dot = preset['x']
+        y_dot = preset['y']
+        z_dot = preset['z']
+        params = preset.get('params', dict())
         self.eqn_x.set(x_dot)
         self.eqn_y.set(y_dot)
         self.eqn_z.set(z_dot)
         self.system.params.update(params)
         self._update_params()
+        if callable(self.preset_cmd):
+            self.preset_cmd(name)
 
     def _update_system(self, *args):
         x_dot = self.eqn_x.get()

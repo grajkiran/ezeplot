@@ -10,6 +10,7 @@ from widgets import *
 import helpers
 import plotting
 from poincare import PWindow
+import presets
 
 PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar', '3D': '3d'})
 
@@ -55,11 +56,8 @@ class AppWindow():
         opts = Options()
         opts.tmax           = tk.DoubleVar(self.root, 25)
         opts.dt             = tk.DoubleVar(self.root, 0.05)
-        opts.coarsen        = tk.IntVar(self.root, 1)
         opts.quiver         = tk.BooleanVar(self.root, False)
-        opts.quiver_scale   = tk.BooleanVar(self.root, True)
         opts.nullclines     = tk.BooleanVar(self.root, True)
-        opts.spacing        = tk.DoubleVar(self.root, 0.3)
         opts.temporal       = tk.BooleanVar(self.root, False)
         opts.projection     = tk.StringVar(self.root, '2D')
         opts.limits         = Options()
@@ -74,6 +72,27 @@ class AppWindow():
         opts.limits.per_y   = tk.BooleanVar(self.root, False)
         opts.limits.per_z   = tk.BooleanVar(self.root, False)
         return opts
+
+    def _load_preset(self, name):
+        opts = self.opts
+        preset = presets.systems[name]
+        for opt in ('tmax', 'dt', 'projection'):
+            if opt in preset:
+                opts[opt].set(preset[opt])
+        if 'xlim' in preset:
+            x1, x2 = preset['xlim']
+            opts.limits.xmin.set(x1)
+            opts.limits.xmax.set(x2)
+        if 'ylim' in preset:
+            y1, y2 = preset['ylim']
+            opts.limits.ymin.set(y1)
+            opts.limits.ymax.set(y2)
+        if 'zlim' in preset:
+            z1, z2 = preset['zlim']
+            opts.limits.zmin.set(z1)
+            opts.limits.zmax.set(z2)
+        self._update_system_limits(prompt = False)
+        self.update_trajectories()
 
     def _update_system_limits(self, *args, prompt = True):
         print(self.fig.get_limits())
@@ -114,9 +133,9 @@ class AppWindow():
         picked = list(self.trajectories.keys())
         self.trajectories.clear()
         self.anim_tmax = 0.0
+        self.update_fig()
         for pos in picked:
             self.add_location(pos)
-        self.update_fig()
 
     def update_fig(self, *args):
         self.fig.clear(tmax = self.opts.tmax.get())
@@ -238,7 +257,8 @@ class AppWindow():
             self.mouse_mode = 'pick'
 
     def _add_widgets(self, frame):
-        f_system = DSFrame(frame, self.system, command = self.update_trajectories)
+        f_system = DSFrame(frame, self.system, preset_cmd = self._load_preset,
+                command = self.update_trajectories)
         f_system.grid(sticky = tk.W + tk.E)
 
         f_controls = tk.Frame(frame)
@@ -255,7 +275,7 @@ class AppWindow():
         optmenu.grid(columnspan = 2)
         tk.Button(f_controls, text = "Reset", underline = 0,
                 command = self._reset_fig).grid(row=1,column=2)
-        tk.Button(f_controls, text = "Plot limits",
+        tk.Button(f_controls, text = "Limits",
                 command = self._update_system_limits).grid()
         tk.Button(f_controls, text = "Poincare section",
                 command = self.show_poincare_dialog).grid(row = 2, column = 1, columnspan = 2)

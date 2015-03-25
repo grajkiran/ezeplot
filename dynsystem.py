@@ -211,58 +211,58 @@ class DynamicSystem:
         rk4.integrate(tmax)
         return traj
 
-presets = {
-        'Linear System': (
-            'a*x + b*y',
-            'c*x + d*y',
-            '0',
-            dict(a = 2, b = 2, c = -2, d = -3)),
-        'Simple Pendulum': (
-            'y',
-            'sin(x)',
-            '0',
-            dict()),
-        'Linear Oscillator':   (
-            'y',
-            '-omega * x - c * y',
-            '0',
-            dict(c = 0.5, omega = 1.0)),
-        'Van Der Pol Oscillator':  (
-            'y',
-            '-x + mu * (1 - x*x)*y',
-            '0',
-            dict(mu = 1.0)),
-        'Modified Van Der Pol':  (
-            'y - mu * (x**3/3 - x)',
-            '-x',
-            '0',
-            dict(mu = 10.0)),
-        'Glycolysis limit cycle':  (
-            '-x + a*y+x**2*y',
-            'b - a*y -x**2*y',
-            '0',
-            dict(a = 0.05, b = 0.5)),
-        'Non isolated FP': (
-            'y',
-            '-2*mu*y - omega**2 * x',
-            '0',
-            dict(mu = 1.0, omega = 0.01)),
-        'Glider problem': (
-            '-cos(x)/y + y',
-            '-sin(x) - D*y*y',
-            '0',
-            dict(D = 0.0)),
-        'Non linear center': (
-            '-y + a*x*(x*x + y*y)',
-            'x + a*y*(x*x + y*y)',
-            '0',
-            dict(a = 0.0)),
-        'Lorentz attractor': (
-            'sigma * (y-x)',
-            'x * (rho - z) - y',
-            'x*y - beta * z',
-            dict(sigma = 10.0, beta = 8.0/3, rho = 28.0)),
-        }
+#presets = {
+#        'Linear System': (
+#            'a*x + b*y',
+#            'c*x + d*y',
+#            '0',
+#            dict(a = 2, b = 2, c = -2, d = -3)),
+#        'Simple Pendulum': (
+#            'y',
+#            'sin(x)',
+#            '0',
+#            dict()),
+#        'Linear Oscillator':   (
+#            'y',
+#            '-omega * x - c * y',
+#            '0',
+#            dict(c = 0.5, omega = 1.0)),
+#        'Van Der Pol Oscillator':  (
+#            'y',
+#            '-x + mu * (1 - x*x)*y',
+#            '0',
+#            dict(mu = 1.0)),
+#        'Modified Van Der Pol':  (
+#            'y - mu * (x**3/3 - x)',
+#            '-x',
+#            '0',
+#            dict(mu = 10.0)),
+#        'Glycolysis limit cycle':  (
+#            '-x + a*y+x**2*y',
+#            'b - a*y -x**2*y',
+#            '0',
+#            dict(a = 0.05, b = 0.5)),
+#        'Non isolated FP': (
+#            'y',
+#            '-2*mu*y - omega**2 * x',
+#            '0',
+#            dict(mu = 1.0, omega = 0.01)),
+#        'Glider problem': (
+#            '-cos(x)/y + y',
+#            '-sin(x) - D*y*y',
+#            '0',
+#            dict(D = 0.0)),
+#        'Non linear center': (
+#            '-y + a*x*(x*x + y*y)',
+#            'x + a*y*(x*x + y*y)',
+#            '0',
+#            dict(a = 0.0)),
+#        'Lorentz attractor': (
+#            'sigma * (y-x)',
+#            'x * (rho - z) - y',
+#            'x*y - beta * z',
+#            dict(sigma = 10.0, beta = 8.0/3, rho = 28.0)),
+#        }
 
 def main():
     d = DynamicSystem()
