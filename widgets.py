@@ -79,6 +79,7 @@ class PlotLimits(tk.Toplevel):
         tk.Button(frame, text = "From plot", command = self.__from_plot).grid(row = 6, column = 0, columnspan = 2)
         tk.Button(frame, text = "Close", command = self.destroy).grid(row = 6, column = 2)
         self.protocol('WM_DELETE_WINDOW', self.destroy)
+        self.grab_set()
         self.wait_window(self)
 
     def __from_plot(self, *args):
