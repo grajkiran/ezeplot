@@ -211,6 +211,7 @@ class AppWindow():
             traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
                 bidirectional = True, nsteps = 5 * (self.opts.tmax.get()/self.opts.dt.get()),
                 max_step = self.opts.dt.get())
+            #print("Computing trajectory took %g seconds" % t.seconds())
         except:
             pos_str = ", ".join(map(str, pos))
             sys.stderr.write("Could not compute trajectory from: %s\n" % pos_str)

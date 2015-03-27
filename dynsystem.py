@@ -24,11 +24,11 @@ class Trajectory:
         self.x = self.points[:,0]
         self.y = self.points[:,1]
         self.z = self.points[:,2]
-        self.s_ip = interp1d(self.time, self.dist)
-        self.t_ip = interp1d(self.dist, self.time)
-        self.x_ip = interp1d(self.time, self.x)
-        self.y_ip = interp1d(self.time, self.y)
-        self.z_ip = interp1d(self.time, self.z)
+        #self.s_ip = interp1d(self.time, self.dist)
+        #self.t_ip = interp1d(self.dist, self.time)
+        #self.x_ip = interp1d(self.time, self.x)
+        #self.y_ip = interp1d(self.time, self.y)
+        #self.z_ip = interp1d(self.time, self.z)
         self.start = self.points[startidx]
         self.length = self.dist[-1] - self.dist[0]
 
@@ -174,9 +174,9 @@ class DynamicSystem:
         def accumulate(t, pos):
             pos = list(pos)
             pos_norm = list(pos)
-            for i in range(len(pos)):
-                if self.periodic[i]:
-                    pos_norm[i] = self.normalize_coord(pos[i], self.limits[i])
+            #for i in range(len(pos)):
+            #    if self.periodic[i]:
+            #        pos_norm[i] = self.normalize_coord(pos[i], self.limits[i])
             if len(traj) == 0:
                 traj.append([t, 0.0] + pos_norm)
                 return 0
@@ -188,11 +188,6 @@ class DynamicSystem:
                 s_cum = s_old + s
             else:
                 s_cum = s_old - s
-# FIXME: insert none values for breaking the trajectory
-#            if pos != pos_norm:
-#                print(pos, "!=", pos_norm,)
-#                print("Inserting break at time:", t)
-#                traj.append([t, s_cum] + [None, None, None])
             traj.append([t, s_cum] + pos_norm)
             if not helpers.is_inside(pos_norm, self.limits):
                 print("Crossed domain - stopping integration.")
@@ -209,69 +204,12 @@ class DynamicSystem:
         rk4.set_solout(accumulate)
         rk4.set_initial_value(start, 0.0)
         rk4.integrate(tmax)
+        #print("Integration took %g seconds" % t.seconds())
         return traj
-
-#presets = {
-#        'Linear System': (
-#            'a*x + b*y',
-#            'c*x + d*y',
-#            '0',
-#            dict(a = 2, b = 2, c = -2, d = -3)),
-#        'Simple Pendulum': (
-#            'y',
-#            'sin(x)',
-#            '0',
-#            dict()),
-#        'Linear Oscillator':   (
-#            'y',
-#            '-omega * x - c * y',
-#            '0',
-#            dict(c = 0.5, omega = 1.0)),
-#        'Van Der Pol Oscillator':  (
-#            'y',
-#            '-x + mu * (1 - x*x)*y',
-#            '0',
-#            dict(mu = 1.0)),
-#        'Modified Van Der Pol':  (
-#            'y - mu * (x**3/3 - x)',
-#            '-x',
-#            '0',
-#            dict(mu = 10.0)),
-#        'Glycolysis limit cycle':  (
-#            '-x + a*y+x**2*y',
-#            'b - a*y -x**2*y',
-#            '0',
-#            dict(a = 0.05, b = 0.5)),
-#        'Non isolated FP': (
-#            'y',
-#            '-2*mu*y - omega**2 * x',
-#            '0',
-#            dict(mu = 1.0, omega = 0.01)),
-#        'Glider problem': (
-#            '-cos(x)/y + y',
-#            '-sin(x) - D*y*y',
-#            '0',
-#            dict(D = 0.0)),
-#        'Non linear center': (
-#            '-y + a*x*(x*x + y*y)',
-#            'x + a*y*(x*x + y*y)',
-#            '0',
-#            dict(a = 0.0)),
-#        'Lorentz attractor': (
-#            'sigma * (y-x)',
-#            'x * (rho - z) - y',
-#            'x*y - beta * z',
-#            dict(sigma = 10.0, beta = 8.0/3, rho = 28.0)),
-#        }
 
 def main():
     d = DynamicSystem()
     p = [-5, 5]
-    #print d.normalize_coord(-5, p)
-    #for c in np.linspace(-50, 50):
-    #    print c, d.normalize_coord(c, p), d.normalize_coord(c, None)
-#    import IPython
-#    IPython.embed()
 
 if __name__ == '__main__':
     main()

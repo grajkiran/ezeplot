@@ -203,9 +203,8 @@ class Figure:
         if t_anim is None:
             for m in range(4):
                 traj.marker[m].set_visible(False)
-            traj.marker["start"].set_visible(True)
             traj.marker["3d"].set_visible(False)
-            traj.arrow.set_visible(True)
+            #traj.arrow.set_visible(True)
             traj.line[0].set_xdata(traj.x)
             traj.line[0].set_ydata(traj.y)
             for l in 1, 2, 3:
@@ -217,8 +216,9 @@ class Figure:
         else: # During animation
             if t_anim > traj.t[-1]:
                 t_anim = traj.t[-1]
-            last = traj.prev_index(t_anim)+1
-            x, y, z = traj.x_ip(t_anim), traj.y_ip(t_anim), traj.z_ip(t_anim)
+            last = traj.prev_index(t_anim)#+1
+            x, y, z = traj.points[last]
+            #x, y, z = traj.x_ip(t_anim), traj.y_ip(t_anim), traj.z_ip(t_anim)
             tdata = np.append(traj.t[:last], t_anim)
             xdata = np.append(traj.x[:last], x)
             ydata = np.append(traj.y[:last], y)
@@ -246,12 +246,11 @@ class Figure:
             traj.marker["3d"]._verts3d = ([x], [y], [z])
             for m in range(4):
                 traj.marker[m].set_visible(True)
-            traj.marker["start"].set_visible(True)
             traj.marker["3d"].set_visible(True)
         # Draw only the relevant artists
         if not self._3d:
             self._draw_artist(traj.line[0])
-            self._draw_artist(traj.arrow)
+            #self._draw_artist(traj.arrow)
             self._draw_artist(traj.marker["start"])
             self._draw_artist(traj.marker[0])
         else:
@@ -266,7 +265,7 @@ class Figure:
         #self.trajectories.append(traj)
         self.init_trajectory(traj, *args, **kwargs)
 
-    def init_trajectory(self, traj, style = 'r-', mfc = 'none', marker = 'bo'):
+    def init_trajectory(self, traj, style = 'b-', mfc = 'none', marker = 'ro'):
         """Creates the line, start marker, arrow and animation marker"""
         traj.line = dict()
         traj.marker = dict()
@@ -285,15 +284,15 @@ class Figure:
             traj.marker[m].set_visible(False)
         #traj.marker_anim.set_visible(False)
         # Add arrow at about 10% diagonal length from the start location
-        diag = self.get_diagonal()
-        arrow_len = diag / 1000.0
-        arrow_start = min(self.get_diagonal()/10.0, traj.dist[-1]/4.0)
-        arrow_end = arrow_start + arrow_len
-        t_start, t_end = traj.t_ip([arrow_start, arrow_end])
-        x1, x2 = traj.x_ip([t_start, t_end])
-        y1, y2 = traj.y_ip([t_start, t_end])
-        traj.arrow = self.ax_main.annotate("", xy = (x2, y2), xytext = (x1, y1),
-                arrowprops = dict(arrowstyle = "->"))
+        #diag = self.get_diagonal()
+        #arrow_len = diag / 1000.0
+        #arrow_start = min(self.get_diagonal()/10.0, traj.dist[-1]/4.0)
+        #arrow_end = arrow_start + arrow_len
+        #t_start, t_end = traj.t_ip([arrow_start, arrow_end])
+        #x1, x2 = traj.x_ip([t_start, t_end])
+        #y1, y2 = traj.y_ip([t_start, t_end])
+        #traj.arrow = self.ax_main.annotate("", xy = (x2, y2), xytext = (x1, y1),
+        #        arrowprops = dict(arrowstyle = "->"))
 
     def anim_update(self, time, trajectories):
         self.restore()#self.ax_main)
