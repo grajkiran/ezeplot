@@ -57,7 +57,7 @@ class AppWindow():
         opts.tmax           = tk.DoubleVar(self.root, 25)
         opts.dt             = tk.DoubleVar(self.root, 0.05)
         opts.quiver         = tk.BooleanVar(self.root, False)
-        opts.nullclines     = tk.BooleanVar(self.root, True)
+        opts.nullclines     = tk.BooleanVar(self.root, False)
         opts.temporal       = tk.BooleanVar(self.root, False)
         opts.projection     = tk.StringVar(self.root, '2D')
         opts.limits         = Options()
@@ -270,7 +270,7 @@ class AppWindow():
                 command = self.update_fig).grid(row=0, column=0)
         tk.Checkbutton(f_controls, text = "Quiver", variable = self.opts.quiver,
                 command = self.update_fig).grid(row = 0, column = 1)
-        tk.Checkbutton(f_controls, text = "Temporal", variable = self.opts.temporal,
+        tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
                 command = self._set_temporal).grid(row = 0, column = 2)
         optmenu = tk.OptionMenu(f_controls, self.opts.projection,
                 *PROJECTIONS.keys(), command = self._set_proj)
