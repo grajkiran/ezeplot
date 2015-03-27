@@ -96,7 +96,6 @@ class AppWindow():
         self.update_trajectories()
 
     def _update_system_limits(self, evt = None, prompt = True):
-        print(self.fig.get_limits())
         if prompt:
             limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
         limits = self.opts.limits
@@ -198,6 +197,7 @@ class AppWindow():
             self.anim_timer.start()
 
     def add_location(self, pos = None):
+        styles = ["b", "g", "k", "m"]
         threshold = 1e-4
         if pos is None or isinstance(pos, tk.Event):
             pos = helpers.parse_coords(self.location_str.get())
@@ -221,7 +221,8 @@ class AppWindow():
         self.trajectories[pos] = traj
         if traj.t[-1] > self.anim_tmax:
             self.anim_tmax = traj.t[-1]
-        self.fig.add_trajectory(traj, style = 'r-')
+        style = (len(self.trajectories) - 1) % len(styles)
+        self.fig.add_trajectory(traj, style = styles[style])
         self.fig.draw_trajectory(traj)
         self.fig.draw()
 
