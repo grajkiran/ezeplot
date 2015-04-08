@@ -26,11 +26,6 @@ class Trajectory:
         self.x = self.points[:,0]
         self.y = self.points[:,1]
         self.z = self.points[:,2]
-        #self.s_ip = interp1d(self.time, self.dist)
-        #self.t_ip = interp1d(self.dist, self.time)
-        #self.x_ip = interp1d(self.time, self.x)
-        #self.y_ip = interp1d(self.time, self.y)
-        #self.z_ip = interp1d(self.time, self.z)
         self.start = self.points[startidx]
         self.length = self.dist[-1] - self.dist[0]
 

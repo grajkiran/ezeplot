@@ -68,12 +68,16 @@ systems = {
             "projection": "3D",
             "locations": [(-10.5, 10.5), (-10.5, 10.6)],
             },
-#        "Duffing oscillator": {
-#                "x": "y",
-#                "y": "-d*y + x - x**3 + gamma*cos(w*z)",
-#                "z": "1.0",
-#                "xlim": [-10.0, 10.0],
-#                "ylim": [-10.0, 10.0],
-#                "zlim": [0, 50]
-#                }
+        "Duffing oscillator": {
+                "x": "y",
+                "y": "-d*y + x - x**3 + gamma*cos(w*z)",
+                "z": "1.0",
+                "xlim": [-5.0, 5.0],
+                "ylim": [-5.0, 5.0],
+                "zlim": [0, float("inf")],
+                "params": {"d": 0, "gamma": -2, "w": 1},
+                "locations": [(0.7, -0.3, 0), (-0.18, 4.36, 0)],
+                "reverse": False,
+                "tmax": 50,
+                }
         }
