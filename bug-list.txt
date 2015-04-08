@@ -10,7 +10,7 @@ Done	7. Change of current cursor position to bottom-left.
 Done	8. Remove arrow and initial point marked from graph.
 	9. Reorganisation of main panel into sub-panels separated by line, with equation, domain, time step selection, remove current time-step from screen.
 Done	10. Phase portrait (Polar) as title.
-	11. Move origin in 3d plot to centre and only plot x-y-z axis no grid lines.
+*fixed*	11. Move origin in 3d plot to centre and only plot x-y-z axis no grid lines.
 	12. All built-in models in dimensionless form and ranges are same.
 Done	13. For 3d put in (x0,y0,z0) as box entry.
 Done	14. Default colour scheme is blue curve with red dot.

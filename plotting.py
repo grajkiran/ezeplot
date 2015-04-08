@@ -120,6 +120,14 @@ class Figure:
             raise NotImplementedError("Unsupported mode: " + str(mode))
         self.mode = mode
 
+    def __set_3d_mode(self):
+        self.ax_3d.mouse_init(zoom_btn = [])
+        #self.ax_3d.grid(False)
+        #self.ax_3d.set_frame_on(False)
+        #self.ax_3d.set_axis_off()
+        #self.ax_3d.set_xticks([])
+        #self.ax_3d.set_yticks([])
+        #self.ax_3d.set_zticks([])
     def clear(self, tmax = 1.0):
         xlim = self.ax_rect.get_xlim()
         ylim = self.ax_rect.get_ylim()
@@ -129,6 +137,7 @@ class Figure:
                 self.ax_x, self.ax_y, self.ax_z):
             a.clear()
             a.grid(True)
+        self.__set_3d_mode()
         self.ax_rect.set_title("Phase portrait")
         self.ax_polar.set_title(r"Phase portrait (polar)")
         polar_message = "$x=\\theta$\n$y=r$"
