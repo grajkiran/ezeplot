@@ -21,7 +21,7 @@ Done	15. Allow 2 simultaneous portraits with different colours (blue, black).
 Done	19. Pressing update should first clear the screen.
 Done	20. Disallow more than 5-letter parameter names
 	21. Enable z_dot entry only if 3d is elected. Otherwise grey it out.
-	22. Add info message on top-right when in polar mode appropriately saying r=x, theta=y
+Done	22. Add info message on top-right when in polar mode appropriately saying r=x, theta=y
 Done	23. BUG: Reset when selecting new model.
 
 First round:

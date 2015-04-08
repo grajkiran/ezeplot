@@ -130,7 +130,10 @@ class Figure:
             a.clear()
             a.grid(True)
         self.ax_rect.set_title("Phase portrait")
-        self.ax_polar.set_title("Phase portrait (polar)")
+        self.ax_polar.set_title(r"Phase portrait (polar)")
+        polar_message = "$x=\\theta$\n$y=r$"
+        self.ax_polar.annotate(polar_message, (-40, -75), size = 16, color = 'blue',
+                xycoords = 'figure points')
         #self.ax_3d.set_title("Phase portrait")
         self.ax_rect.set_xlabel(r'$\dot x\rightarrow$')
         self.ax_rect.set_ylabel(r'$\dot y\rightarrow$')
