@@ -15,12 +15,12 @@ Done	10. Phase portrait (Polar) as title.
 	13. For 3d put in (x0,y0,z0) as box entry.
 Done	14. Default colour scheme is blue curve with red dot.
 Done	15. Allow 2 simultaneous portraits with different colours (blue, black).
-	16. If equations change then write “User-defined model”.
+*fixed*	16. If equations change then write “User-defined model”.
 	17. If easy to implement then change “**” to “^”.
 	18. IMP: Always integrate upto Tmax and let the point move out of domain.
 Done	19. Pressing update should first clear the screen.
 Done	20. Disallow more than 5-letter parameter names
-	21. Enable z_dot entry only if 3d is elected. Otherwise grey it out.
+*fixed*	21. Enable z_dot entry only if 3d is elected. Otherwise grey it out.
 Done	22. Add info message on top-right when in polar mode appropriately saying r=x, theta=y
 Done	23. BUG: Reset when selecting new model.
 
