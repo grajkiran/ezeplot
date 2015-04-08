@@ -106,7 +106,6 @@ class AppWindow():
         #self.update_trajectories()
 
     def _update_system_limits(self, evt = None, prompt = False):
-        print(evt)
         if prompt:
             limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
         limits = self.opts.limits
@@ -202,9 +201,9 @@ class AppWindow():
         self.fig.anim_update(anim_time, self.trajectories.values())
 
     def toggle_traj_animation(self):
+        self.anim_tstep.set(0)
         if not self.anim_running.get():
             self.anim_timer.stop()
-            self.anim_tstep.set(0)
         else:
             self.anim_timer.start()
 
@@ -283,17 +282,15 @@ class AppWindow():
 #        f_controls.grid(sticky = tk.W + tk.E)
 #        tk.Button(f_controls, text = "Limits",
 #                command = self._update_system_limits).grid()
-#        tk.Button(f_controls, text = "Poincare section",
-#                command = self.show_poincare_dialog).grid(row = 2, column = 1, columnspan = 2)
 
         # Plot controls frame
         f_controls = tk.LabelFrame(frame, text = "Plot Controls")
         f_controls.grid(sticky = tk.E + tk.W)
-        tk.Label(f_controls, text = "Projection:").grid(columnspan = 2)
+        tk.Label(f_controls, text = "Projection:", anchor = tk.E).grid(columnspan = 2, sticky = tk.E)
         optmenu = tk.OptionMenu(f_controls, self.opts.projection,
                 *PROJECTIONS.keys(), command = self._set_proj)
         optmenu.configure(width = 5)
-        optmenu.grid(row = 0, column = 2, columnspan = 2)
+        optmenu.grid(row = 0, column = 2, columnspan = 2, sticky = tk.W)
         tk.Label(f_controls, text = "xlim:").grid(row = 1, column = 0)
         tk.Label(f_controls, text = "ylim:").grid(row = 2, column = 0)
         tk.Label(f_controls, text = "zlim:").grid(row = 3, column = 0)
@@ -311,6 +308,8 @@ class AppWindow():
                 command = self.update_fig).grid(row = 2, column = 3, sticky = tk.W)
         tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
                 command = self._set_temporal).grid(row = 3, column = 3, sticky = tk.W)
+
+        #tk.Button(f_controls, text = "Poincare", command = self.show_poincare_dialog).grid(row = 4, column = 3)
 
         # Trajectories frame.
         row = 0
