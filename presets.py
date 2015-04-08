@@ -33,6 +33,17 @@ systems = {
             "tmax": 25.0,
             "projection": "2D",
             },
+        "Belousov-Zhabotinski": {
+            "x": "a - x - 4*x*y/(1+x*x)",
+            "y": "b*x *(1- y/(1+x*x))",
+            "z": "0",
+            "params": {"a": 10, "b": 1},
+            "xlim": [0, 5],
+            "ylim": [0, 10],
+            "tmax": 50,
+            "projection": "2D",
+            "locations": [(4,4), (2,6)],
+            },
         "Lorentz attractor": {
             "x": "sigma * (y-x)",
             "y": "x * (rho - z) - y",
@@ -57,17 +68,6 @@ systems = {
             "projection": "3D",
             "locations": [(-10.5, 10.5), (-10.5, 10.6)],
             },
-        "Belousov-Zhabotinski": {
-            "x": "a - x - 4*x*y/(1+x*x)",
-            "y": "b*x *(1- y/(1+x*x))",
-            "z": "0",
-            "params": {"a": 10, "b": 1},
-            "xlim": [0, 5],
-            "ylim": [0, 10],
-            "tmax": 50,
-            "projection": "2D",
-            "locations": [(4,4), (2,6)],
-            }
 #        "Duffing oscillator": {
 #                "x": "y",
 #                "y": "-d*y + x - x**3 + gamma*cos(w*z)",
