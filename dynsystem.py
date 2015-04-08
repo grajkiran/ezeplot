@@ -7,6 +7,8 @@ import helpers
 from numpy import *
 abs = absolute
 
+MAX_CHARS = 6
+
 class Trajectory:
     def __init__(self, data, startidx = 0):
         self.startidx = startidx
@@ -93,6 +95,9 @@ class DynamicSystem:
         self.__y_dot = y_dot
         self.__z_dot = z_dot
         self.__params_update()
+        for p in self.params:
+            if len(p) > MAX_CHARS:
+                raise ValueError("Parameter name exceeds %d characters" % MAX_CHARS)
         self.__call__([0.8934,0.6572,0.8723])
         for handler in self.update_handlers:
             handler()
@@ -111,7 +116,6 @@ class DynamicSystem:
         for p in list(self.params.keys()):
             if not p in req_params:
                 del self.params[p]
-        return req_params
 
     @staticmethod
     def normalize_coord(c, period):
