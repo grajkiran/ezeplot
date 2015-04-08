@@ -6,7 +6,7 @@ Done	3. Change “Temporal” to “Graphs”
 Done	4. Axis label of “Time”. Shift X,Y,Z to appropriate location. Write “Phase portrait” at top. Axis labels on the main graph with title.
 	5. Shift Reset button to bottom, enlarge and make it red. Make update button blue and large and put in middle of free section.
 	6. Place the “change limits” window in main panel and remove change plot button.
-	7. Change of current cursor position to bottom-left.
+Done	7. Change of current cursor position to bottom-left.
 Done	8. Remove arrow and initial point marked from graph.
 	9. Reorganisation of main panel into sub-panels separated by line, with equation, domain, time step selection, remove current time-step from screen.
 Done	10. Phase portrait (Polar) as title.

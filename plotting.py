@@ -11,7 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import numpy as np
 import helpers
 
-#matplotlib.rcParams['toolbar'] = 'None'
+matplotlib.rcParams['toolbar'] = 'None'
 
 class Figure:
     def __init__(self, mode = 1, blit = True, master = None):

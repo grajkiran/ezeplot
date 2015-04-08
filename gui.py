@@ -50,6 +50,8 @@ class AppWindow():
         else:
             self._add_widgets(self.root)
             self.fig.bind('close_event', lambda evt: root.quit())
+        tk.Label(self.root, textvariable = self.pointer_info, anchor = tk.W,
+                relief = tk.SUNKEN,).pack(side = tk.BOTTOM, fill = tk.X)
         self.update_fig()
 
     def _init_options(self, fname = None):
@@ -308,7 +310,6 @@ class AppWindow():
         tk.Checkbutton(f_traj, text = "Animated", variable = self.anim_running,
                 command = self.toggle_traj_animation).grid(sticky = tk.E + tk.W, row = row, column = 2)
         tk.Button(frame, text = "Update", height = 2, width = 10, command = self.update_trajectories).grid(row = row, column = 0, sticky = tk.S)
-        tk.Label(frame, textvariable = self.pointer_info).grid(sticky = tk.W)
 
 if __name__ == '__main__':
     np.seterr(invalid = 'print')
