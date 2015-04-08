@@ -1,15 +1,15 @@
 Second round:
 ~~~~~~~~~~~~~
-	1. Remove glider, glycolysis, linear system, modified Van der Pol, non-isolated fp, nonlinear centre. Add Rossler attractor, Belousov-Zhabotinski model. By default for the standard models pick some initial value and show appropriate phase portrait and not the nullcline.
+Done	1. Remove glider, glycolysis, linear system, modified Van der Pol, non-isolated fp, nonlinear centre. Add Rossler attractor, Belousov-Zhabotinski model. By default for the standard models pick some initial value and show appropriate phase portrait and not the nullcline.
 Done	2. Nullclines not enabled by default.
 Done	3. Change “Temporal” to “Graphs”
-	4. Axis label of “Time”. Shift X,Y,Z to appropriate location. Write “Phase portrait” at top. Axis labels on the main graph with title.
+Done	4. Axis label of “Time”. Shift X,Y,Z to appropriate location. Write “Phase portrait” at top. Axis labels on the main graph with title.
 	5. Shift Reset button to bottom, enlarge and make it red. Make update button blue and large and put in middle of free section.
 	6. Place the “change limits” window in main panel and remove change plot button.
 	7. Change of current cursor position to bottom-left.
 Done	8. Remove arrow and initial point marked from graph.
 	9. Reorganisation of main panel into sub-panels separated by line, with equation, domain, time step selection, remove current time-step from screen.
-	10. Phase portrait (Polar) as title.
+Done	10. Phase portrait (Polar) as title.
 	11. Move origin in 3d plot to centre and only plot x-y-z axis no grid lines.
 	12. All built-in models in dimensionless form and ranges are same.
 	13. For 3d put in (x0,y0,z0) as box entry.
@@ -19,10 +19,10 @@ Done	15. Allow 2 simultaneous portraits with different colours (blue, black).
 	17. If easy to implement then change “**” to “^”.
 	18. IMP: Always integrate upto Tmax and let the point move out of domain.
 Done	19. Pressing update should first clear the screen.
-	20. Disallow more than 5-letter parameter names
+Done	20. Disallow more than 5-letter parameter names
 	21. Enable z_dot entry only if 3d is elected. Otherwise grey it out.
 	22. Add info message on top-right when in polar mode appropriately saying r=x, theta=y
-	23. BUG: Reset when selecting new model.
+Done	23. BUG: Reset when selecting new model.
 
 First round:
 ~~~~~~~~~~~~

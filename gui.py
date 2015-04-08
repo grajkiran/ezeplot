@@ -92,8 +92,12 @@ class AppWindow():
             opts.limits.zmin.set(z1)
             opts.limits.zmax.set(z2)
         #self._update_system_limits(prompt = False)
+        self._reset_fig()
         self._set_proj()
-        self.update_trajectories()
+        if 'locations' in preset:
+            for pos in preset['locations']:
+                self.add_location(pos)
+        #self.update_trajectories()
 
     def _update_system_limits(self, evt = None, prompt = True):
         if prompt:
