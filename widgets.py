@@ -151,15 +151,15 @@ class DSFrame(tk.LabelFrame):
                 command = self._load_preset).grid(sticky = tk.E+ tk.W, columnspan = 2)
         tk.Label(self, text = "x_dot:").grid()
         self.entry_x = VEntry(self, self.eqn_x, command = self.command,
-                validator = self._update_system)
+                validator = self._update_system, disabledforeground = "black")
         self.entry_x.grid(row=1, column = 1, sticky = tk.E + tk.W)
         tk.Label(self, text = "y_dot:").grid()
         self.entry_y = VEntry(self, self.eqn_y, command = self.command,
-                validator = self._update_system)
+                validator = self._update_system, disabledforeground = "black")
         self.entry_y.grid(row=2, column = 1, sticky = tk.E + tk.W)
         tk.Label(self, text = "z_dot:").grid()
         self.entry_z = VEntry(self, self.eqn_z, command = self.command,
-                validator = self._update_system)
+                validator = self._update_system, disabledforeground = "black")
         self.entry_z.grid(row=3, column = 1, sticky = tk.E + tk.W)
         self.params = list()
         pframe = tk.Frame(self)
