@@ -3,8 +3,10 @@ import sys
 
 try:
     import tkinter as tk
+    from tkinter import ttk
 except:
     import Tkinter as tk
+    import ttk
 import numpy as np
 from widgets import *
 import helpers
@@ -282,8 +284,6 @@ class AppWindow():
                 *PROJECTIONS.keys(), command = self._set_proj)
         optmenu.configure(width = 5)
         optmenu.grid(columnspan = 2)
-        tk.Button(f_controls, text = "Reset", underline = 0,
-                command = self._reset_fig).grid(row=1,column=2)
         tk.Button(f_controls, text = "Limits",
                 command = self._update_system_limits).grid()
         tk.Button(f_controls, text = "Poincare section",
@@ -304,12 +304,24 @@ class AppWindow():
         row += 1
         tk.Label(f_traj, text = "Tmax:").grid(row = row, column = 0)
         VEntry(f_traj, textvariable = self.opts.tmax, width = 5).grid(row = row, column = 1)
-        tk.Label(f_traj, textvariable = self.anim_info).grid(row = row, column = 2)
+        #tk.Label(f_traj, textvariable = self.anim_info).grid(row = row, column = 2)
         row += 1
-        tk.Button(f_traj, text = "Restart", command = lambda: self.anim_tstep.set(0)).grid(row = row, column = 1)
-        tk.Checkbutton(f_traj, text = "Animated", variable = self.anim_running,
+        #tk.Button(f_traj, text = "Restart", command = lambda: self.anim_tstep.set(0)).grid(row = row, column = 1)
+        tk.Checkbutton(f_traj, text = "Animate", pady = 2, padx = 4, font = "sans 12 bold", variable = self.anim_running, indicatoron = 0,
                 command = self.toggle_traj_animation).grid(sticky = tk.E + tk.W, row = row, column = 2)
-        tk.Button(frame, text = "Update", height = 2, width = 10, command = self.update_trajectories).grid(row = row, column = 0, sticky = tk.S)
+
+        f_update = tk.Frame(frame)
+        f_update.columnconfigure(0, weight=1)
+        tk.Button(f_update, text = "Update", command = self.update_trajectories,
+                background = "#0000aa", activebackground = "#3333ff",
+                foreground = "white", activeforeground = "white", font = "sans 16 bold",
+                height = 1, width = 6).grid(
+                        row = 0, columnspan=2, sticky = tk.S)
+        tk.Button(f_update, text = "Reset", command = self._reset_fig, font = "sans 10 bold",
+                background = "#aa0000", activebackground = "#ff5555",
+                foreground = "white", activeforeground = "white").grid(
+                        row = 0, column = 2, sticky = tk.E + tk.S)
+        f_update.grid(sticky = tk.E + tk.W + tk.S)
 
 if __name__ == '__main__':
     np.seterr(invalid = 'print')

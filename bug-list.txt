@@ -4,7 +4,7 @@ Done	1. Remove glider, glycolysis, linear system, modified Van der Pol, non-isol
 Done	2. Nullclines not enabled by default.
 Done	3. Change “Temporal” to “Graphs”
 Done	4. Axis label of “Time”. Shift X,Y,Z to appropriate location. Write “Phase portrait” at top. Axis labels on the main graph with title.
-	5. Shift Reset button to bottom, enlarge and make it red. Make update button blue and large and put in middle of free section.
+Done	5. Shift Reset button to bottom, enlarge and make it red. Make update button blue and large and put in middle of free section.
 	6. Place the “change limits” window in main panel and remove change plot button.
 Done	7. Change of current cursor position to bottom-left.
 Done	8. Remove arrow and initial point marked from graph.
