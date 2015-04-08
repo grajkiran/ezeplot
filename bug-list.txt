@@ -5,10 +5,10 @@ Done	2. Nullclines not enabled by default.
 Done	3. Change “Temporal” to “Graphs”
 Done	4. Axis label of “Time”. Shift X,Y,Z to appropriate location. Write “Phase portrait” at top. Axis labels on the main graph with title.
 Done	5. Shift Reset button to bottom, enlarge and make it red. Make update button blue and large and put in middle of free section.
-	6. Place the “change limits” window in main panel and remove change plot button.
+Done	6. Place the “change limits” window in main panel and remove change plot button.
 Done	7. Change of current cursor position to bottom-left.
 Done	8. Remove arrow and initial point marked from graph.
-	9. Reorganisation of main panel into sub-panels separated by line, with equation, domain, time step selection, remove current time-step from screen.
+Done	9. Reorganisation of main panel into sub-panels separated by line, with equation, domain, time step selection, remove current time-step from screen.
 Done	10. Phase portrait (Polar) as title.
 *fixed*	11. Move origin in 3d plot to centre and only plot x-y-z axis no grid lines.
 	12. All built-in models in dimensionless form and ranges are same.

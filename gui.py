@@ -105,7 +105,7 @@ class AppWindow():
                 self.add_location(pos)
         #self.update_trajectories()
 
-    def _update_system_limits(self, evt = None, prompt = True):
+    def _update_system_limits(self, evt = None, prompt = False):
         print(evt)
         if prompt:
             limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
@@ -279,22 +279,38 @@ class AppWindow():
                 command = self.update_trajectories)
         f_system.grid(sticky = tk.W + tk.E)
 
-        f_controls = tk.Frame(frame)
-        f_controls.grid(sticky = tk.W + tk.E)
-        tk.Checkbutton(f_controls, text = "Nullclines", variable = self.opts.nullclines,
-                command = self.update_fig).grid(row=0, column=0)
-        tk.Checkbutton(f_controls, text = "Quiver", variable = self.opts.quiver,
-                command = self.update_fig).grid(row = 0, column = 1)
-        tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
-                command = self._set_temporal).grid(row = 0, column = 2)
+#        f_controls = tk.Frame(frame)
+#        f_controls.grid(sticky = tk.W + tk.E)
+#        tk.Button(f_controls, text = "Limits",
+#                command = self._update_system_limits).grid()
+#        tk.Button(f_controls, text = "Poincare section",
+#                command = self.show_poincare_dialog).grid(row = 2, column = 1, columnspan = 2)
+
+        # Plot controls frame
+        f_controls = tk.LabelFrame(frame, text = "Plot Controls")
+        f_controls.grid(sticky = tk.E + tk.W)
+        tk.Label(f_controls, text = "Projection:").grid(columnspan = 2)
         optmenu = tk.OptionMenu(f_controls, self.opts.projection,
                 *PROJECTIONS.keys(), command = self._set_proj)
         optmenu.configure(width = 5)
-        optmenu.grid(columnspan = 2)
-        tk.Button(f_controls, text = "Limits",
-                command = self._update_system_limits).grid()
-        tk.Button(f_controls, text = "Poincare section",
-                command = self.show_poincare_dialog).grid(row = 2, column = 1, columnspan = 2)
+        optmenu.grid(row = 0, column = 2, columnspan = 2)
+        tk.Label(f_controls, text = "xlim:").grid(row = 1, column = 0)
+        tk.Label(f_controls, text = "ylim:").grid(row = 2, column = 0)
+        tk.Label(f_controls, text = "zlim:").grid(row = 3, column = 0)
+        limits = self.opts.limits
+        vars = [(limits.xmin, limits.xmax), (limits.ymin, limits.ymax), (limits.zmin, limits.zmax)]
+        for row in 0, 1, 2:
+            for col in 0, 1:
+                VEntry(f_controls, textvariable = vars[row][col], width = 5,
+                        command = self._update_system_limits).grid(row = row+1, column = col+1)
+        tk.Button(f_controls, text = "Apply limits",
+                command = self._update_system_limits).grid(row = 4, columnspan = 3)
+        tk.Checkbutton(f_controls, text = "Nullclines", variable = self.opts.nullclines,
+                command = self.update_fig).grid(row=1, column=3, sticky = tk.W)
+        tk.Checkbutton(f_controls, text = "Quiver", variable = self.opts.quiver,
+                command = self.update_fig).grid(row = 2, column = 3, sticky = tk.W)
+        tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
+                command = self._set_temporal).grid(row = 3, column = 3, sticky = tk.W)
 
         # Trajectories frame.
         row = 0
