@@ -32,7 +32,6 @@ class AppWindow():
         self.anim_info    = tk.StringVar(self.root, "")
         self.anim_running = tk.BooleanVar(self.root, False)
         self.anim_tstep   = tk.IntVar(self.root, 0)
-        self.anim_time    = tk.DoubleVar(self.root, 0.0)
         self.anim_tmax    = 0.0
         self.anim_timer.add_callback(self.anim_update)
         self.pointer_info = tk.StringVar(self.root, "")
@@ -190,7 +189,7 @@ class AppWindow():
     def anim_update(self):
         tstep = self.anim_tstep.get()
         anim_time = tstep * self.opts.dt.get()
-        if anim_time > self.anim_tmax:
+        if anim_time > self.opts.tmax.get():
             anim_time = 0.0
             self.anim_tstep.set(0)
         else:
@@ -201,6 +200,7 @@ class AppWindow():
     def toggle_traj_animation(self):
         if not self.anim_running.get():
             self.anim_timer.stop()
+            self.anim_tstep.set(0)
         else:
             self.anim_timer.start()
 

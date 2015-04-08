@@ -17,7 +17,7 @@ Done	14. Default colour scheme is blue curve with red dot.
 Done	15. Allow 2 simultaneous portraits with different colours (blue, black).
 *fixed*	16. If equations change then write “User-defined model”.
 Done	17. If easy to implement then change “**” to “^”.
-	18. IMP: Always integrate upto Tmax and let the point move out of domain.
+*fixed*	18. IMP: Always integrate upto Tmax and let the point move out of domain.
 Done	19. Pressing update should first clear the screen.
 Done	20. Disallow more than 5-letter parameter names
 *fixed*	21. Enable z_dot entry only if 3d is elected. Otherwise grey it out.
