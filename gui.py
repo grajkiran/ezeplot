@@ -33,6 +33,9 @@ class AppWindow():
         self.anim_running = tk.BooleanVar(self.root, False)
         self.anim_tstep   = tk.IntVar(self.root, 0)
         self.anim_tmax    = 0.0
+        self.loc_x        = tk.DoubleVar(self.root, 0.0)
+        self.loc_y        = tk.DoubleVar(self.root, 0.0)
+        self.loc_z        = tk.DoubleVar(self.root, 0.0)
         self.anim_timer.add_callback(self.anim_update)
         self.pointer_info = tk.StringVar(self.root, "")
         self.trajectories = dict()
@@ -45,8 +48,8 @@ class AppWindow():
         self.fig.bind('motion_notify_event', self.mouse_move)
         self.fig.bind('resize_event', self.update_fig)
         if embedded:
-            cframe = tk.Frame(self.root)
-            cframe.pack()
+            cframe = tk.Frame(self.root, bd = 2, relief = tk.RIDGE)
+            cframe.pack(fill = tk.Y, expand = 1)
             self._add_widgets(cframe)
         else:
             self._add_widgets(self.root)
@@ -103,6 +106,7 @@ class AppWindow():
         #self.update_trajectories()
 
     def _update_system_limits(self, evt = None, prompt = True):
+        print(evt)
         if prompt:
             limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
         limits = self.opts.limits
@@ -208,7 +212,8 @@ class AppWindow():
         styles = ["b", "g", "k", "m"]
         threshold = 1e-4
         if pos is None or isinstance(pos, tk.Event):
-            pos = helpers.parse_coords(self.location_str.get())
+            #pos = helpers.parse_coords(self.location_str.get())
+            pos = self.loc_x.get(), self.loc_y.get(), self.loc_z.get()
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
         pos = tuple(pos)
@@ -264,6 +269,8 @@ class AppWindow():
         if self.mouse_mode == 'pick':
             pos = evt.xdata, evt.ydata
             self.add_location(pos)
+            self.loc_x.set(evt.xdata)
+            self.loc_y.set(evt.ydata)
         else:
             self.mouse_mode = 'pick'
 
@@ -294,10 +301,18 @@ class AppWindow():
         f_traj = tk.LabelFrame(frame, text = "Trajectories:")
         f_traj.grid(sticky = tk.E+tk.W)
         f_traj.columnconfigure(2,weight=1)
-        tk.Label(f_traj, text = "Coords:").grid(row = row, column = 0)
-        VEntry(f_traj, textvariable = self.location_str, validator = helpers.parse_coords,
-                command = self.add_location, width = 12).grid(row = row, column = 1, columnspan = 2, sticky = tk.W)
-        tk.Button(f_traj, text = "Add", command = self.add_location).grid(row = row, column = 2, sticky = tk.E)
+        # xyz location entry:
+        f_xyz = tk.Frame(f_traj)
+        f_xyz.grid(columnspan = 3, sticky = tk.E+tk.W)
+        tk.Label(f_xyz, text = "XYZ:").pack(side = tk.LEFT)
+        VEntry(f_xyz, width = 5, textvariable = self.loc_x, command = self.add_location).pack(side = tk.LEFT)
+        VEntry(f_xyz, width = 5, textvariable = self.loc_y, command = self.add_location).pack(side = tk.LEFT)
+        VEntry(f_xyz, width = 5, textvariable = self.loc_z, command = self.add_location).pack(side = tk.LEFT)
+        tk.Button(f_xyz, text = "Add", command = self.add_location).pack(side = tk.LEFT)
+        #tk.Label(f_traj, text = "Coords:").grid(row = row, column = 0)
+        #VEntry(f_traj, textvariable = self.location_str, validator = helpers.parse_coords,
+        #        command = self.add_location, width = 12).grid(row = row, column = 1, columnspan = 2, sticky = tk.W)
+        #tk.Button(f_traj, text = "Add", command = self.add_location).grid(row = row, column = 2, sticky = tk.E)
         row += 1
         tk.Label(f_traj, text = "Time step:").grid(row = row, column = 0)
         VEntry(f_traj, textvariable = self.opts.dt, width = 5).grid(row = row, column = 1)
@@ -305,13 +320,17 @@ class AppWindow():
         tk.Label(f_traj, text = "Tmax:").grid(row = row, column = 0)
         VEntry(f_traj, textvariable = self.opts.tmax, width = 5).grid(row = row, column = 1)
         #tk.Label(f_traj, textvariable = self.anim_info).grid(row = row, column = 2)
-        row += 1
         #tk.Button(f_traj, text = "Restart", command = lambda: self.anim_tstep.set(0)).grid(row = row, column = 1)
         tk.Checkbutton(f_traj, text = "Animate", pady = 2, padx = 4, font = "sans 12 bold", variable = self.anim_running, indicatoron = 0,
-                command = self.toggle_traj_animation).grid(sticky = tk.E + tk.W, row = row, column = 2)
+                command = self.toggle_traj_animation).grid(sticky = tk.NE + tk.SW, row = row - 1, rowspan = 2, column = 2)
 
         f_update = tk.Frame(frame)
         f_update.columnconfigure(0, weight=1)
+        f_update.grid(sticky = tk.E + tk.W + tk.S)
+        # Allocate remaining vertical space to this frame.
+        # FIXME: Can this be done better?
+        frame.rowconfigure(f_update.grid_info()['row'], weight = 1)
+        f_update.rowconfigure(0, weight=1)
         tk.Button(f_update, text = "Update", command = self.update_trajectories,
                 background = "#0000aa", activebackground = "#3333ff",
                 foreground = "white", activeforeground = "white", font = "sans 16 bold",
@@ -321,7 +340,6 @@ class AppWindow():
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = "white", activeforeground = "white").grid(
                         row = 0, column = 2, sticky = tk.E + tk.S)
-        f_update.grid(sticky = tk.E + tk.W + tk.S)
 
 if __name__ == '__main__':
     np.seterr(invalid = 'print')
