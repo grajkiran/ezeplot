@@ -87,7 +87,9 @@ class DynamicSystem:
             y_dot = self.__y_dot
         if z_dot is None:
             z_dot = self.__z_dot
-        if '"' in (x_dot+y_dot+z_dot) or "'" in (x_dot+y_dot+z_dot): return False
+        x_dot = self.__sanitize(x_dot)
+        y_dot = self.__sanitize(y_dot)
+        z_dot = self.__sanitize(z_dot)
         self.__code_x = compile(x_dot, '<string>', 'eval')
         self.__code_y = compile(y_dot, '<string>', 'eval')
         self.__code_z = compile(z_dot, '<string>', 'eval')
@@ -101,6 +103,11 @@ class DynamicSystem:
         self.__call__([0.8934,0.6572,0.8723])
         for handler in self.update_handlers:
             handler()
+
+    def __sanitize(self, text):
+        if '"' in (text) or "'" in (text):
+            raise ValueError("Invalid characters")
+        return text.replace("^", "**")
 
     def __params_update(self):
         #from numpy import sqrt, sin, cos, tan, abs, exp, pi
