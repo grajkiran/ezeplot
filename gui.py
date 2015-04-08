@@ -62,6 +62,7 @@ class AppWindow():
         opts = Options()
         opts.tmax           = tk.DoubleVar(self.root, 25)
         opts.dt             = tk.DoubleVar(self.root, 0.05)
+        opts.reverse        = tk.BooleanVar(self.root, True)
         opts.quiver         = tk.BooleanVar(self.root, False)
         opts.nullclines     = tk.BooleanVar(self.root, False)
         opts.temporal       = tk.BooleanVar(self.root, False)
@@ -82,7 +83,7 @@ class AppWindow():
     def _load_preset(self, name):
         opts = self.opts
         preset = presets.systems[name]
-        for opt in ('tmax', 'dt', 'projection'):
+        for opt in ('tmax', 'dt', 'projection', 'reverse'):
             if opt in preset:
                 opts[opt].set(preset[opt])
         if 'xlim' in preset:
@@ -221,7 +222,7 @@ class AppWindow():
             return
         try:
             traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
-                bidirectional = True, nsteps = 5 * (self.opts.tmax.get()/self.opts.dt.get()),
+                bidirectional = self.opts.reverse.get(), nsteps = 5 * (self.opts.tmax.get()/self.opts.dt.get()),
                 max_step = self.opts.dt.get())
             #print("Computing trajectory took %g seconds" % t.seconds())
         except:
