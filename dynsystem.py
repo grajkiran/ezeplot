@@ -180,15 +180,11 @@ class DynamicSystem:
         def accumulate(t, pos):
             pos = list(pos)
             pos_norm = list(pos)
-            #for i in range(len(pos)):
-            #    if self.periodic[i]:
-            #        pos_norm[i] = self.normalize_coord(pos[i], self.limits[i])
             if len(traj) == 0:
                 traj.append([t, 0.0] + pos_norm)
                 return 0
             s_old = traj[-1][1]
             pos_old = traj[-1][2:]
-            # We use the non-normalized position to compute the accumulated distance
             s = helpers.distance(pos_old, pos)
             if tmax > 0:
                 s_cum = s_old + s

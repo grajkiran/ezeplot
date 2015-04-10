@@ -302,17 +302,6 @@ class Figure:
         traj.marker[3], = self.ax_z.plot([0.0], [traj.start[2]], marker)
         for m in range(4):
             traj.marker[m].set_visible(False)
-        #traj.marker_anim.set_visible(False)
-        # Add arrow at about 10% diagonal length from the start location
-        #diag = self.get_diagonal()
-        #arrow_len = diag / 1000.0
-        #arrow_start = min(self.get_diagonal()/10.0, traj.dist[-1]/4.0)
-        #arrow_end = arrow_start + arrow_len
-        #t_start, t_end = traj.t_ip([arrow_start, arrow_end])
-        #x1, x2 = traj.x_ip([t_start, t_end])
-        #y1, y2 = traj.y_ip([t_start, t_end])
-        #traj.arrow = self.ax_main.annotate("", xy = (x2, y2), xytext = (x1, y1),
-        #        arrowprops = dict(arrowstyle = "->"))
 
     def anim_update(self, time, trajectories):
         self.restore()#self.ax_main)
