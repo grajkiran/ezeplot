@@ -273,6 +273,8 @@ class AppWindow():
             return
         if not evt.inaxes is self.fig.ax_main:
             return
+        if self.anim_running.get():
+            return
         if self.fig.ax_main is self.fig.ax_3d:
             self.update_fig()
             return
