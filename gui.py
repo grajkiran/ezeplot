@@ -50,9 +50,9 @@ class AppWindow():
         if embedded:
             cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
             cframe.pack(fill = tk.Y, expand = 1)
-            self._add_widgets(cframe)
+            self.controls = self._add_widgets(cframe)
         else:
-            self._add_widgets(self.root)
+            self.controls = self._add_widgets(self.root)
             self.fig.bind('close_event', lambda evt: root.quit())
         tk.Label(self.root, textvariable = self.pointer_info, anchor = tk.W,
                 relief = tk.SUNKEN,).pack(side = tk.BOTTOM, fill = tk.X)
@@ -190,6 +190,12 @@ class AppWindow():
 
     def _set_proj(self, *args):
         proj = self.opts.projection.get()
+        if proj.lower() == '3d':
+            self.controls['nullclines'].configure(state = tk.DISABLED)
+            self.controls['quiver'].configure(state = tk.DISABLED)
+        else:
+            self.controls['nullclines'].configure(state = tk.NORMAL)
+            self.controls['quiver'].configure(state = tk.NORMAL)
         self.fig.set_proj(PROJECTIONS[proj])
         self._update_system_limits(prompt = False)
         self.update_fig()
@@ -279,6 +285,7 @@ class AppWindow():
             self.mouse_mode = 'pick'
 
     def _add_widgets(self, frame):
+        controls = dict()
         f_system = DSFrame(frame, self.system, preset_cmd = self._load_preset,
                 command = self.update_trajectories)
         f_system.grid(sticky = tk.W + tk.E)
@@ -307,10 +314,14 @@ class AppWindow():
                         command = self._update_system_limits).grid(row = row+1, column = col+1)
         tk.Button(f_controls, text = "Apply limits",
                 command = self._update_system_limits).grid(row = 4, columnspan = 3)
-        tk.Checkbutton(f_controls, text = "Nullclines", variable = self.opts.nullclines,
-                command = self.update_fig).grid(row=1, column=3, sticky = tk.W)
-        tk.Checkbutton(f_controls, text = "Quiver", variable = self.opts.quiver,
-                command = self.update_fig).grid(row = 2, column = 3, sticky = tk.W)
+        btn_nullc = tk.Checkbutton(f_controls, text = "Nullclines", variable = self.opts.nullclines,
+                command = self.update_fig)
+        btn_nullc.grid(row=1, column=3, sticky = tk.W)
+        controls['nullclines'] = btn_nullc
+        btn_quiver = tk.Checkbutton(f_controls, text = "Quiver", variable = self.opts.quiver,
+                command = self.update_fig)
+        btn_quiver.grid(row = 2, column = 3, sticky = tk.W)
+        controls['quiver'] = btn_quiver
         tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
                 command = self._set_temporal).grid(row = 3, column = 3, sticky = tk.W)
 
@@ -360,6 +371,7 @@ class AppWindow():
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = "white", activeforeground = "white").grid(
                         row = 0, column = 2, sticky = tk.E + tk.S)
+        return controls
 
 if __name__ == '__main__':
     np.seterr(invalid = 'print')
