@@ -110,8 +110,8 @@ class PWindow(tk.Toplevel):
         self.ax = Axes3D(self.fig)
         self.limits = limits
         self.a = tk.DoubleVar(self, 0.0)
-        self.b = tk.DoubleVar(self, 0.0)
-        self.c = tk.DoubleVar(self, 1.0)
+        self.b = tk.DoubleVar(self, 1.0)
+        self.c = tk.DoubleVar(self, 0.0)
         self.d = tk.DoubleVar(self, 0.0)
         self.traj_loc = tk.StringVar(self, "Select")
         cframe = tk.Frame(self)

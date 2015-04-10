@@ -313,7 +313,7 @@ class AppWindow():
         tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
                 command = self._set_temporal).grid(row = 3, column = 3, sticky = tk.W)
 
-        #tk.Button(f_controls, text = "Poincare", command = self.show_poincare_dialog).grid(row = 4, column = 3)
+        tk.Button(f_controls, text = "Poincare", command = self.show_poincare_dialog).grid(row = 4, column = 3)
 
         # Trajectories frame.
         row = 0
