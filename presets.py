@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 systems = {
-        "Simple Pendulum": {
+        "Simple pendulum": {
             "x": "y",
             "y": "sin(x)",
             "z": "0",
@@ -11,7 +11,7 @@ systems = {
             "tmax": 25.0,
             "projection": "2D",
             },
-        "Linear Oscillator":   {
+        "Linear damped oscillator":   {
             "x": "y",
             "y": "-omega * x - c * y",
             "z": "0",
@@ -22,7 +22,7 @@ systems = {
             "tmax": 25.0,
             "projection": "2D",
             },
-        "Van Der Pol Oscillator":  {
+        "Van der Pol oscillator":  {
             "x": "y",
             "y": "-x + mu * (1 - x*x)*y",
             "z": "0",

@@ -1,7 +1,7 @@
 Third round:
 ~~~~~~~~~~~~
 Done	1. User-defined. Name is EzePlot on top. Remove arrow next to x,y,z,t axis label.
-	2. Linear damped oscillator not Oscillator, Simple pendulum, Van der Pol oscillator.
+Done	2. Linear damped oscillator not Oscillator, Simple pendulum, Van der Pol oscillator.
 Done	3. BUG: No axis in 3d plots !
 	4. Cursor location shift to bottom-left and truncate all entries to 4 decimal places. Should also work for 3-d plots.
 	5. Write x=theta, y=r inside the panel. Shift title in polar mode up and make it bold. Make titles boldface in all plots.
@@ -16,7 +16,7 @@ Done	12. Disable nullclines and quiver for 3d.
 	14. BUG: Do not allow the user to input initial trajectory location to be outside the xlim, ylim, zlim ranges.
 	15. Shift Animate button down and out of current panel.
 	16. Eliminate the initial position entry, this should be clickable on the 3D graph.
-	17. While animating disable clicking new trajectories on the graph.
+Done	17. While animating disable clicking new trajectories on the graph.
 
 Second round:
 ~~~~~~~~~~~~~
