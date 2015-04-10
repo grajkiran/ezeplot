@@ -68,7 +68,7 @@ class AppWindow():
         opts.temporal       = tk.BooleanVar(self.root, False)
         opts.projection     = tk.StringVar(self.root, '2D')
         opts.limits         = Options()
-        opts.limits.factor  = tk.DoubleVar(self.root, 1.5)
+        opts.limits.factor  = tk.DoubleVar(self.root, 2.5)
         opts.limits.xmin    = tk.DoubleVar(self.root, -5.0)
         opts.limits.xmax    = tk.DoubleVar(self.root, 5.0)
         opts.limits.ymin    = tk.DoubleVar(self.root, -5.0)
@@ -83,9 +83,12 @@ class AppWindow():
     def _load_preset(self, name):
         opts = self.opts
         preset = presets.systems[name]
+        defaults = dict(tmax = 25, dt = 0.05, projection = '2D', reverse = True)
         for opt in ('tmax', 'dt', 'projection', 'reverse'):
             if opt in preset:
                 opts[opt].set(preset[opt])
+            else:
+                opts[opt].set(defaults[opt])
         if 'xlim' in preset:
             x1, x2 = preset['xlim']
             opts.limits.xmin.set(x1)
@@ -187,8 +190,8 @@ class AppWindow():
     def _set_proj(self, *args):
         proj = self.opts.projection.get()
         self.fig.set_proj(PROJECTIONS[proj])
-        self.update_fig()
         self._update_system_limits(prompt = False)
+        self.update_fig()
 
     def anim_update(self):
         tstep = self.anim_tstep.get()
