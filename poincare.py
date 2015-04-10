@@ -97,7 +97,7 @@ class PWindow(tk.Toplevel):
             self.destroy()
             return
         self.transient(master)
-        self.title("Poincare section")
+        self.title("EzeePlot - Poincare section")
         self.trajectories = dict()
         for t in trajectories:
             s = "% 0.4f, % 0.4f, % 0.4f" % t

@@ -48,7 +48,7 @@ class AppWindow():
         self.fig.bind('motion_notify_event', self.mouse_move)
         self.fig.bind('resize_event', self.update_fig)
         if embedded:
-            cframe = tk.Frame(self.root, bd = 2, relief = tk.RIDGE)
+            cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
             cframe.pack(fill = tk.Y, expand = 1)
             self._add_widgets(cframe)
         else:
