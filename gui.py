@@ -169,6 +169,7 @@ class AppWindow():
         self.fig.draw(force = True)
         self.fig.save()
         for t in self.trajectories.values():
+            self.fig.add_trajectory(t)
             self.fig.draw_trajectory(t)
         self.fig.draw()
 
