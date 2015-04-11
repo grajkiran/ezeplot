@@ -172,7 +172,7 @@ class DSFrame(tk.LabelFrame):
                         validator = self._update_system_params)
                 pe.grid(row = row, column = col, sticky = tk.E + tk.W)
                 self.params.append(pe)
-        self._load_preset(choices[-1])
+        #self._load_preset(choices[-1])
 
     def _load_preset(self, name):
         self.preset.set(name)

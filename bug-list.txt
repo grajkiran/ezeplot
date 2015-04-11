@@ -17,6 +17,7 @@ Done	12. Disable nullclines and quiver for 3d.
 	15. Shift Animate button down and out of current panel.
 	16. Eliminate the initial position entry, this should be clickable on the 3D graph.
 Done	17. While animating disable clicking new trajectories on the graph.
+Done	18. Make Lorentz attractor as default model. Its the most famous and dramatic model from your list.
 
 Second round:
 ~~~~~~~~~~~~~

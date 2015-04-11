@@ -56,6 +56,7 @@ class AppWindow():
             self.fig.bind('close_event', lambda evt: root.quit())
         tk.Label(self.root, textvariable = self.pointer_info, anchor = tk.W,
                 relief = tk.SUNKEN,).pack(side = tk.BOTTOM, fill = tk.X)
+        self.controls['system']._load_preset('Lorentz attractor')
         self.update_fig()
 
     def _init_options(self, fname = None):
@@ -291,6 +292,7 @@ class AppWindow():
         f_system = DSFrame(frame, self.system, preset_cmd = self._load_preset,
                 command = self.update_trajectories)
         f_system.grid(sticky = tk.W + tk.E)
+        controls['system'] = f_system
 
 #        f_controls = tk.Frame(frame)
 #        f_controls.grid(sticky = tk.W + tk.E)
