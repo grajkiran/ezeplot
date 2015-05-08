@@ -21,11 +21,10 @@ class Options(dict):
     __setattr__ = dict.__setitem__
 
 class AppWindow():
-    def __init__(self, root, system, blit = True, embedded = False):
+    def __init__(self, root, system, blit = True):#, embedded = False):
         self.system = system
         self.root = root
-        master = self.root if embedded else None
-        self.fig = plotting.Figure(blit = blit, master = master)
+        self.fig = plotting.Figure(root, blit = blit)
         self.opts = self._init_options()
         self._update_system_limits(prompt = False)
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
@@ -47,17 +46,15 @@ class AppWindow():
         self.fig.bind('button_release_event', self.button_release)
         self.fig.bind('motion_notify_event', self.mouse_move)
         self.fig.bind('resize_event', self.update_fig)
-        if embedded:
-            cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
-            cframe.pack(fill = tk.Y, expand = 1)
-            self.controls = self._add_widgets(cframe)
-        else:
-            self.controls = self._add_widgets(self.root)
-            self.fig.bind('close_event', lambda evt: root.quit())
-        tk.Label(self.root, textvariable = self.pointer_info, anchor = tk.W,
-                relief = tk.SUNKEN,).pack(side = tk.BOTTOM, fill = tk.X)
+        pinfo_label = tk.Label(self.root, textvariable = self.pointer_info, anchor = tk.W,
+                relief = tk.SUNKEN,)
+        cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
+        self.controls = self._add_widgets(cframe)
         self.controls['system']._load_preset('Lorentz attractor')
         self.update_fig()
+        self.fig.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
+        pinfo_label.pack(side = tk.BOTTOM, fill = tk.X)
+        cframe.pack(fill = tk.Y, expand = 1)
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -278,8 +275,8 @@ class AppWindow():
         s = ""
         if evt.inaxes is None:
             s = ""
-        elif evt.inaxes == self.fig.ax_3d:
-            s = ""
+        #elif evt.inaxes == self.fig.ax_3d:
+        #    s = ""
         elif evt.inaxes == self.fig.ax_main:
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
         self.pointer_info.set(s)

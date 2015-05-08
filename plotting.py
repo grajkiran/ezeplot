@@ -14,16 +14,10 @@ import helpers
 matplotlib.rcParams['toolbar'] = 'None'
 
 class Figure:
-    def __init__(self, mode = 1, blit = True, master = None):
-        if master is not None:
-            self.fig = matplotlib.figure.Figure()
-            self.canvas = FigureCanvasTkAgg(self.fig, master = master)
-            self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
-            #self.toolbar = NavigationToolbar2TkAgg(self.canvas, master)
-            #self.toolbar.pack_configure(side=tk.BOTTOM)
-        else:
-            self.fig = plt.figure()
-            self.canvas = self.fig.canvas
+    def __init__(self, master, mode = 1, blit = True):
+        self.fig = matplotlib.figure.Figure()
+        self.canvas = FigureCanvasTkAgg(self.fig, master = master)
+        #self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         self._blit = blit and self.fig.canvas.supports_blit
         #self.canvas.mpl_connect('scroll_event', self.scale_view)
         self.ax_rect = self.fig.add_subplot(111, label = 'rect', xlim = (-5, 5), ylim=(-5, 5))
