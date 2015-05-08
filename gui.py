@@ -163,9 +163,9 @@ class AppWindow():
         field = x, y, u, v
         field_quiv = [f[::4, ::4] for f in field]
         if self.opts.nullclines.get():
-            self.fig.draw_nullclines(field)
+            self.fig.draw_nullclines(field, linestyles = "dashed")
         if self.opts.quiver.get():
-            self.fig.draw_quiver(field_quiv)
+            self.fig.draw_quiver(field_quiv, width = 0.001, headwidth = 5, scale = 50)
         #NOTE: Add other bg elements like FP, LC, here before draw and save.
         self.fig.draw(force = True)
         self.fig.save()
@@ -197,6 +197,21 @@ class AppWindow():
         else:
             self.controls['nullclines'].configure(state = tk.NORMAL)
             self.controls['quiver'].configure(state = tk.NORMAL)
+        xlims, ylims, zlims = self.controls['limits']
+        for l in self.controls['limits']:
+            l[0].configure(state = tk.NORMAL)
+            l[1].configure(state = tk.NORMAL)
+        if proj.lower() == 'polar':
+            self.opts.limits.ymin.set(0)
+            for l in self.controls['limits']:
+                l[0].configure(state = tk.DISABLED)
+                l[1].configure(state = tk.DISABLED)
+            self.controls['limits'][1][1].configure(state = tk.NORMAL)
+        #elif proj.lower() == '2d':
+        #    self.opts.limits.zmin.set("-inf")
+        #    self.opts.limits.zmax.set("inf")
+        #    zlims[0].configure(state = tk.DISABLED)
+        #    zlims[1].configure(state = tk.DISABLED)
         self.fig.set_proj(PROJECTIONS[proj])
         self._update_system_limits(prompt = False)
         self.update_fig()
@@ -312,10 +327,13 @@ class AppWindow():
         tk.Label(f_controls, text = "zlim:").grid(row = 3, column = 0)
         limits = self.opts.limits
         vars = [(limits.xmin, limits.xmax), (limits.ymin, limits.ymax), (limits.zmin, limits.zmax)]
+        controls['limits'] = [[None, None],[None, None],[None, None]]
         for row in 0, 1, 2:
             for col in 0, 1:
-                VEntry(f_controls, textvariable = vars[row][col], width = 5,
-                        command = self._update_system_limits).grid(row = row+1, column = col+1)
+                e = VEntry(f_controls, textvariable = vars[row][col], width = 5,
+                        command = self._update_system_limits)
+                e.grid(row = row+1, column = col+1)
+                controls['limits'][row][col] = e
         tk.Button(f_controls, text = "Apply limits",
                 command = self._update_system_limits).grid(row = 4, columnspan = 3)
         btn_nullc = tk.Checkbutton(f_controls, text = "Nullclines", variable = self.opts.nullclines,

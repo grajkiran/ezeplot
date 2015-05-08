@@ -1,3 +1,15 @@
+Fourth round:
+~~~~~~~~~~~~~
+Done	1. Polar mode: Redraw panel to only show rlim with 0 [gray] rlim [entry]. In graph only show rlim value at edge nothing inside the circle.
+Done	2. Remove Duffing
+	3. Parameters should be ordered according to equation order - its annoying otherwise.
+Done	4. Quiver - thinner arrowheads
+	5. Poincare section: Simple 2-d graph with single pixel points.
+Done	6. Van der Pol: Change mu to 2.5
+	7. Poincare First-Return map as 2-d plot as an option.
+	8. Print option for all graphs, icon on top-left.
+	9. Fixed points option with initial position specified by user: Check pplane in this regard for radius.
+Done	10. BUG: Nullclines – make dot-dash line, or its confused with trajectories
 Third round:
 ~~~~~~~~~~~~
 Done	1. User-defined. Name is EzePlot on top. Remove arrow next to x,y,z,t axis label.
