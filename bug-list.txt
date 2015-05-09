@@ -15,7 +15,7 @@ Third round:
 Done	1. User-defined. Name is EzePlot on top. Remove arrow next to x,y,z,t axis label.
 Done	2. Linear damped oscillator not Oscillator, Simple pendulum, Van der Pol oscillator.
 Done	3. BUG: No axis in 3d plots !
-	4. Cursor location shift to bottom-left and truncate all entries to 4 decimal places. Should also work for 3-d plots.
+Done	4. Cursor location shift to bottom-left and truncate all entries to 4 decimal places. Should also work for 3-d plots.
 	5. Write x=theta, y=r inside the panel. Shift title in polar mode up and make it bold. Make titles boldface in all plots.
 Done	6. BUG: When shifting to Polar mode, it should automatically do the update for built-in models.
 	7. Place simple pendulum and linear damped oscillator first in list of the pull-down menu.
@@ -25,9 +25,9 @@ Done	6. BUG: When shifting to Polar mode, it should automatically do the update 
 	11. Red and yellow solid circles in Poincare section. Place an update button in this panel. Positioning of the Poincare section should overlap previous window and have grey border.
 Done	12. Disable nullclines and quiver for 3d.
 	13. Change location of graphs button and rename it as “Time series”. Put title “Time series”. Place Poincare button elsewhere and replace it with “Time series”.
-	14. BUG: Do not allow the user to input initial trajectory location to be outside the xlim, ylim, zlim ranges.
+Done	14. BUG: Do not allow the user to input initial trajectory location to be outside the xlim, ylim, zlim ranges.
 	15. Shift Animate button down and out of current panel.
-	16. Eliminate the initial position entry, this should be clickable on the 3D graph.
+Done	16. Eliminate the initial position entry, this should be clickable on the 3D graph.
 Done	17. While animating disable clicking new trajectories on the graph.
 Done	18. Make Lorentz attractor as default model. Its the most famous and dramatic model from your list.
 

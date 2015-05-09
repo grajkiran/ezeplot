@@ -55,6 +55,7 @@ systems = {
             "tmax": 100.0,
             "projection": "3D",
             "locations": [(0.5, 0.5)],
+            "reverse": False,
             },
         "Rossler attractor": {
             "x": "-y - z",

@@ -296,29 +296,36 @@ class AppWindow():
         s = ""
         if evt.inaxes is None:
             s = ""
-        #elif evt.inaxes == self.fig.ax_3d:
-        #    s = ""
-        elif evt.inaxes == self.fig.ax_main:
+        elif evt.inaxes == self.fig.ax_polar:
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
+        elif evt.inaxes == self.fig.ax_rect:
+            s = "x = %0.3f, y = %0.3f" % (evt.xdata, evt.ydata)
+        elif evt.inaxes == self.fig.ax_3d:
+            s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
+            if evt.button != 3:
+                x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
+                s = "x = %0.3f, y = %0.3f, z = %0.3f" % (x, y, z)
         self.pointer_info.set(s)
 
     def button_release(self, evt):
-        if evt.button != 1:
-            return
         if not evt.inaxes is self.fig.ax_main:
+            return
+        if evt.button != 1:
+            if self.fig.ax_main is self.fig.ax_3d:
+                # Rotation or zoom
+                self.update_fig()
             return
         if self.anim_running.get():
             return
+        x, y, z = evt.xdata, evt.ydata, 0.0
         if self.fig.ax_main is self.fig.ax_3d:
-            self.update_fig()
-            return
-        if self.mouse_mode == 'pick':
-            pos = evt.xdata, evt.ydata
-            self.add_location(pos)
-            self.loc_x.set(evt.xdata)
-            self.loc_y.set(evt.ydata)
-        else:
-            self.mouse_mode = 'pick'
+            s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
+            x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
+            pos = x, y, z
+        self.add_location(pos)
+        self.loc_x.set(x)
+        self.loc_y.set(y)
+        self.loc_z.set(z)
 
     def _add_widgets(self, frame):
         controls = dict()
@@ -372,18 +379,15 @@ class AppWindow():
         f_traj = tk.LabelFrame(frame, text = "Trajectories:")
         f_traj.grid(sticky = tk.E+tk.W)
         f_traj.columnconfigure(2,weight=1)
-        # xyz location entry:
-        f_xyz = tk.Frame(f_traj)
-        f_xyz.grid(columnspan = 3, sticky = tk.E+tk.W)
-        tk.Label(f_xyz, text = "XYZ:").pack(side = tk.LEFT)
-        VEntry(f_xyz, width = 5, textvariable = self.loc_x, command = self.add_location).pack(side = tk.LEFT)
-        VEntry(f_xyz, width = 5, textvariable = self.loc_y, command = self.add_location).pack(side = tk.LEFT)
-        VEntry(f_xyz, width = 5, textvariable = self.loc_z, command = self.add_location).pack(side = tk.LEFT)
-        tk.Button(f_xyz, text = "Add", command = self.add_location).pack(side = tk.LEFT)
-        #tk.Label(f_traj, text = "Coords:").grid(row = row, column = 0)
-        #VEntry(f_traj, textvariable = self.location_str, validator = helpers.parse_coords,
-        #        command = self.add_location, width = 12).grid(row = row, column = 1, columnspan = 2, sticky = tk.W)
-        #tk.Button(f_traj, text = "Add", command = self.add_location).grid(row = row, column = 2, sticky = tk.E)
+        ## # xyz location entry:
+        ## f_xyz = tk.Frame(f_traj)
+        ## f_xyz.grid(columnspan = 3, sticky = tk.E+tk.W)
+        ## tk.Label(f_xyz, text = "XYZ:").pack(side = tk.LEFT)
+        ## VEntry(f_xyz, width = 5, textvariable = self.loc_x, command = self.add_location).pack(side = tk.LEFT)
+        ## VEntry(f_xyz, width = 5, textvariable = self.loc_y, command = self.add_location).pack(side = tk.LEFT)
+        ## VEntry(f_xyz, width = 5, textvariable = self.loc_z, command = self.add_location).pack(side = tk.LEFT)
+        ## tk.Button(f_xyz, text = "Add", command = self.add_location).pack(side = tk.LEFT)
+
         row += 1
         tk.Label(f_traj, text = "Time step:").grid(row = row, column = 0)
         VEntry(f_traj, textvariable = self.opts.dt, width = 5).grid(row = row, column = 1)
