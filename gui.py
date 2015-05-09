@@ -4,9 +4,11 @@ import sys
 try:
     import tkinter as tk
     from tkinter import ttk
+    from tkinter.filedialog import asksaveasfilename
 except:
     import Tkinter as tk
     import ttk
+    from tkFileDialog import asksaveasfilename
 import numpy as np
 from widgets import *
 import helpers
@@ -49,12 +51,21 @@ class AppWindow():
         pinfo_label = tk.Label(self.root, textvariable = self.pointer_info, anchor = tk.W,
                 relief = tk.SUNKEN,)
         cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
+        self.menu = self._add_menubar()
         self.controls = self._add_widgets(cframe)
         self.controls['system']._load_preset('Lorentz attractor')
         self.update_fig()
-        self.fig.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
-        pinfo_label.pack(side = tk.BOTTOM, fill = tk.X)
-        cframe.pack(fill = tk.Y, expand = 1)
+
+        self.root.rowconfigure(1, weight = 1)
+        self.root.columnconfigure(0, weight = 1)
+        #self.menu.pack(row = 0, column = 0, columnspan = 2)
+        self.root.config(menu = self.menu)
+        self.fig.canvas.get_tk_widget().grid(row = 1, column = 0, sticky = tk.NE + tk.SW)
+        pinfo_label.grid(row = 2, column = 0, sticky = tk.E + tk.W)
+        cframe.grid(row = 1, column = 1, rowspan = 2, sticky = tk.N + tk.S)
+        #self.fig.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
+        #pinfo_label.pack(side = tk.BOTTOM, fill = tk.X)
+        #cframe.pack(fill = tk.Y, expand = 1)
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -391,6 +402,20 @@ class AppWindow():
                 foreground = "white", activeforeground = "white").grid(
                         row = 0, column = 2, sticky = tk.E + tk.S)
         return controls
+
+    def _add_menubar(self):
+        menubar = tk.Menu(self.root)
+        filemenu = tk.Menu(menubar, tearoff = False)
+        menubar.add_cascade(label = 'File', menu=filemenu)
+        filemenu.add_command(label = 'Print', command = self.save)
+        filemenu.add_command(label = 'Quit', command = self.root.quit)
+        return menubar
+    def save(self):
+        f = asksaveasfilename(defaultextension = ".pdf",
+                parent = self.root, title = "Save as")
+        print("Saving to", f)
+        self.fig.fig.savefig(f, format = 'pdf')
+
 
 if __name__ == '__main__':
     np.seterr(invalid = 'print')
