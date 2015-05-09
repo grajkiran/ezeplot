@@ -149,7 +149,6 @@ class DSFrame(tk.LabelFrame):
         self.eqn_z = tk.StringVar(self, self.system.get(3))
         self.preset = tk.StringVar(self)
         choices = list(presets.systems.keys())
-        choices.sort()
         choices.append("User defined")
         tk.OptionMenu(self, self.preset, *choices,
                 command = self._load_preset).grid(sticky = tk.E+ tk.W, columnspan = 2)

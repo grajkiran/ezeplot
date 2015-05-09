@@ -1,7 +1,8 @@
 #!/usr/bin/python
+from collections import OrderedDict
 
-systems = {
-        "Simple pendulum": {
+systems = OrderedDict()
+systems["Simple pendulum"] = {
             "x": "y",
             "y": "sin(x)",
             "z": "0",
@@ -10,8 +11,8 @@ systems = {
             "ylim": [-5, 5],
             "tmax": 25.0,
             "projection": "2D",
-            },
-        "Linear damped oscillator":   {
+            }
+systems["Linear damped oscillator"] = {
             "x": "y",
             "y": "-omega * x - c * y",
             "z": "0",
@@ -21,8 +22,8 @@ systems = {
             "ylim": [-5, 5],
             "tmax": 25.0,
             "projection": "2D",
-            },
-        "Van der Pol oscillator":  {
+            }
+systems["Van der Pol oscillator"] = {
             "x": "y",
             "y": "-x + mu * (1 - x*x)*y",
             "z": "0",
@@ -32,8 +33,8 @@ systems = {
             "ylim": [-5, 5],
             "tmax": 25.0,
             "projection": "2D",
-            },
-        "Belousov-Zhabotinski": {
+            }
+systems["Belousov-Zhabotinski"] = {
             "x": "a - x - 4*x*y/(1+x*x)",
             "y": "b*x *(1- y/(1+x*x))",
             "z": "0",
@@ -43,8 +44,8 @@ systems = {
             "tmax": 50,
             "projection": "2D",
             "locations": [(4,4), (2,6)],
-            },
-        "Lorentz attractor": {
+            }
+systems["Lorentz attractor"] = {
             "x": "sigma * (y-x)",
             "y": "x * (rho - z) - y",
             "z": "x*y - beta * z",
@@ -56,8 +57,8 @@ systems = {
             "projection": "3D",
             "locations": [(0.5, 0.5)],
             "reverse": False,
-            },
-        "Rossler attractor": {
+            }
+systems["Rossler attractor"] = {
             "x": "-y - z",
             "y": "x + a*y",
             "z": "b + z*(x - c)",
@@ -68,8 +69,8 @@ systems = {
             "tmax": 100.0,
             "projection": "3D",
             "locations": [(-10.5, 10.5), (-10.5, 10.6)],
-            },
-#        "Duffing oscillator": {
+            }
+#systems["Duffing oscillator"] = {
 #                "x": "y",
 #                "y": "-d*y + x - x**3 + gamma*cos(w*z)",
 #                "z": "1.0",
@@ -81,4 +82,3 @@ systems = {
 #                "reverse": False,
 #                "tmax": 50,
 #                }
-        }

@@ -18,7 +18,7 @@ Done	3. BUG: No axis in 3d plots !
 Done	4. Cursor location shift to bottom-left and truncate all entries to 4 decimal places. Should also work for 3-d plots.
 Done	5. Write x=theta, y=r inside the panel. Shift title in polar mode up and make it bold. Make titles boldface in all plots.
 Done	6. BUG: When shifting to Polar mode, it should automatically do the update for built-in models.
-	7. Place simple pendulum and linear damped oscillator first in list of the pull-down menu.
+Done	7. Place simple pendulum and linear damped oscillator first in list of the pull-down menu.
 	8. Place an About button on top left. It should popup a small gray screen with author name, contact email and version number as well website link and licensing information. Check pplane about button.
 Done	9. Animate button when unpressed should continue at previous points.
 Done	9a. Restart animation from beginning option
