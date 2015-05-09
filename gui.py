@@ -15,6 +15,7 @@ import helpers
 import plotting
 from poincare import PWindow
 import presets
+import uptime
 
 PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar', '3D': '3d'})
 
@@ -26,7 +27,9 @@ class AppWindow():
     def __init__(self, root, system, blit = True):#, embedded = False):
         self.system = system
         self.root = root
+        print(uptime.uptime(), "Creating figure window...")
         self.fig = plotting.Figure(root, blit = blit)
+        print(uptime.uptime(), "Initializing options...")
         self.opts = self._init_options()
         self._update_system_limits(prompt = False)
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
@@ -52,10 +55,12 @@ class AppWindow():
                 relief = tk.SUNKEN,)
         cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
         self.menu = self._add_menubar()
+        print(uptime.uptime(), "Creating widgets...")
         self.controls = self._add_widgets(cframe)
-        self.controls['system']._load_preset('Lorentz attractor')
+        print(uptime.uptime(), "Updating figure...")
         self.update_fig()
 
+        print(uptime.uptime(), "Finishing...")
         self.root.rowconfigure(1, weight = 1)
         self.root.columnconfigure(0, weight = 1)
         #self.menu.pack(row = 0, column = 0, columnspan = 2)
@@ -66,6 +71,9 @@ class AppWindow():
         #self.fig.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         #pinfo_label.pack(side = tk.BOTTOM, fill = tk.X)
         #cframe.pack(fill = tk.Y, expand = 1)
+
+        print(uptime.uptime(), "Loading presets...")
+        #self.controls['system']._load_preset('Lorentz attractor')
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -270,7 +278,8 @@ class AppWindow():
         if traj.t[-1] > self.anim_tmax:
             self.anim_tmax = traj.t[-1]
         style = (len(self.trajectories) - 1) % len(styles)
-        self.fig.add_trajectory(traj, style = styles[style])
+        traj.style = styles[style]
+        self.fig.add_trajectory(traj)
         self.fig.draw_trajectory(traj)
         self.fig.draw()
 
@@ -410,6 +419,7 @@ class AppWindow():
         filemenu.add_command(label = 'Print', command = self.save)
         filemenu.add_command(label = 'Quit', command = self.root.quit)
         return menubar
+
     def save(self):
         f = asksaveasfilename(defaultextension = ".pdf",
                 parent = self.root, title = "Save as")

@@ -13,6 +13,7 @@ from optparse import OptionParser
 from plotting import Figure
 from gui import AppWindow
 from dynsystem import DynamicSystem
+import uptime
 
 
 parser = OptionParser()
@@ -24,12 +25,15 @@ opts, args = parser.parse_args()
 
 system = DynamicSystem('y', '-x + mu * (1 - x*x)*y', params = dict(mu = 1.0))
 #fig = Figure(blit = opts.blit)
+print(uptime.uptime(), "Creating root window...")
 root = tk.Tk()
 root.title("EzePlot - Dynamic systems visualization")
 root.protocol('WM_DELETE_WINDOW', root.quit)
 #root.attributes('-fullscreen', True)
-root.attributes('-zoomed', True)
+#root.attributes('-zoomed', True)
 #fig.bind('close_event', lambda evt: root.quit())
+print(uptime.uptime(), "Creating application...")
 app = AppWindow(root, system, blit = opts.blit)#, embedded = opts.embed)
 # TODO: Set the geometry of the control window and figure windows
+print(uptime.uptime(), "Entering mainloop...")
 root.mainloop()

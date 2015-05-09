@@ -11,6 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import numpy as np
 import helpers
 
+import uptime
 matplotlib.rcParams['toolbar'] = 'None'
 
 class Figure:
@@ -20,10 +21,12 @@ class Figure:
         #self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         self._blit = blit and self.fig.canvas.supports_blit
         #self.canvas.mpl_connect('scroll_event', self.scale_view)
+        print(uptime.uptime(), "Creating subplots main...")
         self.ax_rect = self.fig.add_subplot(111, label = 'rect', xlim = (-5, 5), ylim=(-5, 5))
         self.ax_3d = self.fig.add_subplot(111, label = '3d', projection = '3d', zlim = (-1, 1))
         self.ax_polar = self.fig.add_subplot(111, label = 'polar', projection = 'polar')
         self.ax_main = self.ax_rect
+        print(uptime.uptime(), "Creating subplots time series...")
         self.ax_x = self.fig.add_subplot(222, label = 'x', visible = False)
         self.ax_y = self.fig.add_subplot(223, label = 'y', visible = False, sharex = self.ax_x)
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False, sharex = self.ax_x)
@@ -31,9 +34,9 @@ class Figure:
         self.mode = mode
         self.bg = dict()
         #self.trajectories = []
-        if master is None:
-            self.fig.show()
+        print(uptime.uptime(), "Setting mode...")
         self.set_mode(mode)
+        print(uptime.uptime(), "Setting projection...")
         self.set_proj('rect')
 
     def get_diagonal(self):
@@ -284,6 +287,8 @@ class Figure:
 
     def init_trajectory(self, traj, style = 'b-', mfc = 'none', marker = 'ro'):
         """Creates the line, start marker, arrow and animation marker"""
+        if hasattr(traj, 'style'):
+            style = traj.style
         traj.line = dict()
         traj.marker = dict()
         traj.line[0], = self.ax_main.plot(traj.x, traj.y, style)
