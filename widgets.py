@@ -215,7 +215,7 @@ class DSFrame(tk.LabelFrame):
                 self.system.params[name] = value
 
     def _update_params(self, *args):
-        items = sorted(self.system.params.items())
+        items = list(self.system.params.items())
         for i in range(len(items)):
             self.params[i].enable(name = items[i][0], value = items[i][1])
         for pe in self.params[len(items):]:

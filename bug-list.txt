@@ -2,7 +2,7 @@ Fourth round:
 ~~~~~~~~~~~~~
 Done	1. Polar mode: Redraw panel to only show rlim with 0 [gray] rlim [entry]. In graph only show rlim value at edge nothing inside the circle.
 Done	2. Remove Duffing
-	3. Parameters should be ordered according to equation order - its annoying otherwise.
+Done	3. Parameters should be ordered according to equation order - its annoying otherwise.
 Done	4. Quiver - thinner arrowheads
 	5. Poincare section: Simple 2-d graph with single pixel points.
 Done	6. Van der Pol: Change mu to 2.5

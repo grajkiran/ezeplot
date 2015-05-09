@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from collections import OrderedDict
 import numpy as np
 from scipy.integrate import ode
 from scipy.interpolate import interp1d
@@ -105,7 +106,6 @@ class DynamicSystem:
         return text.replace("^", "**")
 
     def __params_update(self):
-        #from numpy import sqrt, sin, cos, tan, abs, exp, pi
         x, y, z = 0.0, 0.0, 0.0
         req_params = set(self.__code_x.co_names)
         req_params.update(set(self.__code_y.co_names))
@@ -118,6 +118,12 @@ class DynamicSystem:
         for p in list(self.params.keys()):
             if not p in req_params:
                 del self.params[p]
+        names = self.__code_x.co_names+self.__code_y.co_names+self.__code_z.co_names
+        ordered_params = OrderedDict()
+        for n in names:
+            if n in req_params:
+                ordered_params[n] = self.params[n]
+        self.params = ordered_params
 
     @staticmethod
     def normalize_coord(c, period):
@@ -134,7 +140,6 @@ class DynamicSystem:
         return c
 
     def __call__(self, x, params = None):
-        #from numpy import sqrt, sin, cos, tan, abs, exp, pi, log, arctan
         f_params = globals()
         size = len(x)
         if size == 2:
