@@ -17,7 +17,7 @@ from poincare import PWindow
 import presets
 import uptime
 
-PROJECTIONS = dict({'2D': 'rect', 'Polar': 'polar', '3D': '3d'})
+PROJECTIONS = dict({'2D': 'rect', 'Polar (x≡θ, y≡r)': 'polar', '3D': '3d'})
 
 class Options(dict):
     __getattr__ = dict.__getitem__
@@ -228,6 +228,8 @@ class AppWindow():
             l[1].configure(state = tk.NORMAL)
         if proj.lower() == 'polar':
             self.opts.limits.ymin.set(0)
+            self.opts.limits.xmin.set(0)
+            self.opts.limits.xmax.set(2*np.pi)
             for l in self.controls['limits']:
                 l[0].configure(state = tk.DISABLED)
                 l[1].configure(state = tk.DISABLED)
@@ -361,12 +363,14 @@ class AppWindow():
         f_controls = tk.LabelFrame(frame, text = "Options")
         f_controls.grid(sticky = tk.E + tk.W)
         row = 0
-        tk.Label(f_controls, text = "Projection:",
-                anchor = tk.E).grid(row=row, column = 0, sticky = tk.E)
-        optmenu = tk.OptionMenu(f_controls, self.opts.projection,
+        f = tk.Frame(f_controls)
+        f.grid(row=row, columnspan=2)
+        tk.Label(f, text = "Projection:",
+                anchor = tk.E).grid(row=0, column = 0, sticky = tk.E)
+        optmenu = tk.OptionMenu(f, self.opts.projection,
                 *PROJECTIONS.keys(), command = self._set_proj)
-        optmenu.configure(width = 5)
-        optmenu.grid(row = row, column = 1, sticky = tk.W)
+        optmenu.configure(width = 12)
+        optmenu.grid(row = 0, column = 1, sticky = tk.W+tk.E)
 
         row += 1
         btn_nullc = tk.Checkbutton(f_controls, text = "Nullclines",

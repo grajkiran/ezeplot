@@ -13,6 +13,7 @@ import helpers
 
 import uptime
 matplotlib.rcParams['toolbar'] = 'None'
+#matplotlib.rc('font', size = 16, weight = 'bold')
 
 class Figure:
     def __init__(self, master, mode = 1, blit = True):
@@ -134,24 +135,35 @@ class Figure:
                 self.ax_x, self.ax_y, self.ax_z):
             a.clear()
             a.grid(True)
+        self.fig.subplots_adjust(top = 0.85, left = 0.1, right = 0.9,
+                bottom = 0.1, hspace = 0.4)
         self.__set_3d_mode()
-        self.ax_rect.set_title("Phase portrait")
-        self.ax_polar.set_title(r"Phase portrait (polar)")
-        polar_message = "$x=\\theta$\n$y=r$"
-        self.ax_polar.annotate(polar_message, (-40, -75), size = 16, color = 'blue',
-                xycoords = 'figure points')
-        #self.ax_3d.set_title("Phase portrait")
-        self.ax_rect.set_xlabel(r'x')
-        self.ax_rect.set_ylabel(r'y')
-        self.ax_x.set_xlabel(r't')
-        self.ax_y.set_xlabel(r't')
-        self.ax_z.set_xlabel(r't')
-        self.ax_x.set_ylabel(r'x')
-        self.ax_y.set_ylabel(r'y')
-        self.ax_z.set_ylabel(r'z')
-        self.ax_3d.set_xlabel(r'x')
-        self.ax_3d.set_ylabel(r'y')
-        self.ax_3d.set_zlabel(r'z')
+        self.ax_rect.text(0.5, 1.1, "Phase portrait (XY)", size = 16, weight = 'bold',
+                transform = self.ax_main.transAxes, ha = 'center')
+        self.ax_polar.text(0.5, 1.1, "Phase portrait (Polar)", size = 16, weight = 'bold',
+                transform = self.ax_polar.transAxes, ha = 'center')
+        self.ax_3d.text2D(0.5, 1.1, "Phase portrait (3D)", size = 16, weight = 'bold',
+                transform = self.ax_3d.transAxes, ha = 'center')
+        self.ax_x.text(0.5, 1.1, "Time series (X)", size = 16, weight = 'bold',
+                transform = self.ax_x.transAxes, ha = 'center')
+        self.ax_y.text(0.5, 1.1, "Time series (Y)", size = 16, weight = 'bold',
+                transform = self.ax_y.transAxes, ha = 'center')
+        self.ax_z.text(0.5, 1.1, "Time series (Z)", size = 16, weight = 'bold',
+                transform = self.ax_z.transAxes, ha = 'center')
+        #polar_message = "$x=\\theta$\n$y=r$"
+        #self.ax_polar.annotate(polar_message, (-40, -75), size = 16, color = 'blue',
+        #        xycoords = 'figure points')
+        self.ax_rect.set_xlabel(r'X')
+        self.ax_rect.set_ylabel(r'Y')
+        self.ax_x.set_xlabel(r'Time')
+        self.ax_y.set_xlabel(r'Time')
+        self.ax_z.set_xlabel(r'Time')
+        self.ax_x.set_ylabel(r'X')
+        self.ax_y.set_ylabel(r'Y')
+        self.ax_z.set_ylabel(r'Z')
+        self.ax_3d.set_xlabel(r'X')
+        self.ax_3d.set_ylabel(r'Y')
+        self.ax_3d.set_zlabel(r'Z')
         # The t-limit (time axis) is shared between ax_x, ax_y and ax_z
         self.ax_x.set_xlim(tlim)
         #self.ax_polar.set_xlim(self.ax_polar.get_xlim())
@@ -248,7 +260,7 @@ class Figure:
             for l in 1, 2, 3:
                 traj.line[l].set_xdata(tdata)
             if self.ax_main is self.ax_polar:
-                traj.line[1].set_ydata(xdata%np.pi)
+                traj.line[1].set_ydata(xdata%(2*np.pi))
             else:
                 traj.line[1].set_ydata(xdata)
             traj.line[2].set_ydata(ydata)
@@ -260,7 +272,7 @@ class Figure:
             traj.marker[0].set_ydata([y])
             for m in 1, 2, 3:
                 traj.marker[m].set_xdata([t_anim])
-            traj.marker[1].set_ydata([x])
+            traj.marker[1].set_ydata([x%(2*np.pi)])
             traj.marker[2].set_ydata([y])
             traj.marker[3].set_ydata([z])
             traj.marker["3d"]._verts3d = ([x], [y], [z])
