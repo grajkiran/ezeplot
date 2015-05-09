@@ -98,6 +98,26 @@ class AppWindow():
         opts.limits.per_z   = tk.BooleanVar(self.root, False)
         return opts
 
+    def _set_limits(self, preset = None):
+        opts = self.opts
+        x1, x2 = -5.0, 5.
+        y1, y2 = -5.0, 5.
+        z1, z2 = -5.0, 5.
+        if preset is not None:
+            if 'xlim' in preset:
+                x1, x2 = preset['xlim']
+            if 'ylim' in preset:
+                y1, y2 = preset['ylim']
+            if 'zlim' in preset:
+                z1, z2 = preset['zlim']
+        opts.limits.xmin.set(x1)
+        opts.limits.xmax.set(x2)
+        opts.limits.ymin.set(y1)
+        opts.limits.ymax.set(y2)
+        opts.limits.zmin.set(z1)
+        opts.limits.zmax.set(z2)
+        self._update_system_limits(prompt = False)
+
     def _load_preset(self, name):
         opts = self.opts
         preset = presets.systems[name]
@@ -107,19 +127,7 @@ class AppWindow():
                 opts[opt].set(preset[opt])
             else:
                 opts[opt].set(defaults[opt])
-        if 'xlim' in preset:
-            x1, x2 = preset['xlim']
-            opts.limits.xmin.set(x1)
-            opts.limits.xmax.set(x2)
-        if 'ylim' in preset:
-            y1, y2 = preset['ylim']
-            opts.limits.ymin.set(y1)
-            opts.limits.ymax.set(y2)
-        if 'zlim' in preset:
-            z1, z2 = preset['zlim']
-            opts.limits.zmin.set(z1)
-            opts.limits.zmax.set(z2)
-        #self._update_system_limits(prompt = False)
+        self._set_limits(preset)
         self._reset_fig()
         self._set_proj()
         if 'locations' in preset:
@@ -154,6 +162,7 @@ class AppWindow():
             self.system.periodic[0] = True
 
     def show_poincare_dialog(self, *args):
+        self.stop_traj_animation()
         l = self.opts.limits
         x1, x2 = l.xmin.get(), l.xmax.get()
         y1, y2 = l.ymin.get(), l.ymax.get()
@@ -192,8 +201,7 @@ class AppWindow():
         self.fig.draw()
 
     def _reset_fig(self, *args):
-        self.anim_running.set(False)
-        self.anim_timer.stop()
+        self.stop_traj_animation()
         self.trajectories.clear()
         self.anim_tmax = 0.0
         self.fig.clear(tmax = self.opts.tmax.get())
@@ -241,15 +249,29 @@ class AppWindow():
             self.anim_tstep.set(0)
         else:
             self.anim_tstep.set(tstep+1)
-        self.anim_info.set("%0.3f" % anim_time)
+        self.anim_info.set("t = %0.3f" % anim_time)
         self.fig.anim_update(anim_time, self.trajectories.values())
 
-    def toggle_traj_animation(self):
+    def stop_traj_animation(self):
         self.anim_tstep.set(0)
+        self.anim_timer.stop()
+        self.anim_running.set(False)
         if not self.anim_running.get():
+            self.update_fig()
+        self.controls['anim'].configure(text = 'Start')
+        self.anim_info.set("t = 0.000")
+
+    def toggle_traj_animation(self):
+        if self.anim_running.get():
+            print("Stopping animation...")
             self.anim_timer.stop()
+            self.anim_running.set(False)
+            self.controls['anim'].configure(text = 'Start')
         else:
+            print("Starting animation...")
             self.anim_timer.start()
+            self.anim_running.set(True)
+            self.controls['anim'].configure(text = 'Pause')
 
     def add_location(self, pos = None):
         styles = ["b", "g", "k", "m"]
@@ -283,6 +305,7 @@ class AppWindow():
         self.fig.add_trajectory(traj)
         self.fig.draw_trajectory(traj)
         self.fig.draw()
+        self.last_loc = pos
 
     def button_press(self, evt):
         if evt.key == 'shift' and evt.inaxes is self.fig.ax_main:
@@ -321,7 +344,7 @@ class AppWindow():
         if self.fig.ax_main is self.fig.ax_3d:
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
             x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
-            pos = x, y, z
+        pos = x, y, z
         self.add_location(pos)
         self.loc_x.set(x)
         self.loc_y.set(y)
@@ -334,70 +357,75 @@ class AppWindow():
         f_system.grid(sticky = tk.W + tk.E)
         controls['system'] = f_system
 
-#        f_controls = tk.Frame(frame)
-#        f_controls.grid(sticky = tk.W + tk.E)
-#        tk.Button(f_controls, text = "Limits",
-#                command = self._update_system_limits).grid()
-
-        # Plot controls frame
-        f_controls = tk.LabelFrame(frame, text = "Plot Controls")
+        # Plot options frame
+        f_controls = tk.LabelFrame(frame, text = "Options")
         f_controls.grid(sticky = tk.E + tk.W)
-        tk.Label(f_controls, text = "Projection:", anchor = tk.E).grid(columnspan = 2, sticky = tk.E)
+        row = 0
+        tk.Label(f_controls, text = "Projection:",
+                anchor = tk.E).grid(row=row, column = 0, sticky = tk.E)
         optmenu = tk.OptionMenu(f_controls, self.opts.projection,
                 *PROJECTIONS.keys(), command = self._set_proj)
         optmenu.configure(width = 5)
-        optmenu.grid(row = 0, column = 2, columnspan = 2, sticky = tk.W)
-        tk.Label(f_controls, text = "xlim:").grid(row = 1, column = 0)
-        tk.Label(f_controls, text = "ylim:").grid(row = 2, column = 0)
-        tk.Label(f_controls, text = "zlim:").grid(row = 3, column = 0)
+        optmenu.grid(row = row, column = 1, sticky = tk.W)
+
+        row += 1
+        btn_nullc = tk.Checkbutton(f_controls, text = "Nullclines",
+                variable = self.opts.nullclines, command = self.update_fig,
+                indicatoron = False, pady = 4)
+        btn_nullc.grid(row=row, column=0, sticky = tk.W + tk.E)
+        btn_quiver = tk.Checkbutton(f_controls, text = "Quiver",
+                variable = self.opts.quiver, command = self.update_fig,
+                indicatoron = False, pady = 4)
+        btn_quiver.grid(row = row, column = 1, sticky = tk.W + tk.E)
+        controls['nullclines'] = btn_nullc
+        controls['quiver'] = btn_quiver
+
+        row += 1
+        PEntry(f_controls, "Tstep:", self.opts.dt).grid(row = row, column = 0)
+        PEntry(f_controls, 'Tmax:', self.opts.tmax).grid(row = row, column = 1)
+
+        row += 1
         limits = self.opts.limits
+        labels = [('xmin:', 'xmax:'), ('ymin:', 'ymax:'), ('zmin:', 'zmax:')]
         vars = [(limits.xmin, limits.xmax), (limits.ymin, limits.ymax), (limits.zmin, limits.zmax)]
         controls['limits'] = [[None, None],[None, None],[None, None]]
-        for row in 0, 1, 2:
-            for col in 0, 1:
-                e = VEntry(f_controls, textvariable = vars[row][col], width = 5,
+        for r in 0, 1, 2:
+            for c in 0, 1:
+                f = tk.Frame(f_controls)
+                f.grid(row = row+r, column = c)
+                tk.Label(f, text = labels[r][c]).grid(row = 0, column = 0)
+                e = VEntry(f, textvariable = vars[r][c], width = 5,
                         command = self._update_system_limits)
-                e.grid(row = row+1, column = col+1)
-                controls['limits'][row][col] = e
+                e.grid(row = 0, column = 1)
+                controls['limits'][r][c] = e
+        row += 3
         tk.Button(f_controls, text = "Apply limits",
-                command = self._update_system_limits).grid(row = 4, columnspan = 3)
-        btn_nullc = tk.Checkbutton(f_controls, text = "Nullclines", variable = self.opts.nullclines,
-                command = self.update_fig)
-        btn_nullc.grid(row=1, column=3, sticky = tk.W)
-        controls['nullclines'] = btn_nullc
-        btn_quiver = tk.Checkbutton(f_controls, text = "Quiver", variable = self.opts.quiver,
-                command = self.update_fig)
-        btn_quiver.grid(row = 2, column = 3, sticky = tk.W)
-        controls['quiver'] = btn_quiver
-        tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
-                command = self._set_temporal).grid(row = 3, column = 3, sticky = tk.W)
+                command = self._update_system_limits).grid(row = row, column = 0)
+        tk.Button(f_controls, text = 'Defaults',
+                command = self._set_limits).grid(row = row, column = 1)
 
-        tk.Button(f_controls, text = "Poincare", command = self.show_poincare_dialog).grid(row = 4, column = 3)
+        # tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
+        #         command = self._set_temporal).grid(row = 3, column = 3, sticky = tk.W)
 
-        # Trajectories frame.
-        row = 0
-        f_traj = tk.LabelFrame(frame, text = "Trajectories:")
-        f_traj.grid(sticky = tk.E+tk.W)
-        f_traj.columnconfigure(2,weight=1)
-        ## # xyz location entry:
-        ## f_xyz = tk.Frame(f_traj)
-        ## f_xyz.grid(columnspan = 3, sticky = tk.E+tk.W)
-        ## tk.Label(f_xyz, text = "XYZ:").pack(side = tk.LEFT)
-        ## VEntry(f_xyz, width = 5, textvariable = self.loc_x, command = self.add_location).pack(side = tk.LEFT)
-        ## VEntry(f_xyz, width = 5, textvariable = self.loc_y, command = self.add_location).pack(side = tk.LEFT)
-        ## VEntry(f_xyz, width = 5, textvariable = self.loc_z, command = self.add_location).pack(side = tk.LEFT)
-        ## tk.Button(f_xyz, text = "Add", command = self.add_location).pack(side = tk.LEFT)
+        # tk.Button(f_controls, text = "Poincare", command = self.show_poincare_dialog).grid(row = 4, column = 3)
 
-        row += 1
-        tk.Label(f_traj, text = "Time step:").grid(row = row, column = 0)
-        VEntry(f_traj, textvariable = self.opts.dt, width = 5).grid(row = row, column = 1)
-        row += 1
-        tk.Label(f_traj, text = "Tmax:").grid(row = row, column = 0)
-        VEntry(f_traj, textvariable = self.opts.tmax, width = 5).grid(row = row, column = 1)
-        #tk.Label(f_traj, textvariable = self.anim_info).grid(row = row, column = 2)
-        #tk.Button(f_traj, text = "Restart", command = lambda: self.anim_tstep.set(0)).grid(row = row, column = 1)
-        tk.Checkbutton(f_traj, text = "Animate", pady = 2, padx = 4, font = "sans 12 bold", variable = self.anim_running, indicatoron = 0,
-                command = self.toggle_traj_animation).grid(sticky = tk.NE + tk.SW, row = row - 1, rowspan = 2, column = 2)
+        f_anim = tk.LabelFrame(frame, text = 'Animation')
+        f_anim.columnconfigure(0, weight=1)
+        f_anim.grid(sticky = tk.E + tk.W)
+        #b_toggle = tk.Button(f_anim, text = "Start", pady = 4, padx = 4, font = "sans 12 bold",
+        #        command = self.toggle_traj_animation)
+        b_toggle = tk.Button(f_anim, text = "Start", command = self.toggle_traj_animation,
+                background = "#0000aa", activebackground = "#3333ff",
+                foreground = "white", activeforeground = "white", font = "sans 16 bold",
+                height = 1, width = 6)
+        b_toggle.grid(row = 0, rowspan = 2, column = 0)
+        #b_stop = tk.Button(f_anim, text = "Stop", command = self.stop_traj_animation)
+        b_stop = tk.Button(f_anim, text = "Stop", command = self.stop_traj_animation, font = "sans 10 bold",
+                background = "#aa0000", activebackground = "#ff5555",
+                foreground = "white", activeforeground = "white")
+        b_stop.grid(row = 0, column = 1)
+        tk.Label(f_anim, textvariable = self.anim_info).grid(row = 1, column = 1)
+        controls['anim'] = b_toggle
 
         f_update = tk.Frame(frame)
         f_update.columnconfigure(0, weight=1)
@@ -423,6 +451,11 @@ class AppWindow():
         menubar.add_cascade(label = 'File', menu=filemenu)
         filemenu.add_command(label = 'Print', command = self.save)
         filemenu.add_command(label = 'Quit', command = self.root.quit)
+        viewmenu = tk.Menu(menubar, tearoff = False)
+        menubar.add_cascade(label = 'View', menu=viewmenu)
+        viewmenu.add_checkbutton(label = 'Time series', variable = self.opts.temporal,
+                command = self._set_temporal)
+        viewmenu.add_command(label = "Poincare", command = self.show_poincare_dialog)
         return menubar
 
     def save(self):

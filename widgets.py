@@ -95,6 +95,10 @@ class PlotLimits(tk.Toplevel):
         self.limits.zmin.set(zmin)
         self.limits.zmax.set(zmax)
 
+def PEntry(master, name, variable, command = None):
+    return Param(master, name, value = variable.get(), validator = variable.set,
+            command = command)
+
 class Param(tk.Frame):
     def __init__(self, master, name, value = 1.0, validator = None,
             command = None):
