@@ -63,7 +63,6 @@ class AppWindow():
         print(uptime.uptime(), "Finishing...")
         self.root.rowconfigure(1, weight = 1)
         self.root.columnconfigure(0, weight = 1)
-        #self.menu.pack(row = 0, column = 0, columnspan = 2)
         self.root.config(menu = self.menu)
         self.fig.canvas.get_tk_widget().grid(row = 1, column = 0, sticky = tk.NE + tk.SW)
         pinfo_label.grid(row = 2, column = 0, sticky = tk.E + tk.W)
@@ -74,6 +73,8 @@ class AppWindow():
 
         print(uptime.uptime(), "Loading presets...")
         #self.controls['system']._load_preset('Lorentz attractor')
+
+        self._init_keybindings()
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -422,9 +423,18 @@ class AppWindow():
 
     def save(self):
         f = asksaveasfilename(defaultextension = ".pdf",
-                parent = self.root, title = "Save as")
-        print("Saving to", f)
-        self.fig.fig.savefig(f, format = 'pdf')
+                parent = self.root, title = "Save as", initialfile = 'figure',
+                filetypes = [("PDF files", "*.pdf")])
+        f = str(f)
+        if not f.endswith('.pdf'):
+            return
+        print("Saving to", f, type(f))
+        self.fig.fig.savefig(f)
+
+    def _init_keybindings(self):
+        self.root.bind_all('<Control-KeyPress-p>', lambda *args: self.save())
+        self.root.bind_all('<Control-KeyPress-s>', lambda *args: self.save())
+        self.root.bind_all('<Control-KeyPress-q>', lambda *args: self.root.quit())
 
 
 if __name__ == '__main__':
