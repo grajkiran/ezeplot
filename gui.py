@@ -16,7 +16,7 @@ import plotting
 from poincare import PWindow
 import presets
 import uptime
-
+from timer import Timer
 PROJECTIONS = dict({'2D': 'rect', 'Polar (x≡θ, y≡r)': 'polar', '3D': '3d'})
 
 class Options(dict):
@@ -72,7 +72,7 @@ class AppWindow():
         #cframe.pack(fill = tk.Y, expand = 1)
 
         print(uptime.uptime(), "Loading presets...")
-        #self.controls['system']._load_preset('Lorentz attractor')
+        self.controls['system']._load_preset('Lorentz attractor')
 
         self._init_keybindings()
 
@@ -288,10 +288,13 @@ class AppWindow():
             print("Trajectory already exists.")
             return
         try:
+            t = Timer()
+            t.start()
             traj = self.system.trajectory(pos, self.opts.tmax.get(), threshold = threshold,
                 bidirectional = self.opts.reverse.get(), nsteps = 5 * (self.opts.tmax.get()/self.opts.dt.get()),
-                max_step = self.opts.dt.get())
-            #print("Computing trajectory took %g seconds" % t.seconds())
+                max_step = self.opts.dt.get(), use_ode = True)
+            t.stop()
+            print("Computing trajectory (%d points) took %g seconds" % (len(traj.x), t.seconds()))
         except:
             pos_str = ", ".join(map(str, pos))
             sys.stderr.write("Could not compute trajectory from: %s\n" % pos_str)

@@ -6,6 +6,7 @@ class Timer:
     time_start = None
     time_end = None
     delta = None
+    duration = 0.0
     def start(self, restart = False):
         if self.is_running and not restart:
             raise RuntimeError("Timer is already running.")
@@ -16,6 +17,7 @@ class Timer:
         self.time_end = datetime.datetime.now()
         self.is_running = False
         self.delta = self.time_end - self.time_start
+        self.duration = self.delta.seconds + self.delta.microseconds/1e6
 
     def seconds(self):
         if self.delta is None:

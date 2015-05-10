@@ -164,7 +164,7 @@ class DynamicSystem:
         x_dot *= eval(self.__code_x, f_params, params or self.params)
         y_dot *= eval(self.__code_y, f_params, params or self.params)
         z_dot *= eval(self.__code_z, f_params, params or self.params)
-        return [x_dot, y_dot, z_dot]
+        return np.array([x_dot, y_dot, z_dot])
 
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,
             bidirectional = True, **kwargs):
@@ -175,11 +175,51 @@ class DynamicSystem:
         # Remove the first element of the reversed trajectory as it is the
         # start point that is already present in the forward trajectory.
         t_back = self.__compute_trajectory(start, -tmax,
-                threshold, **kwargs)[1:]
-        t_back.reverse()
-        return Trajectory(t_back+t_forw, len(t_back))
+                threshold, **kwargs)[:0:-1]
+        return Trajectory(np.vstack((t_back, t_forw)), len(t_back))
 
-    def __compute_trajectory(self, start, tmax, threshold, **kwargs):
+    def __compute_trajectory(self, start, tmax, threshold, use_ode = True, **kwargs):
+        if use_ode:
+            return self.__compute_trajectory_ode(start, tmax, threshold, **kwargs)
+        else:
+            return self.__compute_trajectory_rk4(start, tmax, threshold, **kwargs)
+
+    def __compute_trajectory_rk4(self, start, tmax, threshold, **kwargs):
+        dt = kwargs.get('max_step', 0.01)
+        intervals = int(np.ceil(np.abs(tmax)/np.abs(dt)))
+        traj = np.empty((intervals, 5))
+        threshold = abs(threshold)
+        traj[:,0], dt = np.linspace(0, tmax, intervals, retstep = True)
+        traj[0][2:] = start
+        for i in range(1, intervals):
+            s_old = traj[i-1][1]
+            pos_old = traj[i-1][2:]
+            k1 = self(pos_old)
+            k2 = self(pos_old + 0.5*dt*k1)
+            k3 = self(pos_old + 0.5*dt*k2)
+            k4 = self(pos_old + dt*k3)
+            dpos = dt/6.0*(k1 + 2*k2 + 2*k3 + k4)
+            pos = pos_old + dpos
+            s = helpers.distance(pos_old, pos)
+            if tmax > 0:
+                s_cum = s_old + s
+            else:
+                s_cum = s_old - s
+            traj[i][1] = s_cum
+            traj[i][2:] = pos
+            if not helpers.is_inside(pos, self.limits):
+                print("Crossed domain - stopping integration.")
+                return traj
+            # Check if we are within threshold of a fixed point.
+            # We are if our velocity is decreasing and we have not moved much.
+            v_old = helpers.mag(self(pos_old))
+            v = helpers.mag(self(pos))
+            if s < threshold and v < v_old and len(traj) > 10:
+                print("No significant change - stopping integration.")
+                return traj
+        return traj
+
+    def __compute_trajectory_ode(self, start, tmax, threshold, **kwargs):
         traj = []
         threshold = abs(threshold)
         def accumulate(t, pos):
@@ -212,7 +252,7 @@ class DynamicSystem:
         rk4.set_initial_value(start, 0.0)
         rk4.integrate(tmax)
         #print("Integration took %g seconds" % t.seconds())
-        return traj
+        return np.array(traj)
 
 def main():
     d = DynamicSystem()
