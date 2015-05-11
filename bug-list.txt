@@ -4,7 +4,7 @@ Done	1. Polar mode: Redraw panel to only show rlim with 0 [gray] rlim [entry]. I
 Done	2. Remove Duffing
 Done	3. Parameters should be ordered according to equation order - its annoying otherwise.
 Done	4. Quiver - thinner arrowheads
-	5. Poincare section: Simple 2-d graph with single pixel points.
+*fixed*	5. Poincare section: Simple 2-d graph with single pixel points.
 Done	6. Van der Pol: Change mu to 2.5
 	7. Poincare First-Return map as 2-d plot as an option.
 Done	8. Print option for all graphs, icon on top-left.
@@ -22,8 +22,8 @@ Done	7. Place simple pendulum and linear damped oscillator first in list of the 
 	8. Place an About button on top left. It should popup a small gray screen with author name, contact email and version number as well website link and licensing information. Check pplane about button.
 Done	9. Animate button when unpressed should continue at previous points.
 Done	9a. Restart animation from beginning option
-	10. Poincare section: Automatically select the last trajectory for the section. Write “Equation of plane ax+by+cz+d=0”. Axis labelling.
-	11. Red and yellow solid circles in Poincare section. Place an update button in this panel. Positioning of the Poincare section should overlap previous window and have grey border.
+Done	10. Poincare section: Automatically select the last trajectory for the section. Write “Equation of plane ax+by+cz+d=0”. Axis labelling.
+Done	11. Red and yellow solid circles in Poincare section. Place an update button in this panel. Positioning of the Poincare section should overlap previous window and have grey border.
 Done	12. Disable nullclines and quiver for 3d.
 Done	13. Change location of graphs button and rename it as “Time series”. Put title “Time series”. Place Poincare button elsewhere and replace it with “Time series”.
 Done	14. BUG: Do not allow the user to input initial trajectory location to be outside the xlim, ylim, zlim ranges.
