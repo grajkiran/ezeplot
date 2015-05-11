@@ -37,9 +37,6 @@ class AppWindow():
         self.anim_running = tk.BooleanVar(self.root, False)
         self.anim_tstep   = tk.IntVar(self.root, 0)
         self.anim_tmax    = 0.0
-        self.loc_x        = tk.DoubleVar(self.root, 0.0)
-        self.loc_y        = tk.DoubleVar(self.root, 0.0)
-        self.loc_z        = tk.DoubleVar(self.root, 0.0)
         self.anim_timer.add_callback(self.anim_update)
         self.pointer_info = tk.StringVar(self.root, "")
         self.trajectories = dict()
@@ -167,7 +164,7 @@ class AppWindow():
         x1, x2 = l.xmin.get(), l.xmax.get()
         y1, y2 = l.ymin.get(), l.ymax.get()
         z1, z2 = l.zmin.get(), l.zmax.get()
-        w = PWindow(self.root, self.trajectories,
+        w = PWindow(self.root, self.trajectories[self.last_loc],
                 ((x1, x2), (y1, y2), (z1, z2)))
 
     def update_trajectories(self, *args):
@@ -275,12 +272,9 @@ class AppWindow():
             self.anim_running.set(True)
             self.controls['anim'].configure(text = 'Pause')
 
-    def add_location(self, pos = None):
+    def add_location(self, pos):
         styles = ["b", "g", "k", "m"]
         threshold = 1e-4
-        if pos is None or isinstance(pos, tk.Event):
-            #pos = helpers.parse_coords(self.location_str.get())
-            pos = self.loc_x.get(), self.loc_y.get(), self.loc_z.get()
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
         pos = tuple(pos)
@@ -351,9 +345,6 @@ class AppWindow():
             x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
         pos = x, y, z
         self.add_location(pos)
-        self.loc_x.set(x)
-        self.loc_y.set(y)
-        self.loc_z.set(z)
 
     def _add_widgets(self, frame):
         controls = dict()
