@@ -230,6 +230,15 @@ class Figure:
             v = v/mag
         self.ax_main.quiver(x, y, u, v, **kwargs)
 
+    def draw_fp(self, *fixed_points):
+        if len(fixed_points) == 0:
+            return
+        fps = np.array(fixed_points)
+        if self.ax_main is self.ax_3d:
+            return
+        art, = self.ax_main.plot(fps[:,0], fps[:,1], 'ro')
+        self._draw_artist(art)
+
     def draw_trajectory(self, traj, t_anim = None):
         #print("Drawing trajectory:", traj)
         if t_anim is None:

@@ -3,6 +3,7 @@ from collections import OrderedDict
 import numpy as np
 from scipy.integrate import ode
 from scipy.interpolate import interp1d
+from scipy.optimize import root
 from math import isinf
 import helpers
 from numpy import *
@@ -166,6 +167,13 @@ class DynamicSystem:
         z_dot *= eval(self.__code_z, f_params, params or self.params)
         return np.array([x_dot, y_dot, z_dot])
 
+    def find_fp(self, start, threshold = 1e-4):
+        guess = [0.0, 0.0, 0.0]
+        guess[:len(start)] = start
+        sol = root(self, start, tol = threshold)
+        if sol.success:
+            return sol.x
+
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,
             bidirectional = True, **kwargs):
         t_forw = self.__compute_trajectory(start, tmax,
@@ -259,4 +267,7 @@ def main():
     p = [-5, 5]
 
 if __name__ == '__main__':
-    main()
+    d = DynamicSystem('y', 'sin(x)')
+    sol = d.find_fp([1,1,0])
+    import IPython
+    IPython.embed()

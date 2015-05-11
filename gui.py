@@ -40,6 +40,7 @@ class AppWindow():
         self.anim_timer.add_callback(self.anim_update)
         self.pointer_info = tk.StringVar(self.root, "")
         self.trajectories = dict()
+        self.fixed_points = set()
         # Used for manually adding a point.
         self.location_str = tk.StringVar(self.root, "")
         self.mouse_mode = "pick" # pan, dynamic
@@ -80,6 +81,7 @@ class AppWindow():
         opts.reverse        = tk.BooleanVar(self.root, True)
         opts.quiver         = tk.BooleanVar(self.root, False)
         opts.nullclines     = tk.BooleanVar(self.root, False)
+        opts.fixed_points   = tk.BooleanVar(self.root, True)
         opts.temporal       = tk.BooleanVar(self.root, False)
         opts.projection     = tk.StringVar(self.root, '2D')
         opts.limits         = Options()
@@ -173,6 +175,7 @@ class AppWindow():
     def update_trajectories(self, *args):
         picked = list(self.trajectories.keys())
         self.trajectories.clear()
+        self.fixed_points.clear()
         self.anim_tmax = 0.0
         self.update_fig()
         for pos in picked:
@@ -192,6 +195,8 @@ class AppWindow():
             self.fig.draw_nullclines(field, linestyles = "dashed")
         if self.opts.quiver.get():
             self.fig.draw_quiver(field_quiv, width = 0.001, headwidth = 5, scale = 50)
+        if self.opts.fixed_points.get():
+            self.fig.draw_fp(*self.fixed_points)
         #NOTE: Add other bg elements like FP, LC, here before draw and save.
         self.fig.draw(force = True)
         self.fig.save()
@@ -203,6 +208,7 @@ class AppWindow():
     def _reset_fig(self, *args):
         self.stop_traj_animation(update = False)
         self.trajectories.clear()
+        self.fixed_points.clear()
         self.anim_tmax = 0.0
         self.fig.clear(tmax = self.opts.tmax.get())
         self.update_fig()
@@ -284,6 +290,15 @@ class AppWindow():
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
         pos = tuple(pos)
+        #Search for a fixed point
+        fp = self.system.find_fp(pos, threshold = 1e-4)
+        if fp is not None:
+            fp_clean = tuple(np.round(fp, 3))
+            if not fp_clean in self.fixed_points:
+                self.fixed_points.add(fp_clean)
+                self.fig.draw_fp(fp_clean)
+                vel = self.system(fp_clean)
+                print("Found a fixed point:\n", fp_clean, vel)
         if pos in self.trajectories:
             print("Trajectory already exists.")
             return
@@ -383,6 +398,17 @@ class AppWindow():
         btn_quiver.grid(row = row, column = 1, sticky = tk.W + tk.E)
         controls['nullclines'] = btn_nullc
         controls['quiver'] = btn_quiver
+        row += 1
+        btn_temporal = tk.Checkbutton(f_controls, text = "Time Series",
+                variable = self.opts.temporal, command = self._set_temporal,
+                indicatoron = False, pady = 4)
+        btn_temporal.grid(row=row, column=0, sticky = tk.W + tk.E)
+        btn_fp = tk.Checkbutton(f_controls, text = "Fixed Points",
+                variable = self.opts.fixed_points,# command = self.update_fig,
+                indicatoron = False, pady = 4)
+        btn_fp.grid(row = row, column = 1, sticky = tk.W + tk.E)
+        controls['temporal'] = btn_temporal
+        controls['fp'] = btn_fp
 
         row += 1
         PEntry(f_controls, "Tstep:", self.opts.dt).grid(row = row, column = 0)
@@ -449,6 +475,9 @@ class AppWindow():
                         row = 0, columnspan = 2, sticky = tk.S)
         return controls
 
+    def show_about(self):
+        print("About this application")
+
     def _add_menubar(self):
         menubar = tk.Menu(self.root)
         filemenu = tk.Menu(menubar, tearoff = False)
@@ -460,6 +489,9 @@ class AppWindow():
         viewmenu.add_checkbutton(label = 'Time series', variable = self.opts.temporal,
                 command = self._set_temporal)
         viewmenu.add_command(label = "Poincare", command = self.show_poincare_dialog)
+        helpmenu = tk.Menu(menubar, tearoff = False)
+        menubar.add_cascade(label = 'Help', menu=helpmenu)
+        helpmenu.add_command(label = 'About', command = self.show_about)
         return menubar
 
     def save(self):
