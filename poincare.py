@@ -276,6 +276,8 @@ class PWindow(tk.Toplevel):
         labels = ('X', 'Y', 'Z')
         for i in range(3):
             axes[i].clear()
+            axes[i].set_xlim(self.limits[i])
+            axes[i].set_ylim(self.limits[i])
             axes[i].grid()
             axes[i].set_xlabel(r'$%s_i$' % labels[i])
             axes[i].set_ylabel(r'$%s_{i+1}$' % labels[i])

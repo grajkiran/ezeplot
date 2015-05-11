@@ -153,12 +153,15 @@ class AppWindow():
             else:
                 self.system.limits[i] = helpers.scale_domain(plot_limits[i], factor)
         self.system.periodic = periodic
-        if self.opts.projection.get() == 'Polar':
+        if PROJECTIONS[self.opts.projection.get()] == 'polar':
             # Ignore xlim (theta) in polar mode.
             self.system.limits[0] = None
             self.system.periodic[0] = True
 
     def show_poincare_dialog(self, *args):
+        if len(self.trajectories) == 0:
+            sys.stderr.write("Add a trajectory first.\n")
+            return
         self.stop_traj_animation()
         l = self.opts.limits
         x1, x2 = l.xmin.get(), l.xmax.get()
@@ -198,7 +201,7 @@ class AppWindow():
         self.fig.draw()
 
     def _reset_fig(self, *args):
-        self.stop_traj_animation()
+        self.stop_traj_animation(update = False)
         self.trajectories.clear()
         self.anim_tmax = 0.0
         self.fig.clear(tmax = self.opts.tmax.get())
@@ -212,7 +215,7 @@ class AppWindow():
         self.update_fig()
 
     def _set_proj(self, *args):
-        proj = self.opts.projection.get()
+        proj = PROJECTIONS[self.opts.projection.get()]
         if proj.lower() == '3d':
             self.controls['nullclines'].configure(state = tk.DISABLED)
             self.controls['quiver'].configure(state = tk.DISABLED)
@@ -236,7 +239,7 @@ class AppWindow():
         #    self.opts.limits.zmax.set("inf")
         #    zlims[0].configure(state = tk.DISABLED)
         #    zlims[1].configure(state = tk.DISABLED)
-        self.fig.set_proj(PROJECTIONS[proj])
+        self.fig.set_proj(proj)
         self._update_system_limits(prompt = False)
         self.update_fig()
 
@@ -249,23 +252,26 @@ class AppWindow():
         else:
             self.anim_tstep.set(tstep+1)
         self.anim_info.set("t = %0.3f" % anim_time)
+        self.pointer_info.set("t = %0.3f" % anim_time)
         self.fig.anim_update(anim_time, self.trajectories.values())
 
-    def stop_traj_animation(self):
+    def stop_traj_animation(self, update = True):
         self.anim_tstep.set(0)
         self.anim_timer.stop()
         self.anim_running.set(False)
-        if not self.anim_running.get():
+        if not self.anim_running.get() and update:
             self.update_fig()
-        self.controls['anim'].configure(text = 'Start')
+        self.controls['anim'].configure(text = 'Animate')
         self.anim_info.set("t = 0.000")
 
     def toggle_traj_animation(self):
+        if len(self.trajectories) == 0:
+            return
         if self.anim_running.get():
             print("Stopping animation...")
             self.anim_timer.stop()
             self.anim_running.set(False)
-            self.controls['anim'].configure(text = 'Start')
+            self.controls['anim'].configure(text = 'Animate')
         else:
             print("Starting animation...")
             self.anim_timer.start()
@@ -412,7 +418,7 @@ class AppWindow():
         f_anim.grid(sticky = tk.E + tk.W)
         #b_toggle = tk.Button(f_anim, text = "Start", pady = 4, padx = 4, font = "sans 12 bold",
         #        command = self.toggle_traj_animation)
-        b_toggle = tk.Button(f_anim, text = "Start", command = self.toggle_traj_animation,
+        b_toggle = tk.Button(f_anim, text = "Animate", command = self.toggle_traj_animation,
                 background = "#0000aa", activebackground = "#3333ff",
                 foreground = "white", activeforeground = "white", font = "sans 16 bold",
                 height = 1, width = 6)
@@ -421,8 +427,8 @@ class AppWindow():
         b_stop = tk.Button(f_anim, text = "Stop", command = self.stop_traj_animation, font = "sans 10 bold",
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = "white", activeforeground = "white")
-        b_stop.grid(row = 0, column = 1)
-        tk.Label(f_anim, textvariable = self.anim_info).grid(row = 1, column = 1)
+        b_stop.grid(row = 0, rowspan=2, column = 1)
+        #tk.Label(f_anim, textvariable = self.anim_info).grid(row = 1, column = 1)
         controls['anim'] = b_toggle
 
         f_update = tk.Frame(frame)
@@ -432,15 +438,15 @@ class AppWindow():
         # FIXME: Can this be done better?
         frame.rowconfigure(f_update.grid_info()['row'], weight = 1)
         f_update.rowconfigure(0, weight=1)
-        tk.Button(f_update, text = "Update", command = self.update_trajectories,
+        tk.Button(f_system, text = "Update", command = self.update_trajectories,
                 background = "#0000aa", activebackground = "#3333ff",
                 foreground = "white", activeforeground = "white", font = "sans 16 bold",
                 height = 1, width = 6).grid(
-                        row = 0, columnspan=2, sticky = tk.S)
-        tk.Button(f_update, text = "Reset", command = self._reset_fig, font = "sans 10 bold",
+                        columnspan=2, sticky = tk.S+tk.W+tk.E)
+        tk.Button(f_update, text = "Clear", command = self._reset_fig, font = "sans 10 bold",
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = "white", activeforeground = "white").grid(
-                        row = 0, column = 2, sticky = tk.E + tk.S)
+                        row = 0, columnspan = 2, sticky = tk.S)
         return controls
 
     def _add_menubar(self):
