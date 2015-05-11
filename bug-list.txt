@@ -6,7 +6,7 @@ Done	3. Parameters should be ordered according to equation order - its annoying 
 Done	4. Quiver - thinner arrowheads
 *fixed*	5. Poincare section: Simple 2-d graph with single pixel points.
 Done	6. Van der Pol: Change mu to 2.5
-	7. Poincare First-Return map as 2-d plot as an option.
+Done	7. Poincare First-Return map as 2-d plot as an option.
 Done	8. Print option for all graphs, icon on top-left.
 	9. Fixed points option with initial position specified by user: Check pplane in this regard for radius.
 Done	10. BUG: Nullclines – make dot-dash line, or its confused with trajectories

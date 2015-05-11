@@ -155,8 +155,13 @@ class PWindow(tk.Toplevel):
         #toolbar = NavigationToolbar2TkAgg(self.canvas, self)
         #toolbar.update()
         self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
-        self.fig.subplots_adjust(left = 0.0, right = 1.0, bottom = 0.0, top = 1.0)
-        self.ax = Axes3D(self.fig)
+        #self.fig.subplots_adjust(left = 0.0, right = 1.0, bottom = 0.0, top = 1.0)
+        self.ax = self.fig.add_subplot(111, projection = '3d')
+        self.ax_x = self.fig.add_subplot(222, label = 'x', visible = False)
+        self.ax_y = self.fig.add_subplot(223, label = 'y', visible = False)
+        self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False)
+        self.mode = 1
+        self.set_mode(1)
         self.limits = limits
         self.p0_str = tk.StringVar(self, "0 0 0")
         self.p1_str = tk.StringVar(self, "0 0 1")
@@ -165,6 +170,7 @@ class PWindow(tk.Toplevel):
         self.auto_view = tk.BooleanVar(self, False)
         self.draw_plane = tk.BooleanVar(self, False)
         self.draw_endpoints = tk.BooleanVar(self, False)
+        self.first_returns = tk.BooleanVar(self, False)
         self.plane_eqn = tk.StringVar(self, "0.0 x + 0.0 y + z = 0")
         self.elev = tk.DoubleVar(self, 0.0)
         self.azim = tk.DoubleVar(self, 0.0)
@@ -222,6 +228,8 @@ class PWindow(tk.Toplevel):
                 variable = self.draw_plane).grid(columnspan=2, sticky = tk.W)
         tk.Checkbutton(f_options, text = "Auto align", command = self._update,
                 variable = self.auto_view).grid(columnspan=2, sticky = tk.W)
+        tk.Checkbutton(f_options, text = "First return maps", command = self._update,
+                variable = self.first_returns).grid(columnspan = 2, sticky = tk.W)
 
     def _plane_preset(self, direction = None):
         elevs = [0.0, 0.0, 90.0]
@@ -248,7 +256,42 @@ class PWindow(tk.Toplevel):
         self.factor.set(0.5)
         self._update()
 
+    def set_mode(self, mode = 1):
+        if mode == 1:
+            for ax in self.ax_x, self.ax_y, self.ax_z:
+                ax.set_visible(False)
+                self.fig.delaxes(ax)
+            self.ax.change_geometry(1, 1, 1)
+        elif mode == 4:
+            for ax in self.ax_x, self.ax_y, self.ax_z:
+                self.fig.add_axes(ax)
+                ax.set_visible(True)
+            self.ax.change_geometry(2, 2, 1)
+        else:
+            raise NotImplementedError("Unsupported mode: " + str(mode))
+        self.mode = mode
+
+    def _update_first_returns(self, from_top, from_bot):
+        axes = (self.ax_x, self.ax_y, self.ax_z)
+        labels = ('X', 'Y', 'Z')
+        for i in range(3):
+            axes[i].clear()
+            axes[i].grid()
+            axes[i].set_xlabel(r'$%s_i$' % labels[i])
+            axes[i].set_ylabel(r'$%s_{i+1}$' % labels[i])
+            if len(from_top) > 2:
+                data_top = from_top[:,i]
+                axes[i].plot(data_top[:-1], data_top[1:], 'r.')
+            if len(from_bot) > 2:
+                data_bot = from_bot[:,i]
+                axes[i].plot(data_bot[:-1], data_bot[1:], 'b.')
+
     def _update(self, *args):
+        if self.first_returns.get():
+            if self.mode != 4:
+                self.set_mode(4)
+        elif self.mode != 1:
+            self.set_mode(1)
         t = self.trajectory
         p0 = parse_point(self.p0_str.get())
         p1 = parse_point(self.p1_str.get())
@@ -257,9 +300,11 @@ class PWindow(tk.Toplevel):
         if helpers.distance(p0, p1) == 0.0:
             return
         from_top, from_bot = plane.compute_crossings(t)
+        #print(len(from_top), len(from_bot))
+        if self.first_returns.get():
+            self._update_first_returns(from_top, from_bot)
         xlim, ylim, zlim = self.limits
         self.ax.clear()
-        #self.ax.set_axis_off()
         self.ax.set_frame_on(False)
         self.ax.grid(False)
         self.ax.set_xlabel('X')
