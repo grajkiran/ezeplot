@@ -281,7 +281,10 @@ class Figure:
             traj.marker[0].set_ydata([y])
             for m in 1, 2, 3:
                 traj.marker[m].set_xdata([t_anim])
-            traj.marker[1].set_ydata([x%(2*np.pi)])
+            if self.ax_main is self.ax_polar:
+                traj.marker[1].set_ydata([x%(2*np.pi)])
+            else:
+                traj.marker[1].set_ydata([x])
             traj.marker[2].set_ydata([y])
             traj.marker[3].set_ydata([z])
             traj.marker["3d"]._verts3d = ([x], [y], [z])
