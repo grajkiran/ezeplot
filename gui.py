@@ -72,8 +72,10 @@ class AppWindow():
         #cframe.pack(fill = tk.Y, expand = 1)
 
         print(uptime.uptime(), "Loading presets...")
-        #self.controls['system']._load_preset('Lorentz attractor')
+        #FIXME: The first time preset is loaded, tmax, limits etc are not being
+        # updated from some reason.
         self.controls['system']._load_preset('User defined')
+        self.controls['system']._load_preset('Lorentz attractor')
 
         self._init_keybindings()
 
@@ -179,7 +181,8 @@ class AppWindow():
         y1, y2 = l.ymin.get(), l.ymax.get()
         z1, z2 = l.zmin.get(), l.zmax.get()
         w = PWindow(self.root, self.trajectories[self.last_loc],
-                ((x1, x2), (y1, y2), (z1, z2)), geometry = self.root.winfo_geometry())
+                ((x1, x2), (y1, y2), (z1, z2)),
+                geometry = self.root.winfo_geometry(), system = self.system)
 
     def update_trajectories(self, *args):
         picked = list(self.trajectories.keys())
