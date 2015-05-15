@@ -30,7 +30,7 @@ Done	12. Use “*” symbol for fixed point and have it as an option. Use
 Done	14. BUG: For any model, on opting for diff coordinate system
 	    (polar), recalculate the graph. Take care of Polar - 3D
 	    changeover.
-	15. In any plot circle through all colors permitted by Python
+Done	15. In any plot circle through all colors permitted by Python
 	16. Remove “End points” option and color intersecting plane as
 	    yellow.  Remove “Auto-align” option.
 	17. Move print statements to logging

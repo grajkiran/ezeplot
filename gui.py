@@ -288,7 +288,7 @@ class AppWindow():
             self.controls['anim'].configure(text = 'Pause')
 
     def add_location(self, pos):
-        styles = ["b", "g", "k", "m"]
+        styles = ["b", "g", "r", "c", "m", "y", "k"]
         threshold = 1e-4
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
