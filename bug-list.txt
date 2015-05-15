@@ -1,95 +1,151 @@
 Fifth round:
 ~~~~~~~~~~~~
-Done	1. Rotation with left button+drag. Single click of left button is new trajectory.
-	2. Why is Lorenz attractor giving a free projection upon window resize ?
+Done	1. Rotation with left button+drag. Single click of left button is
+	   new trajectory.
+	2. Why is Lorenz attractor giving a free projection upon window
+	   resize ?
 Done	3. x,Y,Z axes ? Phase portrait (XYZ), Phase portrait (rtheta)
-Done	4. For User-defined it should clear equation entries and only include timestep related info. Other entries clear.
+Done	4. For User-defined it should clear equation entries and only
+	   include timestep related info. Other entries clear.
 Done	5. Dynamical systems visualization
-	6. Phase portrait polar, only have rmax as an option. Its confusing otherwise.
-	7. 3d plot goes outside the defined axes ? Coordinate points are still being output at bottom-left: Can anything be done about it ?
-	8. About button under File. It should popup a small screen with author name and affiliation, contact email, version number as well as website link and licensing information.
+	6. Phase portrait polar, only have rmax as an option. Its confusing
+	   otherwise.
+	7. 3d plot goes outside the defined axes ? Coordinate points are
+	   still being output at bottom-left: Can anything be done about it
+	   ?
+	8. About button under File. It should popup a small screen with
+	   author name and affiliation, contact email, version number as
+	   well as website link and licensing information.
 	9. Exit button on Poincare section window.
-	10. Poincare section window is missing boldface title. Remove “From, To” and Equation of plane. Only state “Direction of intersecting plane” and “Location” bar with end-points and current point location displayed.
+	10. Poincare section window is missing boldface title. Remove
+	    “From, To” and Equation of plane. Only state “Direction of
+	    intersecting plane” and “Location” bar with end-points and
+	    current point location displayed.
 	11. Remove First Return Map option.
-	12. Use “*” symbol for fixed point and have it as an option. Use ranges specified by user for calculation and do max number of steps possible by Python.
-	13. BUG: User is able to input initial trajectory location outside the xlim, ylim, zlim ranges in 3D !
-	14. BUG: For any model, on opting for diff coordinate system (polar), recalculate the graph. Take care of Polar - 3D changeover.
+	12. Use “*” symbol for fixed point and have it as an option. Use
+	    ranges specified by user for calculation and do max number of
+	    steps possible by Python.
+	13. BUG: User is able to input initial trajectory location outside
+	    the xlim, ylim, zlim ranges in 3D !
+	14. BUG: For any model, on opting for diff coordinate system
+	    (polar), recalculate the graph. Take care of Polar - 3D
+	    changeover.
 	15. In any plot circle through all colors permitted by Python
-	16. Remove “End points” option and color intersecting plane as yellow. Remove “Auto-align” option.
+	16. Remove “End points” option and color intersecting plane as
+	    yellow.  Remove “Auto-align” option.
 	17. Move print statements to logging
 
 Fourth round:
 ~~~~~~~~~~~~~
-Done	1. Polar mode: Redraw panel to only show rlim with 0 [gray] rlim [entry]. In graph only show rlim value at edge nothing inside the circle.
+Done	1. Polar mode: Redraw panel to only show rlim with 0 [gray] rlim
+	   [entry]. In graph only show rlim value at edge nothing inside
+	   the circle.
 Done	2. Remove Duffing
-Done	3. Parameters should be ordered according to equation order - its annoying otherwise.
+Done	3. Parameters should be ordered according to equation order - its
+	   annoying otherwise.
 Done	4. Quiver - thinner arrowheads
 *fixed*	5. Poincare section: Simple 2-d graph with single pixel points.
 Done	6. Van der Pol: Change mu to 2.5
 Done	7. Poincare First-Return map as 2-d plot as an option.
 Done	8. Print option for all graphs, icon on top-left.
-Done	9. Fixed points option with initial position specified by user: Check pplane in this regard for radius.
-Done	10. BUG: Nullclines – make dot-dash line, or its confused with trajectories
+Done	9. Fixed points option with initial position specified by user:
+Done	   Check pplane in this regard for radius.
+Done	10. BUG: Nullclines – make dot-dash line, or its confused with
+	    trajectories
+
 Third round:
 ~~~~~~~~~~~~
-Done	1. User-defined. Name is EzePlot on top. Remove arrow next to x,y,z,t axis label.
-Done	2. Linear damped oscillator not Oscillator, Simple pendulum, Van der Pol oscillator.
+Done	1. User-defined. Name is EzePlot on top. Remove arrow next to
+	   x,y,z,t axis label.
+Done	2. Linear damped oscillator not Oscillator, Simple pendulum, Van
+	   der Pol oscillator.
 Done	3. BUG: No axis in 3d plots !
-Done	4. Cursor location shift to bottom-left and truncate all entries to 4 decimal places. Should also work for 3-d plots.
-Done	5. Write x=theta, y=r inside the panel. Shift title in polar mode up and make it bold. Make titles boldface in all plots.
-Done	6. BUG: When shifting to Polar mode, it should automatically do the update for built-in models.
-Done	7. Place simple pendulum and linear damped oscillator first in list of the pull-down menu.
-	8. Place an About button on top left. It should popup a small gray screen with author name, contact email and version number as well website link and licensing information. Check pplane about button.
-Done	9. Animate button when unpressed should continue at previous points.
-Done	9a. Restart animation from beginning option
-Done	10. Poincare section: Automatically select the last trajectory for the section. Write “Equation of plane ax+by+cz+d=0”. Axis labelling.
-Done	11. Red and yellow solid circles in Poincare section. Place an update button in this panel. Positioning of the Poincare section should overlap previous window and have grey border.
+Done	4. Cursor location shift to bottom-left and truncate all entries to
+	   4 decimal places. Should also work for 3-d plots.
+Done	5. Write x=theta, y=r inside the panel. Shift title in polar mode
+	   up and make it bold. Make titles boldface in all plots.
+Done	6. BUG: When shifting to Polar mode, it should automatically do the
+	   update for built-in models.
+Done	7. Place simple pendulum and linear damped oscillator first in list
+	   of the pull-down menu.
+	8. Place an About button on top left. It should popup a small gray
+	   screen with author name, contact email and version number as
+	   well website link and licensing information. Check pplane about
+	   button.
+Done	9. Animate button when unpressed should continue at previous
+	   points.  9a. Restart animation from beginning option
+Done	10. Poincare section: Automatically select the last trajectory for
+	    the section. Write “Equation of plane ax+by+cz+d=0”. Axis
+	    labelling.
+Done	11. Red and yellow solid circles in Poincare section. Place an
+	    update button in this panel. Positioning of the Poincare
+	    section should overlap previous window and have grey border.
 Done	12. Disable nullclines and quiver for 3d.
-Done	13. Change location of graphs button and rename it as “Time series”. Put title “Time series”. Place Poincare button elsewhere and replace it with “Time series”.
-Done	14. BUG: Do not allow the user to input initial trajectory location to be outside the xlim, ylim, zlim ranges.
+Done	13. Change location of graphs button and rename it as “Time
+	    series”. Put title “Time series”. Place Poincare button
+	    elsewhere and replace it with “Time series”.
+Done	14. BUG: Do not allow the user to input initial trajectory location
+	    to be outside the xlim, ylim, zlim ranges.
 Done	15. Shift Animate button down and out of current panel.
-Done	16. Eliminate the initial position entry, this should be clickable on the 3D graph.
+Done	16. Eliminate the initial position entry, this should be clickable
+	    on the 3D graph.
 Done	17. While animating disable clicking new trajectories on the graph.
-Done	18. Make Lorentz attractor as default model. Its the most famous and dramatic model from your list.
+Done	18. Make Lorentz attractor as default model. Its the most famous
+	    and dramatic model from your list.
 
 Second round:
 ~~~~~~~~~~~~~
-Done	1. Remove glider, glycolysis, linear system, modified Van der Pol, non-isolated fp, nonlinear centre. Add Rossler attractor, Belousov-Zhabotinski model. By default for the standard models pick some initial value and show appropriate phase portrait and not the nullcline.
+Done	1. Remove glider, glycolysis, linear system, modified Van der Pol,
+	   non-isolated fp, nonlinear centre. Add Rossler attractor,
+	   Belousov-Zhabotinski model. By default for the standard models
+	   pick some initial value and show appropriate phase portrait and
+	   not the nullcline.
 Done	2. Nullclines not enabled by default.
 Done	3. Change “Temporal” to “Graphs”
-Done	4. Axis label of “Time”. Shift X,Y,Z to appropriate location. Write “Phase portrait” at top. Axis labels on the main graph with title.
-Done	5. Shift Reset button to bottom, enlarge and make it red. Make update button blue and large and put in middle of free section.
-Done	6. Place the “change limits” window in main panel and remove change plot button.
+Done	4. Axis label of “Time”. Shift X,Y,Z to appropriate location. Write
+	   “Phase portrait” at top. Axis labels on the main graph with
+	   title.
+Done	5. Shift Reset button to bottom, enlarge and make it red. Make
+	   update button blue and large and put in middle of free section.
+Done	6. Place the “change limits” window in main panel and remove change
+	   plot button.
 Done	7. Change of current cursor position to bottom-left.
 Done	8. Remove arrow and initial point marked from graph.
-Done	9. Reorganisation of main panel into sub-panels separated by line, with equation, domain, time step selection, remove current time-step from screen.
+Done	9. Reorganisation of main panel into sub-panels separated by line,
+	   with equation, domain, time step selection, remove current
+	   time-step from screen.
 Done	10. Phase portrait (Polar) as title.
-*fixed*	11. Move origin in 3d plot to centre and only plot x-y-z axis no grid lines.
+*fixed*	11. Move origin in 3d plot to centre and only plot x-y-z axis no
+	    grid lines.
 *fixed*	12. All built-in models in dimensionless form and ranges are same.
 Done	13. For 3d put in (x0,y0,z0) as box entry.
 Done	14. Default colour scheme is blue curve with red dot.
-Done	15. Allow 2 simultaneous portraits with different colours (blue, black).
+Done	15. Allow 2 simultaneous portraits with different colours (blue,
+	    black).
 *fixed*	16. If equations change then write “User-defined model”.
 Done	17. If easy to implement then change “**” to “^”.
-*fixed*	18. IMP: Always integrate upto Tmax and let the point move out of domain.
+*fixed*	18. IMP: Always integrate upto Tmax and let the point move out of
+	    domain.
 Done	19. Pressing update should first clear the screen.
 Done	20. Disallow more than 5-letter parameter names
 *fixed*	21. Enable z_dot entry only if 3d is elected. Otherwise grey it out.
-Done	22. Add info message on top-right when in polar mode appropriately saying r=x, theta=y
+Done	22. Add info message on top-right when in polar mode appropriately
+	    saying r=x, theta=y
 Done	23. BUG: Reset when selecting new model.
 
 First round:
 ~~~~~~~~~~~~
-done  1. Remove bar below parameter entry value.
-done  2. Fix 0,0 location in Cartesian graph
-done  3. Remove uniform option, keep it as default.
+Done  1. Remove bar below parameter entry value.
+Done  2. Fix 0,0 location in Cartesian graph
+Done  3. Remove uniform option, keep it as default.
       4. Introduce isocline.
-done  5. Introduce X-t, Y-t, X-Y, X-Y-Z check buttons on front panel
-done  6. Polar not Polar mode
-done  7. Disallow more than 10 parameters.
-done  8. Increase size of Update button and place at bottom of panel
-done  9. Put axis numbers outside the graph.
-done  10. Remove "Phase plane" from top.
-done  11. Get rid of icons at bottom from Python.
-done  12. Graph spacing is mismatched for X-t, Y-t plots, check.
-done  13. Bug ! Check coordinate system info on bottom right in X-t, Y-t graphs.
+Done  5. Introduce X-t, Y-t, X-Y, X-Y-Z check buttons on front panel
+Done  6. Polar not Polar mode
+Done  7. Disallow more than 10 parameters.
+Done  8. Increase size of Update button and place at bottom of panel
+Done  9. Put axis numbers outside the graph.
+Done  10. Remove "Phase plane" from top.
+Done  11. Get rid of icons at bottom from Python.
+Done  12. Graph spacing is mismatched for X-t, Y-t plots, check.
+Done  13. Bug ! Check coordinate system info on bottom right in X-t, Y-t
+	  graphs.
