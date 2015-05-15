@@ -17,7 +17,7 @@ Done	6. Phase portrait polar, only have rmax as an option. Its confusing
 	   author name and affiliation, contact email, version number as
 	   well as website link and licensing information.
 Done	9. Exit button on Poincare section window.
-	10. Poincare section window is missing boldface title. Remove
+Done	10. Poincare section window is missing boldface title. Remove
 	    “From, To” and Equation of plane. Only state “Direction of
 	    intersecting plane” and “Location” bar with end-points and
 	    current point location displayed.

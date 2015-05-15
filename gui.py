@@ -182,7 +182,7 @@ class AppWindow():
         z1, z2 = l.zmin.get(), l.zmax.get()
         w = PWindow(self.root, self.trajectories[self.last_loc],
                 ((x1, x2), (y1, y2), (z1, z2)),
-                geometry = self.root.winfo_geometry(), system = self.system)
+                geometry = self.root.winfo_geometry())
 
     def update_trajectories(self, *args):
         picked = list(self.trajectories.keys())

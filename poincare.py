@@ -143,10 +143,9 @@ class PSection(Plane):
         return np.array(top2bot), np.array(bot2top)
 
 class PWindow(tk.Toplevel):
-    def __init__(self, master, trajectory, limits, geometry = None):
+    def __init__(self, master, trajectory, limits, geometry):
         tk.Toplevel.__init__(self, master)
-        if geometry is not None:
-            self.geometry(geometry)
+        self.geometry(geometry)
         self.transient(master)
         self.title("EzePlot - Poincare section")
         self.trajectory = trajectory
@@ -166,6 +165,7 @@ class PWindow(tk.Toplevel):
         self.p0_str = tk.StringVar(self, "0 0 0")
         self.p1_str = tk.StringVar(self, "0 0 1")
         self.factor = tk.DoubleVar(self, 0.5)
+        self.plane_direction = tk.IntVar(self, 0)
         self.draw_traj = tk.BooleanVar(self, True)
         self.auto_view = tk.BooleanVar(self, False)
         self.draw_plane = tk.BooleanVar(self, False)
@@ -176,47 +176,54 @@ class PWindow(tk.Toplevel):
         self.azim = tk.DoubleVar(self, 0.0)
         cframe = tk.Frame(self)
         cframe.pack()
-        self._add_widgets(cframe)
+        self.controls = self._add_widgets(cframe)
         self.protocol('WM_DELETE_WINDOW', self.destroy)
         self.grab_set()
         self._update()
-        self._plane_preset(2)
+        self._plane_preset()
         self.wait_window(self)
 
     def _add_widgets(self, frame):
-        f_plane = tk.LabelFrame(frame, text = "Plane")
+        controls = dict()
+        f_plane = tk.Frame(frame)#, text = "Plane")
         f_plane.grid(sticky = tk.E + tk.W)
         f_plane.columnconfigure(1, weight = 1)
         row = 0
-        tk.Label(f_plane, text = 'Normal direction:').grid(row = row, columnspan = 2, sticky = tk.W)
+        tk.Label(f_plane, text = 'Intersecting plane\ndirection:',
+                justify = tk.LEFT).grid(row = row, columnspan = 2, sticky = tk.W)
         row += 1
         f_buttons = tk.Frame(f_plane)
         f_buttons.grid(row = row, columnspan = 2)#, sticky = tk.W+tk.E)
-        tk.Button(f_buttons, text = "X", command = partial(self._plane_preset, 0)).pack(side = tk.LEFT)
-        tk.Button(f_buttons, text = "Y", command = partial(self._plane_preset, 1)).pack(side = tk.LEFT)
-        tk.Button(f_buttons, text = "Z", command = partial(self._plane_preset, 2)).pack(side = tk.LEFT)
+        tk.Radiobutton(f_buttons, text = "X", variable = self.plane_direction,
+                value = 0, command = self._plane_preset).pack(side = tk.LEFT)
+        tk.Radiobutton(f_buttons, text = "Y", variable = self.plane_direction,
+                value = 1, command = self._plane_preset).pack(side = tk.LEFT)
+        tk.Radiobutton(f_buttons, text = "Z", variable = self.plane_direction,
+                value = 2, command = self._plane_preset).pack(side = tk.LEFT)
         #tk.Button(f_buttons, text = "Screen", command = self._plane_preset).pack(side = tk.LEFT)
         #row += 1
         #tk.Label(f_plane, text = 'Two points:').grid(columnspan = 2, sticky = tk.W)
+        #row += 1
+        #tk.Label(f_plane, text = "From:").grid(row = row, column = 0,sticky = tk.E)
+        #VEntry(f_plane, self.p0_str, validator = parse_point,
+        #        command = self._update).grid(row = row, column = 1, sticky = tk.E + tk.W)
+        #row += 1
+        #tk.Label(f_plane, text = "To:").grid(row = row, column = 0, sticky = tk.E)
+        #VEntry(f_plane, self.p1_str, validator = parse_point, width = 10,
+        #        command = self._update).grid(row = row, column = 1, sticky = tk.E + tk.W)
         row += 1
-        tk.Label(f_plane, text = "From:").grid(row = row, column = 0,sticky = tk.E)
-        VEntry(f_plane, self.p0_str, validator = parse_point,
-                command = self._update).grid(row = row, column = 1, sticky = tk.E + tk.W)
-        row += 1
-        tk.Label(f_plane, text = "To:").grid(row = row, column = 0, sticky = tk.E)
-        VEntry(f_plane, self.p1_str, validator = parse_point, width = 10,
-                command = self._update).grid(row = row, column = 1, sticky = tk.E + tk.W)
-        row += 1
-        tk.Label(f_plane, text = "Ratio:").grid(row = row, column = 0, sticky = tk.S)
-        tk.Scale(f_plane, orient = tk.HORIZONTAL, variable = self.factor,
+        tk.Label(f_plane, text = "Plane location:").grid(row = row, column = 0, sticky = tk.S)
+        scale = tk.Scale(f_plane, orient = tk.HORIZONTAL, variable = self.factor,
                 resolution = 0.005, from_ = 0.0, to = 1.0,
-                command = self._update).grid(row = row, column= 1,
+                command = self._update)
+        scale.grid(row = row+1, columnspan=2,
                         sticky = tk.E + tk.W)
-        row += 1
-        tk.Label(f_plane, text = "Equation of the plane:").grid(row = row, columnspan = 2, sticky = tk.W)
-        row += 1
-        tk.Label(f_plane, textvariable = self.plane_eqn, width = 30, anchor = tk.W,
-                font = 'TkFixedFont').grid(row = row, columnspan = 2, sticky = tk.W)
+        controls['location'] = scale
+        #row += 1
+        #tk.Label(f_plane, text = "Equation of the plane:").grid(row = row, columnspan = 2, sticky = tk.W)
+        #row += 1
+        #tk.Label(f_plane, textvariable = self.plane_eqn, width = 30, anchor = tk.W,
+        #        font = 'TkFixedFont').grid(row = row, columnspan = 2, sticky = tk.W)
 
         f_options = tk.LabelFrame(frame, text = "Options")
         f_options.grid(sticky = tk.E + tk.W)
@@ -234,8 +241,18 @@ class PWindow(tk.Toplevel):
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = "white", activeforeground = "white").grid(
                         columnspan = 2, sticky = tk.S)
+        return controls
 
-    def _plane_preset(self, direction = None):
+    def _plane_preset(self):
+        direction = self.plane_direction.get()
+        limits = self.ax.get_xlim(), self.ax.get_ylim(), self.ax.get_zlim()
+        center = [sum(limits[i])/2.0 for i in range(3)]
+        scale = self.controls['location']
+        scale.configure(from_ = limits[direction][0], to = limits[direction][1])
+        self.factor.set(center[direction])
+        self._update()
+
+    def _plane_preset_old(self, direction = None):
         elevs = [0.0, 0.0, 90.0]
         azims = [0.0, 90.0, 0.0]
         limits = self.ax.get_xlim(), self.ax.get_ylim(), self.ax.get_zlim()
@@ -299,20 +316,19 @@ class PWindow(tk.Toplevel):
         elif self.mode != 1:
             self.set_mode(1)
         t = self.trajectory
-        p0 = parse_point(self.p0_str.get())
-        p1 = parse_point(self.p1_str.get())
-        plane = PSection.from_points(p0, p1, self.factor.get())
+        coeffs = [0.0, 0.0, 0.0, 0.0]
+        coeffs[3] = -self.factor.get()
+        coeffs[self.plane_direction.get()] = 1.0
+        plane = PSection(*coeffs)
         self.plane_eqn.set(str(plane))
-        if helpers.distance(p0, p1) == 0.0:
-            return
         from_top, from_bot = plane.compute_crossings(t)
-        #print(len(from_top), len(from_bot))
         if self.first_returns.get():
             self._update_first_returns(from_top, from_bot)
         xlim, ylim, zlim = self.limits
         self.ax.clear()
         self.ax.set_frame_on(False)
         self.ax.grid(False)
+        self.ax.mouse_init(zoom_btn = [], rotate_btn = [1])
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         self.ax.set_zlabel('Z')
