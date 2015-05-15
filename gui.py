@@ -42,9 +42,10 @@ class AppWindow():
         self.pointer_info = tk.StringVar(self.root, "")
         self.trajectories = dict()
         self.fixed_points = set()
+        self.last_loc = 0.0, 0.0, 0.0
+        self.press_loc = 0.0, 0.0
         # Used for manually adding a point.
         self.location_str = tk.StringVar(self.root, "")
-        self.mouse_mode = "pick" # pan, dynamic
         self.root.columnconfigure(0, weight=1)
         self.fig.bind('button_press_event', self.button_press)
         self.fig.bind('button_release_event', self.button_release)
@@ -330,13 +331,8 @@ class AppWindow():
         self.last_loc = pos
 
     def button_press(self, evt):
-        if evt.key == 'shift' and evt.inaxes is self.fig.ax_main:
-            self.mouse_mode = 'pan'
-            self.pan_loc = evt.xdata, evt.ydata
-        elif evt.key == 'control':
-            self.mouse_mode = 'dynamic'
-        else:
-            self.mouse_mode = 'pick'
+        self.press_loc = evt.x, evt.y
+
     def mouse_move(self, evt):
         s = ""
         if evt.inaxes is None:
@@ -347,7 +343,7 @@ class AppWindow():
             s = "x = %0.3f, y = %0.3f" % (evt.xdata, evt.ydata)
         elif evt.inaxes == self.fig.ax_3d:
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
-            if evt.button != 3:
+            if evt.button is None:
                 x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
                 s = "x = %0.3f, y = %0.3f, z = %0.3f" % (x, y, z)
         self.pointer_info.set(s)
@@ -361,6 +357,10 @@ class AppWindow():
                 self.update_fig()
             return
         if self.anim_running.get():
+            return
+        release_loc = evt.x, evt.y
+        d = helpers.distance(self.press_loc, release_loc)
+        if d > 5:
             return
         x, y, z = evt.xdata, evt.ydata, 0.0
         if self.fig.ax_main is self.fig.ax_3d:

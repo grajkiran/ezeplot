@@ -1,6 +1,6 @@
 Fifth round:
 ~~~~~~~~~~~~
-	1. Rotation with left button+drag. Single click of left button is new trajectory.
+Done	1. Rotation with left button+drag. Single click of left button is new trajectory.
 	2. Why is Lorenz attractor giving a free projection upon window resize ?
 Done	3. x,Y,Z axes ? Phase portrait (XYZ), Phase portrait (rtheta)
 Done	4. For User-defined it should clear equation entries and only include timestep related info. Other entries clear.
