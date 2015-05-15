@@ -10,9 +10,8 @@ Done	4. For User-defined it should clear equation entries and only
 Done	5. Dynamical systems visualization
 Done	6. Phase portrait polar, only have rmax as an option. Its confusing
 	   otherwise.
-*fixed*	7. 3d plot goes outside the defined axes ? Coordinate points are
-	   still being output at bottom-left: Can anything be done about it
-	   ?
+*fixed*	7. 3d plot goes outside the defined axes? Coordinate points are
+	   still being output at bottom-left: Can anything be done about it?
 	8. About button under File. It should popup a small screen with
 	   author name and affiliation, contact email, version number as
 	   well as website link and licensing information.
@@ -34,6 +33,7 @@ Done	15. In any plot circle through all colors permitted by Python
 Done	16. Remove “End points” option and color intersecting plane as
 	    yellow.  Remove “Auto-align” option.
 	17. Move print statements to logging
+	18. Remove unnecessary stuff like LSelect(Lasso) etc.
 
 Fourth round:
 ~~~~~~~~~~~~~
