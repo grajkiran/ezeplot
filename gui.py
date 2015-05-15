@@ -18,7 +18,7 @@ from poincare import PWindow
 import presets
 import uptime
 from timer import Timer
-PROJECTIONS = dict({'2D': 'rect', 'Polar (x≡θ, y≡r)': 'polar', '3D': '3d'})
+PROJECTIONS = dict({'2D': 'rect', u'Polar (x≡θ, y≡r)': 'polar', '3D': '3d'})
 
 class Options(dict):
     __getattr__ = dict.__getitem__

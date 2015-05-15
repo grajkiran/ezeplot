@@ -408,7 +408,7 @@ if __name__ == '__main__':
     #test_crossings()
     root = tk.Tk()
     t = toroidal_trajectory()
-    w = PWindow(root, t, ((-7,10), (-9,12), (-8,11)))
+    w = PWindow(root, t, ((-7,10), (-9,12), (-8,11)), geometry = "800x600")
     #p = PSection(0.0, 0.0, 1.0, 0.0)
     #down, up = p.compute_crossings(t)
     #up = np.array(up)
