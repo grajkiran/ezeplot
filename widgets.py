@@ -8,9 +8,9 @@ except:
 import matplotlib.widgets
 import dynsystem
 import numpy as np
-from traceback import print_exc
 import sys
 import presets
+import logging
 
 class VEntry(tk.Entry):
     """A Validating Entry widget."""
@@ -48,7 +48,7 @@ class VEntry(tk.Entry):
             self['bg'] = '#ff5555'
             self.errmsg.set(str(e))
             if self.debug:
-                sys.stderr.write("%s\n" % self.errmsg.get())
+                logging.error("%s" % self.errmsg.get())
 
 class PlotLimits(tk.Toplevel):
     def __init__(self, master, fig, limits):
@@ -95,11 +95,38 @@ class PlotLimits(tk.Toplevel):
         self.limits.zmin.set(zmin)
         self.limits.zmax.set(zmax)
 
-def PEntry(master, name, variable, command = None):
+def PEntry1(master, name, variable, command = None):
     p = Param(master, name, value = variable.get(), validator = variable.set,
             command = command)
     variable.trace('w', lambda *args:p.set(variable.get()))
     return p
+
+class PEntry(tk.Frame):
+    def __init__(self, master, name, textvariable = None, validator = None,
+            command = None, value = 1.0):
+        tk.Frame.__init__(self, master)
+        self.name = name
+        self.var = textvariable or tk.DoubleVar(self, value)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.label = tk.Label(self, text = name, width = 6)
+        self.entry = VEntry(self, self.var, width = 6, validator = validator,
+                command = command)
+        self.label.grid(sticky = tk.E + tk.W)
+        self.entry.grid(row = 0, column = 1, sticky = tk.E+tk.W)
+        self.get = self.var.get
+        self.set = self.var.set
+    def enable(self, name = None, value = None):
+        self.label.configure(state = tk.NORMAL)
+        if name is None:
+            name = self.name
+        self.label.configure(text = name)
+        self.entry.configure(state = tk.NORMAL)
+        if value is not None:
+            self.var.set(value)
+    def disable(self):
+        self.label.configure(state = tk.DISABLED, text = "")
+        self.entry.configure(state = tk.DISABLED)
 
 class Param(tk.Frame):
     def __init__(self, master, name, value = 1.0, validator = None,
@@ -173,7 +200,7 @@ class DSFrame(tk.LabelFrame):
         pframe.columnconfigure(1, weight=1)
         for row in range(n_params//2):
             for col in 0, 1:
-                pe = Param(pframe, "", 0.0, command = self.command,
+                pe = PEntry(pframe, "", value = 0.0, command = self.command,
                         validator = self._update_system_params)
                 pe.grid(row = row, column = col, sticky = tk.E + tk.W)
                 self.params.append(pe)
@@ -222,13 +249,6 @@ class DSFrame(tk.LabelFrame):
             self.params[i].enable(name = items[i][0], value = items[i][1])
         for pe in self.params[len(items):]:
             pe.disable()
-
-def test_system():
-    x = e1.get()
-    y = e2.get()
-    u, v = d([x, y])
-    print("x: %g, y: %g, u: %g, v:%g" % (x, y, u, v))
-    print(d.params)
 
 def dsf_test():
     root = tk.Tk()
