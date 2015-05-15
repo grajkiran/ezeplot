@@ -205,7 +205,7 @@ class AppWindow():
         self.fig.save()
         for t in self.trajectories.values():
             self.fig.add_trajectory(t)
-            self.fig.draw_trajectory(t)
+            #self.fig.draw_trajectory(t)
         self.fig.draw()
 
     def _reset_fig(self, *args):
@@ -300,6 +300,7 @@ class AppWindow():
             if not fp_clean in self.fixed_points:
                 self.fixed_points.add(fp_clean)
                 self.fig.draw_fp(fp_clean)
+                self.update_fig()
                 vel = self.system(fp_clean)
                 print("Found a fixed point:\n", fp_clean, vel)
         if pos in self.trajectories:
@@ -326,7 +327,7 @@ class AppWindow():
         style = (len(self.trajectories) - 1) % len(styles)
         traj.style = styles[style]
         self.fig.add_trajectory(traj)
-        self.fig.draw_trajectory(traj)
+        #self.fig.draw_trajectory(traj)
         self.fig.draw()
         self.last_loc = pos
 
@@ -351,11 +352,10 @@ class AppWindow():
     def button_release(self, evt):
         if not evt.inaxes is self.fig.ax_main:
             return
-        if evt.button != 1:
+        if evt.button == 1:
             if self.fig.ax_main is self.fig.ax_3d:
                 # Rotation or zoom
                 self.update_fig()
-            return
         if self.anim_running.get():
             return
         release_loc = evt.x, evt.y
@@ -367,6 +367,11 @@ class AppWindow():
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
             x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
         pos = x, y, z
+        #print("Position:", pos)
+        #print("Limits:", self.fig.get_limits())
+        #if not helpers.is_inside(pos, self.fig.get_limits()):
+        #    print("Position outside limits.")
+        #    return
         self.add_location(pos)
 
     def _add_widgets(self, frame):
@@ -388,6 +393,7 @@ class AppWindow():
                 *PROJECTIONS.keys(), command = self._set_proj)
         optmenu.configure(width = 12)
         optmenu.grid(row = 0, column = 1, sticky = tk.W+tk.E)
+        controls['proj'] = optmenu
 
         row += 1
         btn_nullc = tk.Checkbutton(f_controls, text = "Nullclines",

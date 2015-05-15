@@ -243,7 +243,7 @@ class Figure:
         art, = self.ax_main.plot(fps[:,0], fps[:,1], 'ro')
         self._draw_artist(art)
 
-    def draw_trajectory(self, traj, t_anim = None):
+    def _draw_trajectory(self, traj, t_anim = None):
         #print("Drawing trajectory:", traj)
         if t_anim is None:
             for m in range(4):
@@ -309,11 +309,11 @@ class Figure:
                 self._draw_artist(traj.line[axis], axes)
                 self._draw_artist(traj.marker[axis], axes)
 
-    def add_trajectory(self, traj, *args, **kwargs):
-        #self.trajectories.append(traj)
-        self.init_trajectory(traj, *args, **kwargs)
+    #def add_trajectory(self, traj, *args, **kwargs):
+    #    #self.trajectories.append(traj)
+    #    self.init_trajectory(traj, *args, **kwargs)
 
-    def init_trajectory(self, traj, style = 'b-', mfc = 'none', marker = 'ro'):
+    def add_trajectory(self, traj, style = 'b-', mfc = 'none', marker = 'ro'):
         """Creates the line, start marker, arrow and animation marker"""
         if hasattr(traj, 'style'):
             style = traj.style
@@ -332,11 +332,12 @@ class Figure:
         traj.marker[3], = self.ax_z.plot([0.0], [traj.start[2]], marker)
         for m in range(4):
             traj.marker[m].set_visible(False)
+        self._draw_trajectory(traj)
 
     def anim_update(self, time, trajectories):
         self.restore()#self.ax_main)
         for traj in trajectories:
-            self.draw_trajectory(traj, time)
+            self._draw_trajectory(traj, time)
         self.draw()
 
 if __name__ == '__main__':
