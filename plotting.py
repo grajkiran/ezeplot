@@ -240,7 +240,7 @@ class Figure:
         fps = np.array(fixed_points)
         if self.ax_main is self.ax_3d:
             return
-        art, = self.ax_main.plot(fps[:,0], fps[:,1], 'ro')
+        art, = self.ax_main.plot(fps[:,0], fps[:,1], 'r*', markersize = 8, mec='red')
         self._draw_artist(art)
 
     def _draw_trajectory(self, traj, t_anim = None):

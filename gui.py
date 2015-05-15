@@ -236,9 +236,9 @@ class AppWindow():
             l[0].configure(state = tk.NORMAL)
             l[1].configure(state = tk.NORMAL)
         if proj.lower() == 'polar':
-            self.opts.limits.ymin.set(0)
-            self.opts.limits.xmin.set(0)
-            self.opts.limits.xmax.set(2*np.pi)
+            #self.opts.limits.ymin.set(0)
+            #self.opts.limits.xmin.set(0)
+            #self.opts.limits.xmax.set(2*np.pi)
             for l in self.controls['limits']:
                 l[0].configure(state = tk.DISABLED)
                 l[1].configure(state = tk.DISABLED)
@@ -412,7 +412,7 @@ class AppWindow():
                 indicatoron = False, pady = 4)
         btn_temporal.grid(row=row, column=0, sticky = tk.W + tk.E)
         btn_fp = tk.Checkbutton(f_controls, text = "Fixed Points",
-                variable = self.opts.fixed_points,# command = self.update_fig,
+                variable = self.opts.fixed_points, command = self.update_fig,
                 indicatoron = False, pady = 4)
         btn_fp.grid(row = row, column = 1, sticky = tk.W + tk.E)
         controls['temporal'] = btn_temporal
