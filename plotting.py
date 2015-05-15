@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#encoding: utf-8
 
 try:
     import tkinter as tk
@@ -13,6 +14,9 @@ import helpers
 
 import uptime
 matplotlib.rcParams['toolbar'] = 'None'
+matplotlib.rc('font', family = 'serif')
+#matplotlib.rc('text', usetex = True)
+#matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
 #matplotlib.rc('font', size = 16, weight = 'bold')
 
 class Figure:
@@ -140,9 +144,9 @@ class Figure:
         self.__set_3d_mode()
         self.ax_rect.text(0.5, 1.1, "Phase portrait (XY)", size = 16, weight = 'bold',
                 transform = self.ax_main.transAxes, ha = 'center')
-        self.ax_polar.text(0.5, 1.1, "Phase portrait (Polar)", size = 16, weight = 'bold',
+        self.ax_polar.text(0.5, 1.1, r"Phase portrait (θ-r)", size = 16, weight = 'bold',
                 transform = self.ax_polar.transAxes, ha = 'center')
-        self.ax_3d.text2D(0.5, 1.1, "Phase portrait (3D)", size = 16, weight = 'bold',
+        self.ax_3d.text2D(0.5, 1.1, "Phase portrait (XYZ)", size = 16, weight = 'bold',
                 transform = self.ax_3d.transAxes, ha = 'center')
         self.ax_x.text(0.5, 1.1, "Time series (X)", size = 16, weight = 'bold',
                 transform = self.ax_x.transAxes, ha = 'center')

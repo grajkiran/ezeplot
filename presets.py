@@ -2,6 +2,17 @@
 from collections import OrderedDict
 
 systems = OrderedDict()
+systems["User defined"] = {
+            "x": "0",
+            "y": "0",
+            "z": "0",
+            "xlim": [-5, 5],
+            "ylim": [-5, 5],
+            "zlim": [-5, 5],
+            "tmax": 25.0,
+            "dt": 0.05,
+            "projection": "3D",
+            }
 systems["Simple pendulum"] = {
             "x": "y",
             "y": "sin(x)",

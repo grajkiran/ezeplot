@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+#encoding: utf-8
 from collections import OrderedDict
 import numpy as np
 from scipy.integrate import ode

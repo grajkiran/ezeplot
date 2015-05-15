@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+#encoding: utf-8
 import sys
 
 try:
@@ -71,6 +72,7 @@ class AppWindow():
 
         print(uptime.uptime(), "Loading presets...")
         #self.controls['system']._load_preset('Lorentz attractor')
+        self.controls['system']._load_preset('User defined')
 
         self._init_keybindings()
 

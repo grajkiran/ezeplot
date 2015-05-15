@@ -149,7 +149,7 @@ class DSFrame(tk.LabelFrame):
         self.eqn_z = tk.StringVar(self, self.system.get(3))
         self.preset = tk.StringVar(self)
         choices = list(presets.systems.keys())
-        choices.append("User defined")
+        #choices.append("User defined")
         tk.OptionMenu(self, self.preset, *choices,
                 command = self._load_preset).grid(sticky = tk.E+ tk.W, columnspan = 2)
         tk.Label(self, text = "x_dot:").grid()
@@ -179,20 +179,20 @@ class DSFrame(tk.LabelFrame):
 
     def _load_preset(self, name):
         self.preset.set(name)
+        preset = presets.systems[name]
+        #x_dot, y_dot, z_dot, params = dynsystem.presets[name]
+        x_dot = preset['x']
+        y_dot = preset['y']
+        z_dot = preset['z']
+        params = preset.get('params', dict())
+        self.eqn_x.set(x_dot)
+        self.eqn_y.set(y_dot)
+        self.eqn_z.set(z_dot)
+        self.system.params.update(params)
+        self._update_params()
+        if callable(self.preset_cmd):
+            self.preset_cmd(name)
         if name != "User defined":
-            preset = presets.systems[name]
-            #x_dot, y_dot, z_dot, params = dynsystem.presets[name]
-            x_dot = preset['x']
-            y_dot = preset['y']
-            z_dot = preset['z']
-            params = preset.get('params', dict())
-            self.eqn_x.set(x_dot)
-            self.eqn_y.set(y_dot)
-            self.eqn_z.set(z_dot)
-            self.system.params.update(params)
-            self._update_params()
-            if callable(self.preset_cmd):
-                self.preset_cmd(name)
             for e in self.entry_x, self.entry_y, self.entry_z:
                 e.configure(state = tk.DISABLED)
         else:
