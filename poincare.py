@@ -222,14 +222,14 @@ class PWindow(tk.Toplevel):
         f_options.grid(sticky = tk.E + tk.W)
         tk.Checkbutton(f_options, text = "Show trajectory", command = self._update,
                 variable = self.draw_traj).grid(columnspan=2, sticky = tk.W)
-        tk.Checkbutton(f_options, text = "Show end points", command = self._update,
-                variable = self.draw_endpoints).grid(columnspan=2, sticky = tk.W)
+        #tk.Checkbutton(f_options, text = "Show end points", command = self._update,
+        #        variable = self.draw_endpoints).grid(columnspan=2, sticky = tk.W)
         tk.Checkbutton(f_options, text = "Show plane", command = self._update,
                 variable = self.draw_plane).grid(columnspan=2, sticky = tk.W)
-        tk.Checkbutton(f_options, text = "Auto align", command = self._update,
-                variable = self.auto_view).grid(columnspan=2, sticky = tk.W)
-        tk.Checkbutton(f_options, text = "First return maps", command = self._update,
-                variable = self.first_returns).grid(columnspan = 2, sticky = tk.W)
+        #tk.Checkbutton(f_options, text = "Auto align", command = self._update,
+        #        variable = self.auto_view).grid(columnspan=2, sticky = tk.W)
+        #tk.Checkbutton(f_options, text = "First return maps", command = self._update,
+        #        variable = self.first_returns).grid(columnspan = 2, sticky = tk.W)
 
     def _plane_preset(self, direction = None):
         elevs = [0.0, 0.0, 90.0]
@@ -330,8 +330,8 @@ class PWindow(tk.Toplevel):
             self.ax.plot([p1[0]], [p1[1]], [p1[2]], 'ro')
             self.ax.plot([p0[0], p1[0]], [p0[1], p1[1]], [p0[2], p1[2]], 'k-')
         if self.draw_plane.get():
-            plane.plot(self.ax, self.limits, color = 'green',
-                    shade = False, linewidth = 0.1, edgecolor = 'green')
+            plane.plot(self.ax, self.limits, color = 'yellow',
+                    shade = False, linewidth = 0.1, edgecolor = 'yellow')
         self.canvas.draw()
 
 def toroidal_trajectory(R = 5.0, r = 3.0, w1 = np.pi/3, w2 = 1.0,
