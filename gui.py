@@ -32,7 +32,6 @@ class AppWindow():
         self.fig = plotting.Figure(root, blit = blit)
         print(uptime.uptime(), "Initializing options...")
         self.opts = self._init_options()
-        self._update_system_limits(prompt = False)
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
         self.anim_info    = tk.StringVar(self.root, "")
         self.anim_running = tk.BooleanVar(self.root, False)
@@ -50,7 +49,7 @@ class AppWindow():
         self.fig.bind('button_press_event', self.button_press)
         self.fig.bind('button_release_event', self.button_release)
         self.fig.bind('motion_notify_event', self.mouse_move)
-        self.fig.bind('resize_event', self.update_fig)
+        self.fig.bind('resize_event', self._handle_resize)
         pinfo_label = tk.Label(self.root, textvariable = self.pointer_info, anchor = tk.W,
                 relief = tk.SUNKEN,)
         cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
@@ -58,6 +57,7 @@ class AppWindow():
         print(uptime.uptime(), "Creating widgets...")
         self.controls = self._add_widgets(cframe)
         print(uptime.uptime(), "Updating figure...")
+        self._update_system_limits()
         self.update_fig()
 
         print(uptime.uptime(), "Finishing...")
@@ -118,7 +118,12 @@ class AppWindow():
         opts.limits.ymax.set(y2)
         opts.limits.zmin.set(z1)
         opts.limits.zmax.set(z2)
-        self._update_system_limits(prompt = False)
+        self._update_system_limits()
+
+    def _handle_resize(self, *args):
+        # This fixes a bug in 3d mode in which a projection of the trajectory
+        # is drawn on the z=0 plane when window is resized.
+        self.root.after_idle(self.update_fig)
 
     def _load_preset(self, name):
         opts = self.opts
@@ -151,7 +156,8 @@ class AppWindow():
         plot_limits = [(xmin, xmax), (ymin, ymax), (zmin, zmax)]
         periodic = [limits.per_x.get(), limits.per_y.get(), limits.per_z.get()]
         self.fig.set_limits(*plot_limits)
-        self.fig.draw(force = True)
+        #self.fig.draw(force = True)
+        self.update_fig()
         for i in range(3):
             if periodic[i]:
                 self.system.limits[i] = plot_limits[i]
@@ -249,7 +255,7 @@ class AppWindow():
         #    zlims[0].configure(state = tk.DISABLED)
         #    zlims[1].configure(state = tk.DISABLED)
         self.fig.set_proj(proj)
-        self._update_system_limits(prompt = False)
+        self._update_system_limits()
         self.update_fig()
 
     def anim_update(self):

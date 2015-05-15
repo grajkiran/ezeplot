@@ -2,7 +2,7 @@ Fifth round:
 ~~~~~~~~~~~~
 Done	1. Rotation with left button+drag. Single click of left button is
 	   new trajectory.
-	2. Why is Lorenz attractor giving a free projection upon window
+Done	2. Why is Lorenz attractor giving a free projection upon window
 	   resize ?
 Done	3. x,Y,Z axes ? Phase portrait (XYZ), Phase portrait (rtheta)
 Done	4. For User-defined it should clear equation entries and only
@@ -16,7 +16,7 @@ Done	5. Dynamical systems visualization
 	8. About button under File. It should popup a small screen with
 	   author name and affiliation, contact email, version number as
 	   well as website link and licensing information.
-	9. Exit button on Poincare section window.
+Done	9. Exit button on Poincare section window.
 	10. Poincare section window is missing boldface title. Remove
 	    “From, To” and Equation of plane. Only state “Direction of
 	    intersecting plane” and “Location” bar with end-points and

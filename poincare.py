@@ -230,6 +230,10 @@ class PWindow(tk.Toplevel):
         #        variable = self.auto_view).grid(columnspan=2, sticky = tk.W)
         #tk.Checkbutton(f_options, text = "First return maps", command = self._update,
         #        variable = self.first_returns).grid(columnspan = 2, sticky = tk.W)
+        tk.Button(frame, text = "Close", command = self.destroy, font = "sans 10 bold",
+                background = "#aa0000", activebackground = "#ff5555",
+                foreground = "white", activeforeground = "white").grid(
+                        columnspan = 2, sticky = tk.S)
 
     def _plane_preset(self, direction = None):
         elevs = [0.0, 0.0, 90.0]
