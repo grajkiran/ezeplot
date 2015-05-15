@@ -124,8 +124,8 @@ class Figure:
 
     def __set_3d_mode(self):
         self.ax_3d.mouse_init(zoom_btn = [], rotate_btn = [1])
-        #self.ax_3d.grid(False)
-        #self.ax_3d.set_frame_on(False)
+        self.ax_3d.grid(False)
+        self.ax_3d.set_frame_on(False)
         #self.ax_3d.set_axis_off()
         #self.ax_3d.set_xticks([])
         #self.ax_3d.set_yticks([])
