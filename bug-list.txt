@@ -8,9 +8,9 @@ Done	3. x,Y,Z axes ? Phase portrait (XYZ), Phase portrait (rtheta)
 Done	4. For User-defined it should clear equation entries and only
 	   include timestep related info. Other entries clear.
 Done	5. Dynamical systems visualization
-	6. Phase portrait polar, only have rmax as an option. Its confusing
+Done	6. Phase portrait polar, only have rmax as an option. Its confusing
 	   otherwise.
-	7. 3d plot goes outside the defined axes ? Coordinate points are
+*fixed*	7. 3d plot goes outside the defined axes ? Coordinate points are
 	   still being output at bottom-left: Can anything be done about it
 	   ?
 	8. About button under File. It should popup a small screen with

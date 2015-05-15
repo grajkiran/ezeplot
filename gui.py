@@ -238,22 +238,16 @@ class AppWindow():
             self.controls['nullclines'].configure(state = tk.NORMAL)
             self.controls['quiver'].configure(state = tk.NORMAL)
         xlims, ylims, zlims = self.controls['limits']
+        ylims[1].name = 'ymax:'
         for l in self.controls['limits']:
-            l[0].configure(state = tk.NORMAL)
-            l[1].configure(state = tk.NORMAL)
+            l[0].enable()
+            l[1].enable()
         if proj.lower() == 'polar':
-            #self.opts.limits.ymin.set(0)
-            #self.opts.limits.xmin.set(0)
-            #self.opts.limits.xmax.set(2*np.pi)
+            ylims[1].name = 'rmax:'
             for l in self.controls['limits']:
-                l[0].configure(state = tk.DISABLED)
-                l[1].configure(state = tk.DISABLED)
-            self.controls['limits'][1][1].configure(state = tk.NORMAL)
-        #elif proj.lower() == '2d':
-        #    self.opts.limits.zmin.set("-inf")
-        #    self.opts.limits.zmax.set("inf")
-        #    zlims[0].configure(state = tk.DISABLED)
-        #    zlims[1].configure(state = tk.DISABLED)
+                l[0].disable()
+                l[1].disable()
+            self.controls['limits'][1][1].enable()
         self.fig.set_proj(proj)
         self._update_system_limits()
         self.update_fig()
@@ -435,12 +429,8 @@ class AppWindow():
         controls['limits'] = [[None, None],[None, None],[None, None]]
         for r in 0, 1, 2:
             for c in 0, 1:
-                f = tk.Frame(f_controls)
-                f.grid(row = row+r, column = c)
-                tk.Label(f, text = labels[r][c]).grid(row = 0, column = 0)
-                e = VEntry(f, textvariable = vars[r][c], width = 5,
-                        command = self._update_system_limits)
-                e.grid(row = 0, column = 1)
+                e = PEntry(f_controls, labels[r][c], vars[r][c], command = self._update_system_limits)
+                e.grid(row = row+r, column = c)
                 controls['limits'][r][c] = e
         row += 3
         tk.Button(f_controls, text = "Apply limits",
@@ -448,27 +438,18 @@ class AppWindow():
         tk.Button(f_controls, text = 'Defaults',
                 command = self._set_limits).grid(row = row, column = 1)
 
-        # tk.Checkbutton(f_controls, text = "Graphs", variable = self.opts.temporal,
-        #         command = self._set_temporal).grid(row = 3, column = 3, sticky = tk.W)
-
-        # tk.Button(f_controls, text = "Poincare", command = self.show_poincare_dialog).grid(row = 4, column = 3)
-
         f_anim = tk.LabelFrame(frame, text = 'Animation')
         f_anim.columnconfigure(0, weight=1)
         f_anim.grid(sticky = tk.E + tk.W)
-        #b_toggle = tk.Button(f_anim, text = "Start", pady = 4, padx = 4, font = "sans 12 bold",
-        #        command = self.toggle_traj_animation)
         b_toggle = tk.Button(f_anim, text = "Animate", command = self.toggle_traj_animation,
                 background = "#0000aa", activebackground = "#3333ff",
                 foreground = "white", activeforeground = "white", font = "sans 16 bold",
                 height = 1, width = 6)
         b_toggle.grid(row = 0, rowspan = 2, column = 0)
-        #b_stop = tk.Button(f_anim, text = "Stop", command = self.stop_traj_animation)
         b_stop = tk.Button(f_anim, text = "Stop", command = self.stop_traj_animation, font = "sans 10 bold",
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = "white", activeforeground = "white")
         b_stop.grid(row = 0, rowspan=2, column = 1)
-        #tk.Label(f_anim, textvariable = self.anim_info).grid(row = 1, column = 1)
         controls['anim'] = b_toggle
 
         f_update = tk.Frame(frame)
