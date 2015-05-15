@@ -397,24 +397,20 @@ class AppWindow():
 
         row += 1
         btn_nullc = tk.Checkbutton(f_controls, text = "Nullclines",
-                variable = self.opts.nullclines, command = self.update_fig,
-                indicatoron = False, pady = 4)
-        btn_nullc.grid(row=row, column=0, sticky = tk.W + tk.E)
+                variable = self.opts.nullclines, command = self.update_fig)
+        btn_nullc.grid(row=row, column=0, sticky = tk.W)
         btn_quiver = tk.Checkbutton(f_controls, text = "Quiver",
-                variable = self.opts.quiver, command = self.update_fig,
-                indicatoron = False, pady = 4)
-        btn_quiver.grid(row = row, column = 1, sticky = tk.W + tk.E)
+                variable = self.opts.quiver, command = self.update_fig)
+        btn_quiver.grid(row = row, column = 1, sticky = tk.W)
         controls['nullclines'] = btn_nullc
         controls['quiver'] = btn_quiver
         row += 1
         btn_temporal = tk.Checkbutton(f_controls, text = "Time Series",
-                variable = self.opts.temporal, command = self._set_temporal,
-                indicatoron = False, pady = 4)
-        btn_temporal.grid(row=row, column=0, sticky = tk.W + tk.E)
+                variable = self.opts.temporal, command = self._set_temporal)
+        btn_temporal.grid(row=row, column=0, sticky = tk.W)
         btn_fp = tk.Checkbutton(f_controls, text = "Fixed Points",
-                variable = self.opts.fixed_points, command = self.update_fig,
-                indicatoron = False, pady = 4)
-        btn_fp.grid(row = row, column = 1, sticky = tk.W + tk.E)
+                variable = self.opts.fixed_points, command = self.update_fig)
+        btn_fp.grid(row = row, column = 1, sticky = tk.W)
         controls['temporal'] = btn_temporal
         controls['fp'] = btn_fp
 
