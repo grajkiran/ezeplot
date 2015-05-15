@@ -25,7 +25,7 @@ Done	5. Dynamical systems visualization
 Done	12. Use “*” symbol for fixed point and have it as an option. Use
 	    ranges specified by user for calculation and do max number of
 	    steps possible by Python.
-	13. BUG: User is able to input initial trajectory location outside
+Done	13. BUG: User is able to input initial trajectory location outside
 	    the xlim, ylim, zlim ranges in 3D !
 Done	14. BUG: For any model, on opting for diff coordinate system
 	    (polar), recalculate the graph. Take care of Polar - 3D
