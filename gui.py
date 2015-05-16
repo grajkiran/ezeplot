@@ -392,9 +392,9 @@ class AppWindow():
         pos = x, y, z
         #print("Position:", pos)
         #print("Limits:", self.fig.get_limits())
-        if not helpers.is_inside(pos, self.fig.get_limits()):
-            print("Position outside limits.")
-            return
+        #if not helpers.is_inside(pos, self.fig.get_limits()):
+        #    print("Position outside limits.")
+        #    return
         self.add_location(pos)
 
     def _add_widgets(self, frame):

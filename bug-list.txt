@@ -2,7 +2,7 @@ Sixth round:
 ~~~~~~~~~~~~
 	1. Still have projection on rotation.
 Done	2. rtheta messed up symbol.
-	3. Disable range check in 3d.
+Done	3. Disable range check in 3d.
 	4. Fixed points option should not be enabled by default. Is it working
 	   in 3d ? Also, single click for new traj should be disabled when
 	   fixed point option is ON
