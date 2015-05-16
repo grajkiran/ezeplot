@@ -257,8 +257,8 @@ class Figure:
         if len(fixed_points) == 0:
             return
         fps = np.array(fixed_points)
-        if self.ax_main is self.ax_3d:
-            return
+        #if self.ax_main is self.ax_3d:
+        #    return
         art, = self.ax_main.plot(fps[:,0], fps[:,1], 'r*', markersize = 8, mec='red')
         self._draw_artist(art)
 

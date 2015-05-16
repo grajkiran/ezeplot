@@ -106,7 +106,7 @@ class AppWindow():
         opts.reverse        = tk.BooleanVar(self.root, True)
         opts.quiver         = tk.BooleanVar(self.root, False)
         opts.nullclines     = tk.BooleanVar(self.root, False)
-        opts.fixed_points   = tk.BooleanVar(self.root, True)
+        opts.fixed_points   = tk.BooleanVar(self.root, False)
         opts.temporal       = tk.BooleanVar(self.root, False)
         opts.projection     = tk.StringVar(self.root, '2D')
         opts.limits         = Options()
