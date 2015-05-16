@@ -22,7 +22,7 @@ Done	12. Change "Intersecting plane direction" to "Normal to plane".
 Done	13. Change System to "Dynamical System" in main window
 	14. For polar, you need to give r and theta v/s time. Center the phase
 	    portrait and place r,theta timeseries below.
-	15. Shift Close to bottom of window in Poincare plot
+Done	15. Shift Close to bottom of window in Poincare plot
 	16. For 2d time-series, center phase portrait and plot only X,Y v/s
 	    Time below.
 Done	17. BUG: Poincare section for Rossler, change z-limit for intersecting

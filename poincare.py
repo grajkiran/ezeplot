@@ -195,7 +195,7 @@ class PWindow(tk.Toplevel):
         self.elev = tk.DoubleVar(self, 0.0)
         self.azim = tk.DoubleVar(self, 0.0)
         cframe = tk.Frame(self)
-        cframe.pack()
+        cframe.pack(expand = True, fill = tk.Y)
         self.controls = self._add_widgets(cframe)
         self.protocol('WM_DELETE_WINDOW', self.destroy)
         self.grab_set()
@@ -257,10 +257,11 @@ class PWindow(tk.Toplevel):
         #        variable = self.auto_view).grid(columnspan=2, sticky = tk.W)
         #tk.Checkbutton(f_options, text = "First return maps", command = self._update,
         #        variable = self.first_returns).grid(columnspan = 2, sticky = tk.W)
-        tk.Button(frame, text = "Close", command = self.destroy, font = "sans 10 bold",
+        close_btn = tk.Button(frame, text = "Close", command = self.destroy, font = "sans 10 bold",
                 background = "#aa0000", activebackground = "#ff5555",
-                foreground = "white", activeforeground = "white").grid(
-                        columnspan = 2, sticky = tk.S)
+                foreground = "white", activeforeground = "white")
+        close_btn.grid(columnspan = 2, sticky = tk.S)
+        frame.rowconfigure(close_btn.grid_info()['row'], weight = 1)
         return controls
 
     def _plane_preset(self):
