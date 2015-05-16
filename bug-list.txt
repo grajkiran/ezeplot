@@ -12,7 +12,7 @@ Done	6. Phase portrait polar, only have rmax as an option. Its confusing
 	   otherwise.
 *fixed*	7. 3d plot goes outside the defined axes? Coordinate points are
 	   still being output at bottom-left: Can anything be done about it?
-	8. About button under File. It should popup a small screen with
+Done	8. About button under File. It should popup a small screen with
 	   author name and affiliation, contact email, version number as
 	   well as website link and licensing information.
 Done	9. Exit button on Poincare section window.
@@ -68,7 +68,7 @@ Done	6. BUG: When shifting to Polar mode, it should automatically do the
 	   update for built-in models.
 Done	7. Place simple pendulum and linear damped oscillator first in list
 	   of the pull-down menu.
-	8. Place an About button on top left. It should popup a small gray
+Done	8. Place an About button on top left. It should popup a small gray
 	   screen with author name, contact email and version number as
 	   well website link and licensing information. Check pplane about
 	   button.
