@@ -318,7 +318,7 @@ class Figure:
         if not self._3d:
             self._draw_artist(traj.line[0])
             #self._draw_artist(traj.arrow)
-            self._draw_artist(traj.marker["start"])
+            #self._draw_artist(traj.marker["start"])
             self._draw_artist(traj.marker[0])
         else:
             self._draw_artist(traj.line["3d"])
