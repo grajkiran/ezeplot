@@ -268,12 +268,12 @@ class AppWindow():
             self.controls['nullclines'].configure(state = tk.NORMAL)
             self.controls['quiver'].configure(state = tk.NORMAL)
         xlims, ylims, zlims = self.controls['limits']
-        ylims[1].name = 'ymax:'
+        ylims[1].name = 'ymax'
         for l in self.controls['limits']:
             l[0].enable()
             l[1].enable()
         if proj.lower() == 'polar':
-            ylims[1].name = 'rmax:'
+            ylims[1].name = 'rmax'
             for l in self.controls['limits']:
                 l[0].disable()
                 l[1].disable()
@@ -417,7 +417,7 @@ class AppWindow():
         row = 0
         f = tk.Frame(f_controls)
         f.grid(row=row, columnspan=2)
-        tk.Label(f, text = "Projection:",
+        tk.Label(f, text = "Projection",
                 anchor = tk.E).grid(row=0, column = 0, sticky = tk.E)
         optmenu = tk.OptionMenu(f, self.opts.projection,
                 *PROJECTIONS.keys(), command = self._set_proj)
@@ -445,12 +445,12 @@ class AppWindow():
         controls['fp'] = btn_fp
 
         row += 1
-        PEntry(f_controls, "Tstep:", self.opts.dt).grid(row = row, column = 0)
-        PEntry(f_controls, 'Tmax:', self.opts.tmax).grid(row = row, column = 1)
+        PEntry(f_controls, "Tstep", self.opts.dt).grid(row = row, column = 0)
+        PEntry(f_controls, 'Tmax', self.opts.tmax).grid(row = row, column = 1)
 
         row += 1
         limits = self.opts.limits
-        labels = [('xmin:', 'xmax:'), ('ymin:', 'ymax:'), ('zmin:', 'zmax:')]
+        labels = [('xmin', 'xmax'), ('ymin', 'ymax'), ('zmin', 'zmax')]
         vars = [(limits.xmin, limits.xmax), (limits.ymin, limits.ymax), (limits.zmin, limits.zmax)]
         controls['limits'] = [[None, None],[None, None],[None, None]]
         for r in 0, 1, 2:

@@ -188,7 +188,7 @@ class PWindow(tk.Toplevel):
         self.plane_direction = tk.IntVar(self, 0)
         self.draw_traj = tk.BooleanVar(self, True)
         self.auto_view = tk.BooleanVar(self, False)
-        self.draw_plane = tk.BooleanVar(self, False)
+        self.draw_plane = tk.BooleanVar(self, True)
         self.draw_endpoints = tk.BooleanVar(self, False)
         self.first_returns = tk.BooleanVar(self, False)
         self.plane_eqn = tk.StringVar(self, "0.0 x + 0.0 y + z = 0")
@@ -209,7 +209,7 @@ class PWindow(tk.Toplevel):
         f_plane.grid(sticky = tk.E + tk.W)
         f_plane.columnconfigure(1, weight = 1)
         row = 0
-        tk.Label(f_plane, text = 'Intersecting plane\ndirection:',
+        tk.Label(f_plane, text = 'Normal to plane',
                 justify = tk.LEFT).grid(row = row, columnspan = 2, sticky = tk.W)
         row += 1
         f_buttons = tk.Frame(f_plane)
@@ -232,7 +232,7 @@ class PWindow(tk.Toplevel):
         #VEntry(f_plane, self.p1_str, validator = parse_point, width = 10,
         #        command = self._update).grid(row = row, column = 1, sticky = tk.E + tk.W)
         row += 1
-        tk.Label(f_plane, text = "Plane location:").grid(row = row, column = 0, sticky = tk.S)
+        tk.Label(f_plane, text = "Location of plane").grid(row = row, column = 0, sticky = tk.S)
         scale = tk.Scale(f_plane, orient = tk.HORIZONTAL, variable = self.factor,
                 resolution = 0.005, from_ = 0.0, to = 1.0,
                 command = self._update)
