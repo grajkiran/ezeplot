@@ -8,7 +8,7 @@ Done	4. Fixed points option should not be enabled by default. Is it working
 	4a. Single click for new traj should be disabled when
 	    fixed point option is ON
 	5. Remove starting marker for all traj.
-	6. Put User defined as last in list. Greyed entries should be zero.
+Done	6. Put User defined as last in list. Greyed entries should be zero.
 	7. Shift location of rmax to upwards in polar and remove all other
 	   coordinate ranges.
 	8. Print option in Poincare section.
