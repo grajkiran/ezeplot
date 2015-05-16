@@ -1,3 +1,33 @@
+Sixth round:
+~~~~~~~~~~~~
+	1. Still have projection on rotation.
+	2. rtheta messed up symbol.
+	3. Disable range check in 3d.
+	4. Fixed points option should not be enabled by default. Is it working
+	   in 3d ? Also, single click for new traj should be disabled when
+	   fixed point option is ON
+	5. Remove starting marker for all traj.
+	6. Put User defined as last in list. Greyed entries should be zero.
+	7. Shift location of rmax to upwards in polar and remove all other
+	   coordinate ranges.
+	8. Print option in Poincare section.
+	9. "Location of plane". Keep show plane option and show traj option as
+	   ON by default.
+	10. Pressing clear and update should replot default initial condition
+	    traj for default models.
+	11. Need About window and your choice of icon at top-left.
+	12. Change "Intersecting plane direction" to "Normal to plane".
+	    Remove ":" from phrases such as "Projection:".
+	13. Change System to "Dynamical System" in main window
+	14. For polar, you need to give r and theta v/s time. Center the phase
+	    portrait and place r,theta timeseries below.
+	15. Shift Close to bottom of window in Poincare plot
+	16. For 2d time-series, center phase portrait and plot only X,Y v/s
+	    Time below.
+	17. BUG: Poincare section for Rossler, change z-limit for intersecting
+	    plane.
+	18. Check if quiver option minus the trajectory looks OK in 3d ??
+
 Fifth round:
 ~~~~~~~~~~~~
 Done	1. Rotation with left button+drag. Single click of left button is
