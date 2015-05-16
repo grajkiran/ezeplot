@@ -122,7 +122,9 @@ class AppWindow():
         opts.limits.per_z   = tk.BooleanVar(self.root, False)
         return opts
 
-    def _set_limits(self, preset = None):
+    def _set_limits(self):
+        preset_name = self.controls['system'].preset.get()
+        preset = presets.systems[preset_name]
         opts = self.opts
         x1, x2 = -5.0, 5.
         y1, y2 = -5.0, 5.
@@ -156,7 +158,7 @@ class AppWindow():
                 opts[opt].set(preset[opt])
             else:
                 opts[opt].set(defaults[opt])
-        self._set_limits(preset)
+        self._set_limits()
         self._reset_fig()
         self._set_proj()
         if 'locations' in preset:
