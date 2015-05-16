@@ -9,7 +9,7 @@ Done	4. Fixed points option should not be enabled by default. Is it working
 	    fixed point option is ON
 Done	5. Remove starting marker for all traj.
 Done	6. Put User defined as last in list. Greyed entries should be zero.
-	7. Shift location of rmax to upwards in polar and remove all other
+Done	7. Shift location of rmax to upwards in polar and remove all other
 	   coordinate ranges.
 	8. Print option in Poincare section.
 	9. "Location of plane". Keep show plane option and show traj option as

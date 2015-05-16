@@ -177,21 +177,20 @@ class PEntry(tk.Frame):
         self.label = tk.Label(self, text = name, width = 6)
         self.entry = VEntry(self, self.var, width = 6, validator = validator,
                 command = command)
-        self.label.grid(sticky = tk.E + tk.W)
-        self.entry.grid(row = 0, column = 1, sticky = tk.E+tk.W)
         self.get = self.var.get
         self.set = self.var.set
+        self.enable()
     def enable(self, name = None, value = None):
-        self.label.configure(state = tk.NORMAL)
         if name is None:
             name = self.name
         self.label.configure(text = name)
-        self.entry.configure(state = tk.NORMAL)
         if value is not None:
             self.var.set(value)
+        self.label.grid(sticky = tk.E + tk.W)
+        self.entry.grid(row = 0, column = 1, sticky = tk.E+tk.W)
     def disable(self):
-        self.label.configure(state = tk.DISABLED, text = "")
-        self.entry.configure(state = tk.DISABLED)
+        self.label.grid_forget()
+        self.entry.grid_forget()
 
 class Param(tk.Frame):
     def __init__(self, master, name, value = 1.0, validator = None,
