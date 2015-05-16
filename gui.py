@@ -206,6 +206,11 @@ class AppWindow():
 
     def update_trajectories(self, *args):
         picked = list(self.trajectories.keys())
+        if len(picked) == 0:
+            preset_name = self.controls['system'].preset.get()
+            preset = presets.systems[preset_name]
+            if 'locations' in preset:
+                picked = preset['locations']
         self.trajectories.clear()
         self.fixed_points.clear()
         self.anim_tmax = 0.0
