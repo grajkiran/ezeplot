@@ -19,7 +19,7 @@ Done	10. Pressing clear and update should replot default initial condition
 	11. Need About window and your choice of icon at top-left.
 Done	12. Change "Intersecting plane direction" to "Normal to plane".
 	    Remove ":" from phrases such as "Projection:".
-	13. Change System to "Dynamical System" in main window
+Done	13. Change System to "Dynamical System" in main window
 	14. For polar, you need to give r and theta v/s time. Center the phase
 	    portrait and place r,theta timeseries below.
 	15. Shift Close to bottom of window in Poincare plot

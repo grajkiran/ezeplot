@@ -232,7 +232,7 @@ class LSelect(matplotlib.widgets.Lasso):
 
 class DSFrame(tk.LabelFrame):
     def __init__(self, master, system, command = None, n_params = 10, preset_cmd = None, **kwargs):
-        tk.LabelFrame.__init__(self, master, text = "System", **kwargs)
+        tk.LabelFrame.__init__(self, master, text = "Dynamical system", **kwargs)
         self.columnconfigure(1, weight=1)
         self.system = system
         self.command = command
