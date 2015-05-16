@@ -243,6 +243,17 @@ class Figure:
         self.ax_main.contour(x, y, u, [0.0], **kwargs)
         self.ax_main.contour(x, y, v, [0.0], **kwargs)
 
+    def draw_quiver3d(self, field, scaled = True, **kwargs):
+        if self.ax_main is not self.ax_3d:
+            return
+        x, y, z, u, v, w= field
+        if scaled:
+            mag = np.ma.masked_less(np.sqrt(u*u+v*v+w*w), 1.0e-4)
+            u = u/mag
+            v = v/mag
+            w = w/mag
+        self.ax_main.quiver(x, y, z, u, v, w)
+
     def draw_quiver(self, field, scaled = True, **kwargs):
         if self.ax_main is self.ax_3d:
             return

@@ -27,7 +27,7 @@ Done	13. Change System to "Dynamical System" in main window
 	    Time below.
 Done	17. BUG: Poincare section for Rossler, change z-limit for intersecting
 	    plane.
-	18. Check if quiver option minus the trajectory looks OK in 3d ??
+Done	18. Check if quiver option minus the trajectory looks OK in 3d ??
 
 Fifth round:
 ~~~~~~~~~~~~

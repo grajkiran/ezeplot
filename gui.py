@@ -230,10 +230,18 @@ class AppWindow():
         u, v, w = self.system((x,y))
         field = x, y, u, v
         field_quiv = [f[::4, ::4] for f in field]
+        z1 = self.opts.limits.zmin.get()
+        z2 = self.opts.limits.zmax.get()
+        x3d, y3d, z3d = np.meshgrid(np.linspace(x1, x2, 10), np.linspace(y1, y2, 10), np.linspace(z1, z2, 10))
+        u3d, v3d, w3d = self.system((x3d,y3d,z3d))
+        field_quiv3d = x3d, y3d, z3d, u3d, v3d, w3d
         if self.opts.nullclines.get():
             self.fig.draw_nullclines(field, linestyles = "dashed")
         if self.opts.quiver.get():
-            self.fig.draw_quiver(field_quiv, width = 0.001, headwidth = 5, scale = 50)
+            if PROJECTIONS[self.opts.projection.get()] == '3d':
+                self.fig.draw_quiver3d(field_quiv3d, width = 0.001, headwidth = 5, scale = 50)
+            else:
+                self.fig.draw_quiver(field_quiv, width = 0.001, headwidth = 5, scale = 50)
         if self.opts.fixed_points.get():
             self.fig.draw_fp(*self.fixed_points)
         #NOTE: Add other bg elements like FP, LC, here before draw and save.
@@ -263,7 +271,7 @@ class AppWindow():
         proj = PROJECTIONS[self.opts.projection.get()]
         if proj.lower() == '3d':
             self.controls['nullclines'].configure(state = tk.DISABLED)
-            self.controls['quiver'].configure(state = tk.DISABLED)
+            #self.controls['quiver'].configure(state = tk.DISABLED)
         else:
             self.controls['nullclines'].configure(state = tk.NORMAL)
             self.controls['quiver'].configure(state = tk.NORMAL)
