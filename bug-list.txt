@@ -25,7 +25,7 @@ Done	13. Change System to "Dynamical System" in main window
 	15. Shift Close to bottom of window in Poincare plot
 	16. For 2d time-series, center phase portrait and plot only X,Y v/s
 	    Time below.
-	17. BUG: Poincare section for Rossler, change z-limit for intersecting
+Done	17. BUG: Poincare section for Rossler, change z-limit for intersecting
 	    plane.
 	18. Check if quiver option minus the trajectory looks OK in 3d ??
 
