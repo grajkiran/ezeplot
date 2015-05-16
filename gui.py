@@ -94,9 +94,10 @@ class AppWindow():
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
         self.controls['system']._load_preset('User defined')
-        self.controls['system']._load_preset('Lorentz attractor')
+        #self.controls['system']._load_preset('Lorentz attractor')
 
         self._init_keybindings()
+        self.show_about()
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -490,6 +491,7 @@ class AppWindow():
 
     def show_about(self):
         print("About this application")
+        AboutDialog(self.root)
 
     def _add_menubar(self):
         menubar = tk.Menu(self.root)
@@ -499,8 +501,21 @@ class AppWindow():
         filemenu.add_command(label = 'Quit', command = self.root.quit)
         viewmenu = tk.Menu(menubar, tearoff = False)
         menubar.add_cascade(label = 'View', menu=viewmenu)
-        viewmenu.add_checkbutton(label = 'Time series', variable = self.opts.temporal,
-                command = self._set_temporal)
+        #viewmenu.add_checkbutton(label = 'Time series',
+        #        variable = self.opts.temporal,
+        #        command = self._set_temporal)
+        #viewmenu.add_checkbutton(label = 'Nullclines',
+        #        variable = self.opts.nullclines,
+        #        command = self.update_fig)
+        #viewmenu.add_checkbutton(label = 'Quiver',
+        #        variable = self.opts.quiver,
+        #        command = self.update_fig)
+        #viewmenu.add_checkbutton(label = 'Fixed points',
+        #        variable = self.opts.fixed_points,
+        #        command = self.update_fig)
+        #viewmenu.add_separator()
+        #viewmenu.add_command(label = "Fullscreen", command = )
+        #viewmenu.add_separator()
         viewmenu.add_command(label = "Poincare", command = self.show_poincare_dialog)
         helpmenu = tk.Menu(menubar, tearoff = False)
         menubar.add_cascade(label = 'Help', menu=helpmenu)

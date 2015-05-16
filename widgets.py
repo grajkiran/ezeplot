@@ -70,6 +70,51 @@ class VEntry(tk.Entry):
             if self.debug:
                 logging.error("%s" % self.errmsg.get())
 
+class AboutDialog(tk.Toplevel):
+    def __init__(self, master):
+        tk.Toplevel.__init__(self, master)
+        contents="""Ezeplot 1.0
+
+   Ezeplot is a tool for visualising non-linear autonomous dynamical systems.
+   It is intended to be used as an educational aid for studying non-linear
+   dynamics.
+
+Author:
+   Raj Kiran Grandhi, Aerospace Engineering, IIT Kharagpur.
+
+Email:
+   rajkiran@aero.iitkgp.ernet.in
+
+Website:
+   http://ezeplot.example.com
+
+License:
+   Ezeplot is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+        #contents = open('ABOUT.md').read()
+        text = tk.Label(self, text = contents, justify = tk.LEFT)
+        text.pack(side = tk.TOP)
+        btn = tk.Button(self, text = "Close", padx = 8, pady = 8, command = self.destroy)
+        btn.pack()
+        self.title('About Ezeplot')
+        self.transient(master)
+        self.protocol('WM_DELETE_WINDOW', self.destroy)
+        self.bind('<Escape>', lambda *args: self.destroy())
+        self.focus_set()
+        self.grab_set()
+        self.wait_window(self)
+
 class PlotLimits(tk.Toplevel):
     def __init__(self, master, fig, limits):
         tk.Toplevel.__init__(self, master)
