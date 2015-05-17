@@ -1,3 +1,25 @@
+Seventh round:
+~~~~~~~~~~~~~~
+	1. Only have "theta r" and show in time series. Only have "XY" and in
+	   time series. Shift rmax to left of panel. Change "R" to "r".
+	2. Fixed points option ON means all fixed points in domain are shown.
+	   If OFF then they are switched off.
+	3. For User-defined, flash a message "Click graph to select initial
+	   point".
+	4. About
+	   Remove Initial About screen.
+	   Remove comma, boldface your name.
+	   Change color scheme of "License" and "Close" to White.
+	   Write “Department”, write full “Indian Institute of Technology,
+		Kharagpur”, West Bengal, "India".
+	   Email in italics, website in italics, underlined and clickable.
+	   About Ezeplot menu and Poincare section menu should have your “E”
+		icon on top right.
+	5. Poincare section put permanent message below buttons
+	   Red: Opposite to plane normal
+	   Blue: Direction of plane normal
+	6. Change "Projection" to "Coordinates"
+
 Sixth round:
 ~~~~~~~~~~~~
 Done	1. Still have projection on rotation.
