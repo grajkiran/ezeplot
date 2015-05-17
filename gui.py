@@ -47,9 +47,10 @@ class Options(dict):
     __setattr__ = dict.__setitem__
 
 class AppWindow():
-    def __init__(self, root, system, blit = True):#, embedded = False):
+    def __init__(self, root, system, blit = True, icon = None):#, embedded = False):
         self.system = system
         self.root = root
+        self.icon = icon
         logging.debug(uptime.uptime(), "Creating figure window...")
         self.fig = plotting.Figure(root, blit = blit)
         logging.debug(uptime.uptime(), "Initializing options...")
@@ -207,7 +208,7 @@ class AppWindow():
         z1, z2 = l.zmin.get(), l.zmax.get()
         w = PWindow(self.root, self.trajectories[self.last_loc],
                 ((x1, x2), (y1, y2), (z1, z2)),
-                geometry = self.root.winfo_geometry())
+                geometry = self.root.winfo_geometry(), icon = self.icon)
 
     def update_trajectories(self, *args):
         picked = list(self.trajectories.keys())
@@ -508,7 +509,7 @@ class AppWindow():
         return controls
 
     def show_about(self):
-        ad = AboutDialog(self.root)
+        ad = AboutDialog(self.root, icon = self.icon)
 
     def _add_menubar(self):
         menubar = tk.Menu(self.root)
@@ -537,7 +538,7 @@ class AppWindow():
         helpmenu = tk.Menu(menubar, tearoff = False)
         menubar.add_cascade(label = 'Help', menu=helpmenu)
         helpmenu.add_command(label = 'About Ezeplot', command = self.show_about)
-        helpmenu.add_command(label = 'License', command = lambda: license_dialog(self.root))
+        helpmenu.add_command(label = 'License', command = lambda: license_dialog(self.root, self.icon))
         return menubar
 
     def save(self):

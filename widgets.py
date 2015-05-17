@@ -72,7 +72,7 @@ class VEntry(tk.Entry):
             if self.debug:
                 logging.error("%s" % self.errmsg.get())
 
-def license_dialog(master):
+def license_dialog(master, icon):
     license_text = """
 Ezeplot is free software: you can
 redistribute it and/or modify it under
@@ -98,8 +98,10 @@ this program.  If not, see
             parent = master)
 
 class AboutDialog(tk.Toplevel):
-    def __init__(self, master, splash = False):
+    def __init__(self, master, icon, splash = False):
         tk.Toplevel.__init__(self, master, bg = 'black')
+        if icon is not None:
+            self.tk.call("wm", "iconphoto", self._w, icon)
         contents="""Ezeplot 1.0
 Raj Kiran Grandhi,
 Dept. of Aerospace Engineering

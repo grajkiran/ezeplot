@@ -165,8 +165,10 @@ class PSection(Plane):
         return np.array(top2bot), np.array(bot2top)
 
 class PWindow(tk.Toplevel):
-    def __init__(self, master, trajectory, limits, geometry):
+    def __init__(self, master, trajectory, limits, geometry, icon = None):
         tk.Toplevel.__init__(self, master)
+        if icon is not None:
+            self.tk.call("wm", "iconphoto", self._w, icon)
         self.geometry(geometry)
         self.transient(master)
         self.title("EzePlot - Poincare section")
