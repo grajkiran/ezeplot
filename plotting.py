@@ -293,28 +293,28 @@ class Figure:
         if t_anim is None:
             for m in range(4):
                 traj.marker[m].set_visible(False)
-            traj.marker["3d"].set_visible(False)
-            #traj.arrow.set_visible(True)
             traj.line[0].set_xdata(traj.x)
             traj.line[0].set_ydata(traj.y)
+            if self._3d:
+                traj.line[0].set_3d_properties(traj.z)
             for l in 1, 2, 3:
                 traj.line[l].set_xdata(traj.t)
                 traj.line[l].set_ydata(traj.points[:,l-1])
             if self.ax_main is self.ax_polar:
                 traj.line[1].set_ydata(traj.points[:,0]%(2*np.pi))
-            traj.line["3d"]._verts3d = (traj.x, traj.y, traj.z)
         else: # During animation
             if t_anim > traj.t[-1]:
                 t_anim = traj.t[-1]
             last = traj.prev_index(t_anim)#+1
             x, y, z = traj.points[last]
-            #x, y, z = traj.x_ip(t_anim), traj.y_ip(t_anim), traj.z_ip(t_anim)
             tdata = np.append(traj.t[:last], t_anim)
             xdata = np.append(traj.x[:last], x)
             ydata = np.append(traj.y[:last], y)
             zdata = np.append(traj.z[:last], z)
             traj.line[0].set_xdata(xdata)
             traj.line[0].set_ydata(ydata)
+            if self._3d:
+                traj.line[0].set_3d_properties(zdata)
             for l in 1, 2, 3:
                 traj.line[l].set_xdata(tdata)
             if self.ax_main is self.ax_polar:
@@ -323,9 +323,6 @@ class Figure:
                 traj.line[1].set_ydata(xdata)
             traj.line[2].set_ydata(ydata)
             traj.line[3].set_ydata(zdata)
-            traj.line['3d'].set_xdata(xdata)
-            traj.line['3d'].set_ydata(ydata)
-            traj.line['3d'].set_3d_properties(zdata)
             traj.marker[0].set_xdata([x])
             traj.marker[0].set_ydata([y])
             for m in 1, 2, 3:
@@ -336,19 +333,13 @@ class Figure:
                 traj.marker[1].set_ydata([x])
             traj.marker[2].set_ydata([y])
             traj.marker[3].set_ydata([z])
-            traj.marker["3d"]._verts3d = ([x], [y], [z])
+            if self._3d:
+                traj.marker[0].set_3d_properties([z])
             for m in range(4):
                 traj.marker[m].set_visible(True)
-            traj.marker["3d"].set_visible(True)
         # Draw only the relevant artists
-        if not self._3d:
-            self._draw_artist(traj.line[0])
-            #self._draw_artist(traj.arrow)
-            #self._draw_artist(traj.marker["start"])
-            self._draw_artist(traj.marker[0])
-        else:
-            self._draw_artist(traj.line["3d"])
-            self._draw_artist(traj.marker["3d"])
+        self._draw_artist(traj.line[0])
+        self._draw_artist(traj.marker[0])
         if self.mode == 4:
             for axis, axes in zip((1,2,3), (self.ax_x, self.ax_y, self.ax_z)):
                 self._draw_artist(traj.line[axis], axes)
@@ -364,17 +355,15 @@ class Figure:
             style = traj.style
         traj.line = dict()
         traj.marker = dict()
-        traj.line[0], = self.ax_main.plot(traj.x, traj.y, style)
+        if self._3d:
+            traj.line[0], = self.ax_main.plot(traj.x, traj.y, traj.z, style)
+            traj.marker[0], = self.ax_main.plot([traj.start[0]], [traj.start[1]], [traj.start[2]], marker)
+        else:
+            traj.line[0], = self.ax_main.plot(traj.x, traj.y, style)
+            traj.marker[0], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
         traj.line[1], = self.ax_x.plot(traj.t, traj.x, style)
         traj.line[2], = self.ax_y.plot(traj.t, traj.y, style)
         traj.line[3], = self.ax_z.plot(traj.t, traj.z, style)
-        if self._3d:
-            traj.line["3d"] = traj.line[0]
-        else:
-            traj.line["3d"], = self.ax_3d.plot(traj.x, traj.y, traj.z, style)
-        #traj.marker["start"], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
-        traj.marker["3d"], = self.ax_3d.plot([traj.start[0]], [traj.start[1]], [traj.start[2]], marker)
-        traj.marker[0], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
         traj.marker[1], = self.ax_x.plot([0.0], [traj.start[0]], marker)
         traj.marker[2], = self.ax_y.plot([0.0], [traj.start[1]], marker)
         traj.marker[3], = self.ax_z.plot([0.0], [traj.start[2]], marker)
