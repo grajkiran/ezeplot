@@ -1,6 +1,6 @@
 Seventh round:
 ~~~~~~~~~~~~~~
-	1. Only have "theta r" and show in time series. Only have "XY" and in
+Done	1. Only have "theta r" and show in time series. Only have "XY" and in
 	   time series. Shift rmax to left of panel. Change "R" to "r".
 	2. Fixed points option ON means all fixed points in domain are shown.
 	   If OFF then they are switched off.

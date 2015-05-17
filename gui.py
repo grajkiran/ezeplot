@@ -95,7 +95,7 @@ class AppWindow():
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
         self.controls['system']._load_preset('User defined')
-        self.controls['system']._load_preset('Lorentz attractor')
+        #self.controls['system']._load_preset('Lorentz attractor')
 
         self._init_keybindings()
         #self.show_about()
@@ -263,10 +263,7 @@ class AppWindow():
         self.update_fig()
 
     def _set_temporal(self, *args):
-        if self.opts.temporal.get():
-            self.fig.set_mode(4)
-        else:
-            self.fig.set_mode(1)
+        self.fig.set_mode(self.opts.temporal.get())
         self.update_fig()
 
     def _set_proj(self, *args):
@@ -288,7 +285,7 @@ class AppWindow():
                 l[0].disable()
                 l[1].disable()
             self.controls['limits'][1][1].enable()
-        self.fig.set_proj(proj)
+        self.fig.set_proj(proj, self.opts.temporal.get())
         self._update_system_limits()
         self.update_fig()
 

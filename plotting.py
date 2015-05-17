@@ -40,7 +40,7 @@ matplotlib.rc('font', family = 'serif')
 #matplotlib.rc('font', size = 16, weight = 'bold')
 
 class Figure:
-    def __init__(self, master, mode = 1, blit = True):
+    def __init__(self, master, temporal = False, blit = True):
         self.fig = matplotlib.figure.Figure()
         self.canvas = FigureCanvasTkAgg(self.fig, master = master)
         #self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
@@ -56,13 +56,13 @@ class Figure:
         self.ax_y = self.fig.add_subplot(223, label = 'y', visible = False, sharex = self.ax_x)
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False, sharex = self.ax_x)
         self._3d = False
-        self.mode = mode
+        self.temporal = temporal
         self.bg = dict()
         #self.trajectories = []
         logging.debug(uptime.uptime(), "Setting mode...")
-        self.set_mode(mode)
+        #self.set_mode(temporal)
         logging.debug(uptime.uptime(), "Setting projection...")
-        self.set_proj('rect')
+        self.set_proj('rect', temporal)
 
     def get_diagonal(self):
         lim = self.get_limits()
@@ -101,12 +101,14 @@ class Figure:
             return
         if ax is None:
             ax = self.ax_main
+        if not ax in self.fig.get_axes():
+            return
         if not artist in ax.get_children():
             ax.add_artist(artist)
         if self._blit:
             ax.draw_artist(artist)
 
-    def set_proj(self, projection = 'rect'):
+    def set_proj(self, projection, temporal):
         geom = self.ax_main.get_geometry()
         self._3d = False
         if projection == 'rect':
@@ -123,24 +125,27 @@ class Figure:
                 ax.set_visible(False)
                 self.fig.delaxes(ax)
         self.ax_main.set_visible(True)
-        self.ax_main.change_geometry(*geom)
-        self.fig.add_subplot(self.ax_main)
+        self.fig.add_axes(self.ax_main)
+        self.set_mode(temporal)
+        #self.ax_main.change_geometry(*geom)
         self.draw(force = True)
 
-    def set_mode(self, mode = 1):
-        if mode == 1:
-            for ax in self.ax_x, self.ax_y, self.ax_z:
-                ax.set_visible(False)
+    def set_mode(self, temporal):
+        for ax in self.ax_x, self.ax_y, self.ax_z:
+            ax.set_visible(False)
+            if ax in self.fig.get_axes():
                 self.fig.delaxes(ax)
+        if not temporal:
             self.ax_main.change_geometry(1, 1, 1)
-        elif mode == 4:
-            for ax in self.ax_x, self.ax_y, self.ax_z:
+        else:
+            self.ax_main.change_geometry(2, 2, 1)
+            for ax in self.ax_x, self.ax_y:
                 self.fig.add_axes(ax)
                 ax.set_visible(True)
-            self.ax_main.change_geometry(2, 2, 1)
-        else:
-            raise NotImplementedError("Unsupported mode: " + str(mode))
-        self.mode = mode
+            if self._3d:
+                self.fig.add_axes(self.ax_z)
+                self.ax_z.set_visible(True)
+        self.temporal = temporal
 
     def __set_3d_mode(self):
         self.ax_3d.mouse_init(zoom_btn = [], rotate_btn = [1])
@@ -158,7 +163,7 @@ class Figure:
         var_y = 'Y'
         if self.ax_main is self.ax_polar:
             var_x = r'\theta'
-            var_y = 'R'
+            var_y = 'r'
         title_x = "Time series $(%s)$" % var_x
         title_y = "Time series $(%s)$" % var_y
         title_z = "Time series $(Z)$"
@@ -172,7 +177,7 @@ class Figure:
         self.__set_3d_mode()
         self.ax_rect.text(0.5, 1.1, "Phase portrait $(XY)$", size = 16, weight = 'bold',
                 transform = self.ax_main.transAxes, ha = 'center')
-        self.ax_polar.text(0.5, 1.1, r"Phase portrait $(\theta RZ)$", size = 16, weight = 'bold',
+        self.ax_polar.text(0.5, 1.1, r"Phase portrait $(\theta r)$", size = 16, weight = 'bold',
                 transform = self.ax_polar.transAxes, ha = 'center')
         self.ax_3d.text2D(0.5, 1.1, "Phase portrait $(XYZ)$", size = 16, weight = 'bold',
                 transform = self.ax_3d.transAxes, ha = 'center')
@@ -340,7 +345,7 @@ class Figure:
         # Draw only the relevant artists
         self._draw_artist(traj.line[0])
         self._draw_artist(traj.marker[0])
-        if self.mode == 4:
+        if self.temporal:
             for axis, axes in zip((1,2,3), (self.ax_x, self.ax_y, self.ax_z)):
                 self._draw_artist(traj.line[axis], axes)
                 self._draw_artist(traj.marker[axis], axes)
