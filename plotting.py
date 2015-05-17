@@ -368,8 +368,11 @@ class Figure:
         traj.line[1], = self.ax_x.plot(traj.t, traj.x, style)
         traj.line[2], = self.ax_y.plot(traj.t, traj.y, style)
         traj.line[3], = self.ax_z.plot(traj.t, traj.z, style)
-        traj.line["3d"], = self.ax_3d.plot(traj.x, traj.y, traj.z, style)
-        traj.marker["start"], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
+        if self._3d:
+            traj.line["3d"] = traj.line[0]
+        else:
+            traj.line["3d"], = self.ax_3d.plot(traj.x, traj.y, traj.z, style)
+        #traj.marker["start"], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker, mfc = mfc)
         traj.marker["3d"], = self.ax_3d.plot([traj.start[0]], [traj.start[1]], [traj.start[2]], marker)
         traj.marker[0], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
         traj.marker[1], = self.ax_x.plot([0.0], [traj.start[0]], marker)
