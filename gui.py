@@ -25,10 +25,12 @@ try:
     import tkinter as tk
     from tkinter import ttk
     from tkinter.filedialog import asksaveasfilename
+    from tkinter.messagebox import showinfo
 except:
     import Tkinter as tk
     import ttk
     from tkFileDialog import asksaveasfilename
+    from tkMessageBox import showinfo
 import logging
 import numpy as np
 from widgets import *
@@ -214,6 +216,9 @@ class AppWindow():
             preset = presets.systems[preset_name]
             if 'locations' in preset:
                 picked = preset['locations']
+        if len(picked) == 0:
+            showinfo(title = "No trajectories!", message = "No trajectories to update.", detail = "Change x_dot, y_dot and z_dot as needed and click on the phase portrait to add a trajectory.", parent = self.root)
+            return
         self.trajectories.clear()
         self.fixed_points.clear()
         self.anim_tmax = 0.0

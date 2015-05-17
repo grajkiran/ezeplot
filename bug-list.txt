@@ -4,7 +4,7 @@ Done	1. Only have "theta r" and show in time series. Only have "XY" and in
 	   time series. Shift rmax to left of panel. Change "R" to "r".
 	2. Fixed points option ON means all fixed points in domain are shown.
 	   If OFF then they are switched off.
-	3. For User-defined, flash a message "Click graph to select initial
+Done	3. For User-defined, flash a message "Click graph to select initial
 	   point".
 	4. About
 	   Remove Initial About screen.
