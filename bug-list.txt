@@ -15,7 +15,7 @@ Done	3. For User-defined, flash a message "Click graph to select initial
 	   Email in italics, website in italics, underlined and clickable.
 	   About Ezeplot menu and Poincare section menu should have your “E”
 		icon on top right.
-	5. Poincare section put permanent message below buttons
+Done	5. Poincare section put permanent message below buttons
 	   Red: Opposite to plane normal
 	   Blue: Direction of plane normal
 Done	6. Change "Projection" to "Coordinates"

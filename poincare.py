@@ -261,11 +261,17 @@ class PWindow(tk.Toplevel):
         #        variable = self.auto_view).grid(columnspan=2, sticky = tk.W)
         #tk.Checkbutton(f_options, text = "First return maps", command = self._update,
         #        variable = self.first_returns).grid(columnspan = 2, sticky = tk.W)
+        tk.Label(frame, text = "Blue: Direction of\n         plane normal", fg = "blue",
+                justify = tk.LEFT).grid()
+        tk.Label(frame, text = "Red: Opposite to\n        plane normal", fg = "red",
+                justify = tk.LEFT).grid()
+
         close_btn = tk.Button(frame, text = "Close", command = self.destroy, font = "sans 10 bold",
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = "white", activeforeground = "white")
         close_btn.grid(columnspan = 2, sticky = tk.S)
         frame.rowconfigure(close_btn.grid_info()['row'], weight = 1)
+
         return controls
 
     def _add_menubar(self):
