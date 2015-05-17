@@ -16,7 +16,7 @@ Done	9. "Location of plane". Keep show plane option and show traj option as
 	   ON by default.
 Done	10. Pressing clear and update should replot default initial condition
 	    traj for default models.
-	11. Need About window and your choice of icon at top-left.
+Done	11. Need About window and your choice of icon at top-left.
 Done	12. Change "Intersecting plane direction" to "Normal to plane".
 	    Remove ":" from phrases such as "Projection:".
 Done	13. Change System to "Dynamical System" in main window

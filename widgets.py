@@ -113,7 +113,19 @@ License:
         self.bind('<Escape>', lambda *args: self.destroy())
         self.focus_set()
         self.grab_set()
+        self.center_on_parent(master)
         self.wait_window(self)
+
+    def center_on_parent(self, parent):
+        w = h = 480
+        pw = parent.winfo_width()
+        ph = parent.winfo_height()
+        px = parent.winfo_rootx()
+        py = parent.winfo_rooty()
+        x = px + (pw-w)//2
+        y = py + (ph-h)//2
+        geom = "%+d%+d" % (x,y)
+        self.geometry(geom)
 
 class PlotLimits(tk.Toplevel):
     def __init__(self, master, fig, limits):
@@ -328,4 +340,7 @@ def dsf_test():
     b.grid(row=1, column = 2)
     root.mainloop()
 if __name__ == '__main__':
-    dsf_test()
+    root = tk.Tk()
+    ad = AboutDialog(root)
+    import IPython
+    IPython.embed()

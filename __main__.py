@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 ##############################################################################
 #                                                                            #
@@ -20,6 +20,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.    #
 #                                                                            #
 ##############################################################################
+import uptime
 try:
     import tkinter as tk
 except ImportError:
@@ -28,12 +29,12 @@ import matplotlib
 matplotlib.use('TkAgg')
 import sys
 from optparse import OptionParser
+import os.path
 
 # Local imports
 from plotting import Figure
 from gui import AppWindow
 from dynsystem import DynamicSystem
-import uptime
 
 
 parser = OptionParser()
@@ -49,6 +50,7 @@ print(uptime.uptime(), "Creating root window...")
 root = tk.Tk()
 root.title("EzePlot - Dynamical systems visualization")
 root.protocol('WM_DELETE_WINDOW', root.quit)
+root.tk.call("wm", "iconphoto", root._w, tk.PhotoImage(file = 'icon.png'))
 #root.attributes('-fullscreen', True)
 #root.attributes('-zoomed', True)
 #fig.bind('close_event', lambda evt: root.quit())
