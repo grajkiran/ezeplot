@@ -153,6 +153,14 @@ class Figure:
         xlim = self.ax_rect.get_xlim()
         ylim = self.ax_rect.get_ylim()
         zlim = self.ax_3d.get_zlim()
+        var_x = 'X'
+        var_y = 'Y'
+        if self.ax_main is self.ax_polar:
+            var_x = r'\theta'
+            var_y = 'R'
+        title_x = "Time series $(%s)$" % var_x
+        title_y = "Time series $(%s)$" % var_y
+        title_z = "Time series $(Z)$"
         tlim = 0.0, tmax
         for a in (self.ax_rect, self.ax_3d, self.ax_polar,
                 self.ax_x, self.ax_y, self.ax_z):
@@ -161,18 +169,21 @@ class Figure:
         self.fig.subplots_adjust(top = 0.85, left = 0.1, right = 0.9,
                 bottom = 0.1, hspace = 0.4)
         self.__set_3d_mode()
-        self.ax_rect.text(0.5, 1.1, "Phase portrait (XY)", size = 16, weight = 'bold',
+        self.ax_rect.text(0.5, 1.1, "Phase portrait $(XY)$", size = 16, weight = 'bold',
                 transform = self.ax_main.transAxes, ha = 'center')
-        self.ax_polar.text(0.5, 1.1, r"Phase portrait ($\theta r$)", size = 16, weight = 'bold',
+        self.ax_polar.text(0.5, 1.1, r"Phase portrait $(\theta RZ)$", size = 16, weight = 'bold',
                 transform = self.ax_polar.transAxes, ha = 'center')
-        self.ax_3d.text2D(0.5, 1.1, "Phase portrait (XYZ)", size = 16, weight = 'bold',
+        self.ax_3d.text2D(0.5, 1.1, "Phase portrait $(XYZ)$", size = 16, weight = 'bold',
                 transform = self.ax_3d.transAxes, ha = 'center')
-        self.ax_x.text(0.5, 1.1, "Time series (X)", size = 16, weight = 'bold',
-                transform = self.ax_x.transAxes, ha = 'center')
-        self.ax_y.text(0.5, 1.1, "Time series (Y)", size = 16, weight = 'bold',
-                transform = self.ax_y.transAxes, ha = 'center')
-        self.ax_z.text(0.5, 1.1, "Time series (Z)", size = 16, weight = 'bold',
-                transform = self.ax_z.transAxes, ha = 'center')
+        for ax, title in zip((self.ax_x, self.ax_y, self.ax_z), (title_x, title_y, title_z)):
+            ax.text(0.5, 1.1, title, size = 16, weight = 'bold',
+                transform = ax.transAxes, ha = 'center')
+        #self.ax_x.text(0.5, 1.1, "Time series $(X)$", size = 16, weight = 'bold',
+        #        transform = self.ax_x.transAxes, ha = 'center')
+        #self.ax_y.text(0.5, 1.1, "Time series $(Y)$", size = 16, weight = 'bold',
+        #        transform = self.ax_y.transAxes, ha = 'center')
+        #self.ax_z.text(0.5, 1.1, "Time series $(Z)$", size = 16, weight = 'bold',
+        #        transform = self.ax_z.transAxes, ha = 'center')
         #polar_message = "$x=\\theta$\n$y=r$"
         #self.ax_polar.annotate(polar_message, (-40, -75), size = 16, color = 'blue',
         #        xycoords = 'figure points')
@@ -181,8 +192,8 @@ class Figure:
         self.ax_x.set_xlabel(r'Time')
         self.ax_y.set_xlabel(r'Time')
         self.ax_z.set_xlabel(r'Time')
-        self.ax_x.set_ylabel(r'X')
-        self.ax_y.set_ylabel(r'Y')
+        self.ax_x.set_ylabel(r'$%s$' % var_x)
+        self.ax_y.set_ylabel(r'$%s$' % var_y)
         self.ax_z.set_ylabel(r'Z')
         self.ax_3d.set_xlabel(r'X')
         self.ax_3d.set_ylabel(r'Y')
@@ -204,6 +215,9 @@ class Figure:
         self.ax_x.set_ylim(xlim)
         self.ax_y.set_ylim(ylim)
         self.ax_z.set_ylim(zlim)
+        if self.ax_main is self.ax_polar:
+            self.ax_x.set_ylim((0, 2*np.pi))
+            self.ax_y.set_ylim(self.ax_polar.get_ylim())
 
     def scale_view(self, evt):
         if evt.inaxes is self.ax_3d:
@@ -286,7 +300,7 @@ class Figure:
                 traj.line[l].set_xdata(traj.t)
                 traj.line[l].set_ydata(traj.points[:,l-1])
             if self.ax_main is self.ax_polar:
-                traj.line[1].set_ydata(traj.points[:,0]%np.pi)
+                traj.line[1].set_ydata(traj.points[:,0]%(2*np.pi))
             traj.line["3d"]._verts3d = (traj.x, traj.y, traj.z)
         else: # During animation
             if t_anim > traj.t[-1]:
