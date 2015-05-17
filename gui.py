@@ -29,6 +29,7 @@ except:
     import Tkinter as tk
     import ttk
     from tkFileDialog import asksaveasfilename
+import logging
 import numpy as np
 from widgets import *
 import helpers
@@ -47,9 +48,9 @@ class AppWindow():
     def __init__(self, root, system, blit = True):#, embedded = False):
         self.system = system
         self.root = root
-        print(uptime.uptime(), "Creating figure window...")
+        logging.debug(uptime.uptime(), "Creating figure window...")
         self.fig = plotting.Figure(root, blit = blit)
-        print(uptime.uptime(), "Initializing options...")
+        logging.debug(uptime.uptime(), "Initializing options...")
         self.opts = self._init_options()
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
         self.anim_info    = tk.StringVar(self.root, "")
@@ -73,13 +74,13 @@ class AppWindow():
                 relief = tk.SUNKEN,)
         cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
         self.menu = self._add_menubar()
-        print(uptime.uptime(), "Creating widgets...")
+        logging.debug(uptime.uptime(), "Creating widgets...")
         self.controls = self._add_widgets(cframe)
-        print(uptime.uptime(), "Updating figure...")
+        logging.debug(uptime.uptime(), "Updating figure...")
         self._update_system_limits()
         self.update_fig()
 
-        print(uptime.uptime(), "Finishing...")
+        logging.debug(uptime.uptime(), "Finishing...")
         self.root.rowconfigure(1, weight = 1)
         self.root.columnconfigure(0, weight = 1)
         self.root.config(menu = self.menu)
@@ -90,14 +91,14 @@ class AppWindow():
         #pinfo_label.pack(side = tk.BOTTOM, fill = tk.X)
         #cframe.pack(fill = tk.Y, expand = 1)
 
-        print(uptime.uptime(), "Loading presets...")
+        logging.debug(uptime.uptime(), "Loading presets...")
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
         self.controls['system']._load_preset('User defined')
-        #self.controls['system']._load_preset('Lorentz attractor')
+        self.controls['system']._load_preset('Lorentz attractor')
 
         self._init_keybindings()
-        self.show_about()
+        #self.show_about()
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -195,7 +196,7 @@ class AppWindow():
 
     def show_poincare_dialog(self, *args):
         if len(self.trajectories) == 0:
-            sys.stderr.write("Add a trajectory first.\n")
+            logging.warn("No trajectories present.")
             return
         self.stop_traj_animation()
         l = self.opts.limits
@@ -315,12 +316,12 @@ class AppWindow():
         if len(self.trajectories) == 0:
             return
         if self.anim_running.get():
-            print("Stopping animation...")
+            logging.info("Stopping animation...")
             self.anim_timer.stop()
             self.anim_running.set(False)
             self.controls['anim'].configure(text = 'Animate')
         else:
-            print("Starting animation...")
+            logging.info("Starting animation...")
             self.anim_timer.start()
             self.anim_running.set(True)
             self.controls['anim'].configure(text = 'Pause')
@@ -340,9 +341,9 @@ class AppWindow():
                 self.fig.draw_fp(fp_clean)
                 self.update_fig()
                 vel = self.system(fp_clean)
-                print("Found a fixed point:\n", fp_clean, vel)
+                logging.info("Found a fixed point:\n", fp_clean, vel)
         if pos in self.trajectories:
-            print("Trajectory already exists.")
+            logging.warn("Trajectory already exists.")
             return
         try:
             t = Timer()
@@ -351,11 +352,10 @@ class AppWindow():
                 bidirectional = self.opts.reverse.get(), nsteps = 5 * (self.opts.tmax.get()/self.opts.dt.get()),
                 max_step = self.opts.dt.get(), use_ode = True)
             t.stop()
-            print("Computing trajectory (%d points) took %g seconds" % (len(traj.x), t.seconds()))
+            logging.debug("Computing trajectory (%d points) took %g seconds" % (len(traj.x), t.seconds()))
         except:
             pos_str = ", ".join(map(str, pos))
-            sys.stderr.write("Could not compute trajectory from: %s\n" % pos_str)
-            print(sys.exc_info())
+            logging.warn("Could not compute trajectory from: %s" % pos_str)
             return
         if traj.dist[-1] < 10*threshold:
             return
@@ -405,10 +405,10 @@ class AppWindow():
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
             x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
         pos = x, y, z
-        #print("Position:", pos)
-        #print("Limits:", self.fig.get_limits())
+        #logging.debug("Position:", pos)
+        #logging.debug("Limits:", self.fig.get_limits())
         #if not helpers.is_inside(pos, self.fig.get_limits()):
-        #    print("Position outside limits.")
+        #    logging.warn("Position outside limits.")
         #    return
         self.add_location(pos)
 
@@ -505,7 +505,6 @@ class AppWindow():
         return controls
 
     def show_about(self):
-        print("About this application")
         AboutDialog(self.root)
 
     def _add_menubar(self):
@@ -544,7 +543,7 @@ class AppWindow():
         f = str(f)
         if not f.endswith('.pdf'):
             return
-        print("Saving to", f, type(f))
+        logging.info("Saving to", f, type(f))
         self.fig.fig.savefig(f)
 
     def _init_keybindings(self):

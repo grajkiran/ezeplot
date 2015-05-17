@@ -26,6 +26,7 @@ from scipy.interpolate import interp1d
 from scipy.optimize import root
 from math import isinf
 import helpers
+import logging
 from numpy import *
 abs = absolute
 
@@ -236,14 +237,14 @@ class DynamicSystem:
             traj[i][1] = s_cum
             traj[i][2:] = pos
             if not helpers.is_inside(pos, self.limits):
-                print("Crossed domain - stopping integration.")
+                logging.debug("Crossed domain - stopping integration.")
                 return traj
             # Check if we are within threshold of a fixed point.
             # We are if our velocity is decreasing and we have not moved much.
             v_old = helpers.mag(self(pos_old))
             v = helpers.mag(self(pos))
             if s < threshold and v < v_old and len(traj) > 10:
-                print("No significant change - stopping integration.")
+                logging.debug("No significant change - stopping integration.")
                 return traj
         return traj
 
@@ -265,21 +266,21 @@ class DynamicSystem:
                 s_cum = s_old - s
             traj.append([t, s_cum] + pos_norm)
             if not helpers.is_inside(pos_norm, self.limits):
-                print("Crossed domain - stopping integration.")
+                logging.debug("Crossed domain - stopping integration.")
                 return -1
             # Check if we are within threshold of a fixed point.
             # We are if our velocity is decreasing and we have not moved much.
             v_old = helpers.mag(self(pos_old))
             v = helpers.mag(self(pos_norm))
             if s < threshold and v < v_old and len(traj) > 10:
-                print("No significant change - stopping integration.")
+                logging.debug("No significant change - stopping integration.")
                 return -1
             return 0
         rk4 = ode(lambda t, pos: self(pos)).set_integrator('dopri5', **kwargs)
         rk4.set_solout(accumulate)
         rk4.set_initial_value(start, 0.0)
         rk4.integrate(tmax)
-        #print("Integration took %g seconds" % t.seconds())
+        #logging.debug("Integration took %g seconds" % t.seconds())
         return np.array(traj)
 
 def main():

@@ -63,7 +63,7 @@ Done	14. BUG: For any model, on opting for diff coordinate system
 Done	15. In any plot circle through all colors permitted by Python
 Done	16. Remove “End points” option and color intersecting plane as
 	    yellow.  Remove “Auto-align” option.
-	17. Move print statements to logging
+Done	17. Move print statements to logging
 	18. Remove unnecessary stuff like LSelect(Lasso) etc.
 
 Fourth round:

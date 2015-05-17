@@ -32,6 +32,7 @@ from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 from widgets import VEntry
 import numpy as np
 from textwrap import wrap
+import logging
 from functools import partial
 import helpers
 
@@ -103,7 +104,6 @@ class Plane:
         x = x1 + t * dx
         y = y1 + t * dy
         z = z1 + t * dz
-        #print("Intersection:", dx, dy, dz)
         return (x, y, z)
     def plot(self, ax, limits, **kwargs):
         xlim, ylim, zlim = limits
@@ -283,7 +283,7 @@ class PWindow(tk.Toplevel):
         f = str(f)
         if not f.endswith('.pdf'):
             return
-        print("Saving to", f, type(f))
+        logging.info("Saving to", f, type(f))
         self.fig.savefig(f)
 
     def _plane_preset(self):

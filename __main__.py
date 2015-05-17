@@ -30,6 +30,7 @@ matplotlib.use('TkAgg')
 import sys
 from optparse import OptionParser
 import os.path
+import logging
 
 # Local imports
 from plotting import Figure
@@ -46,7 +47,7 @@ opts, args = parser.parse_args()
 
 system = DynamicSystem('y', '-x + mu * (1 - x*x)*y', params = dict(mu = 1.0))
 #fig = Figure(blit = opts.blit)
-print(uptime.uptime(), "Creating root window...")
+logging.debug(uptime.uptime(), "Creating root window...")
 root = tk.Tk()
 root.title("EzePlot - Dynamical systems visualization")
 root.protocol('WM_DELETE_WINDOW', root.quit)
@@ -54,8 +55,8 @@ root.tk.call("wm", "iconphoto", root._w, tk.PhotoImage(file = 'icon.png'))
 #root.attributes('-fullscreen', True)
 #root.attributes('-zoomed', True)
 #fig.bind('close_event', lambda evt: root.quit())
-print(uptime.uptime(), "Creating application...")
+logging.debug(uptime.uptime(), "Creating application...")
 app = AppWindow(root, system, blit = opts.blit)#, embedded = opts.embed)
 # TODO: Set the geometry of the control window and figure windows
-print(uptime.uptime(), "Entering mainloop...")
+logging.debug(uptime.uptime(), "Entering mainloop...")
 root.mainloop()

@@ -28,6 +28,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+import logging
 import numpy as np
 import helpers
 
@@ -45,12 +46,12 @@ class Figure:
         #self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         self._blit = blit and self.fig.canvas.supports_blit
         #self.canvas.mpl_connect('scroll_event', self.scale_view)
-        print(uptime.uptime(), "Creating subplots main...")
+        logging.debug(uptime.uptime(), "Creating subplots main...")
         self.ax_rect = self.fig.add_subplot(111, label = 'rect', xlim = (-5, 5), ylim=(-5, 5))
         self.ax_3d = self.fig.add_subplot(111, label = '3d', projection = '3d', zlim = (-1, 1))
         self.ax_polar = self.fig.add_subplot(111, label = 'polar', projection = 'polar')
         self.ax_main = self.ax_rect
-        print(uptime.uptime(), "Creating subplots time series...")
+        logging.debug(uptime.uptime(), "Creating subplots time series...")
         self.ax_x = self.fig.add_subplot(222, label = 'x', visible = False)
         self.ax_y = self.fig.add_subplot(223, label = 'y', visible = False, sharex = self.ax_x)
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False, sharex = self.ax_x)
@@ -58,9 +59,9 @@ class Figure:
         self.mode = mode
         self.bg = dict()
         #self.trajectories = []
-        print(uptime.uptime(), "Setting mode...")
+        logging.debug(uptime.uptime(), "Setting mode...")
         self.set_mode(mode)
-        print(uptime.uptime(), "Setting projection...")
+        logging.debug(uptime.uptime(), "Setting projection...")
         self.set_proj('rect')
 
     def get_diagonal(self):
@@ -288,7 +289,7 @@ class Figure:
         self._draw_artist(art)
 
     def _draw_trajectory(self, traj, t_anim = None):
-        #print("Drawing trajectory:", traj)
+        #logging.debug("Drawing trajectory:", traj)
         if t_anim is None:
             for m in range(4):
                 traj.marker[m].set_visible(False)
