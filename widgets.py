@@ -98,7 +98,7 @@ this program.  If not, see
             parent = master)
 
 class AboutDialog(tk.Toplevel):
-    def __init__(self, master):
+    def __init__(self, master, splash = False):
         tk.Toplevel.__init__(self, master, bg = 'black')
         contents="""Ezeplot 1.0
 Raj Kiran Grandhi,
@@ -113,21 +113,30 @@ http://ezeplot.example.com
         img.grid(columnspan = 2)
         text = tk.Label(self, bg = 'black', fg = 'yellow', text = contents, justify = tk.CENTER)
         text.grid(columnspan = 2)
-        btn = tk.Label(self, text = "License", bg = 'black', fg = 'blue', pady = 5)
-        btn.bind('<Button>', lambda arg: license_dialog(self))
-        btn.grid()
-        btn_close = tk.Label(self, text = "Close", bg = 'black', fg = 'blue', pady = 5)
-        btn_close.bind('<Button>', lambda *args: self.destroy())
-        btn_close.grid(row = 2, column = 1)
         self.title('About Ezeplot')
-        self.transient(master)
         self.protocol('WM_DELETE_WINDOW', self.destroy)
         self.bind('<Escape>', lambda *args: self.destroy())
         img.bind('<Button>', lambda *args: self.destroy())
         self.focus_set()
         self.grab_set()
-        self.center_on_parent(master)
-        self.wait_window(self)
+        self.transient(master)
+        if splash:
+            self.center_on_screen()
+        else:
+            btn = tk.Label(self, text = "License", bg = 'black', fg = 'blue', pady = 5)
+            btn.bind('<Button>', lambda arg: license_dialog(self))
+            btn.grid()
+            btn_close = tk.Label(self, text = "Close", bg = 'black', fg = 'blue', pady = 5)
+            btn_close.bind('<Button>', lambda *args: self.destroy())
+            btn_close.grid(row = 2, column = 1)
+            self.center_on_parent(master)
+            self.wait_window(self)
+
+    def center_on_screen(self):
+        w = h = 280
+        pw = self.winfo_screenwidth()
+        ph = self.winfo_screenheight()
+        self.geometry("%+d%+d" % ((pw-w)//2, (ph-h)//2))
 
     def center_on_parent(self, parent):
         w = h = 280

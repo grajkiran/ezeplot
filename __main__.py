@@ -36,7 +36,7 @@ import logging
 from plotting import Figure
 from gui import AppWindow
 from dynsystem import DynamicSystem
-
+from widgets import AboutDialog
 
 parser = OptionParser()
 #parser.add_option("-e", "--embed", action = "store_true", default = True)
@@ -52,6 +52,7 @@ root = tk.Tk()
 root.title("EzePlot - Dynamical systems visualization")
 root.protocol('WM_DELETE_WINDOW', root.quit)
 root.tk.call("wm", "iconphoto", root._w, tk.PhotoImage(file = 'icon.png'))
+ad = AboutDialog(root, splash = True)
 #root.attributes('-fullscreen', True)
 #root.attributes('-zoomed', True)
 #fig.bind('close_event', lambda evt: root.quit())
@@ -59,4 +60,5 @@ logging.debug(uptime.uptime(), "Creating application...")
 app = AppWindow(root, system, blit = opts.blit)#, embedded = opts.embed)
 # TODO: Set the geometry of the control window and figure windows
 logging.debug(uptime.uptime(), "Entering mainloop...")
+ad.destroy()
 root.mainloop()

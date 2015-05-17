@@ -95,10 +95,10 @@ class AppWindow():
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
         self.controls['system']._load_preset('User defined')
-        #self.controls['system']._load_preset('Lorentz attractor')
+        self.controls['system']._load_preset('Lorentz attractor')
 
         self._init_keybindings()
-        self.show_about()
+        #self.show_about()
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -505,7 +505,7 @@ class AppWindow():
         return controls
 
     def show_about(self):
-        AboutDialog(self.root)
+        ad = AboutDialog(self.root)
 
     def _add_menubar(self):
         menubar = tk.Menu(self.root)
