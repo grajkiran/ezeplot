@@ -240,7 +240,8 @@ class AppWindow():
             self.fig.draw_nullclines(field, linestyles = "dashed")
         if self.opts.quiver.get():
             if PROJECTIONS[self.opts.projection.get()] == '3d':
-                self.fig.draw_quiver3d(field_quiv3d, width = 0.001, headwidth = 5, scale = 50)
+                logging.warn("Quiver in 3d is disabled.")
+                #self.fig.draw_quiver3d(field_quiv3d, width = 0.001, headwidth = 5, scale = 50)
             else:
                 self.fig.draw_quiver(field_quiv, width = 0.001, headwidth = 5, scale = 50)
         if self.opts.fixed_points.get():
@@ -272,7 +273,7 @@ class AppWindow():
         proj = PROJECTIONS[self.opts.projection.get()]
         if proj.lower() == '3d':
             self.controls['nullclines'].configure(state = tk.DISABLED)
-            #self.controls['quiver'].configure(state = tk.DISABLED)
+            self.controls['quiver'].configure(state = tk.DISABLED)
         else:
             self.controls['nullclines'].configure(state = tk.NORMAL)
             self.controls['quiver'].configure(state = tk.NORMAL)
