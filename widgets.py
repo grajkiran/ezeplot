@@ -23,9 +23,11 @@
 try:
     import tkinter as tk
     from tkinter.messagebox import showinfo
+    from tkinter.font import Font
 except:
     import Tkinter as tk
     from tkMessageBox import showinfo
+    from tkFont import Font
 
 import matplotlib.widgets
 import dynsystem
@@ -33,6 +35,7 @@ import numpy as np
 import sys
 import presets
 import logging
+import webbrowser
 
 class VEntry(tk.Entry):
     """A Validating Entry widget."""
@@ -72,7 +75,7 @@ class VEntry(tk.Entry):
             if self.debug:
                 logging.error("%s" % self.errmsg.get())
 
-def license_dialog(master, icon):
+def license_dialog(master, icon = None):
     license_text = """
 Ezeplot is free software: you can
 redistribute it and/or modify it under
@@ -98,7 +101,7 @@ this program.  If not, see
             parent = master)
 
 class AboutDialog(tk.Toplevel):
-    def __init__(self, master, icon, splash = False):
+    def __init__(self, master, icon = None, splash = False):
         tk.Toplevel.__init__(self, master, bg = 'black')
         if icon is not None:
             self.tk.call("wm", "iconphoto", self._w, icon)
@@ -113,8 +116,26 @@ http://ezeplot.example.com
         self.icon = tk.PhotoImage(file = 'icon.ppm')
         img = tk.Label(self, image = self.icon, bg = 'black')
         img.grid(columnspan = 2)
-        text = tk.Label(self, bg = 'black', fg = 'yellow', text = contents, justify = tk.CENTER)
-        text.grid(columnspan = 2)
+        frame = tk.Frame(self, bg = 'black')
+        frame.grid(sticky = tk.E + tk.W, columnspan = 2)
+        frame.columnconfigure(0, weight=1)
+        font_b15 = Font(size = 15, weight = 'bold')
+        font_b12 = Font(size = 12, weight = 'bold')
+        font_reg = Font(size = 10)
+        font_url = Font(size = 12, slant = 'italic', underline = 1)
+        font_email = Font(size = 12, slant = 'italic')
+        self.add_line(frame, text = "Ezeplot 1.0", font = font_b15)
+        self.add_line(frame, text = "Raj Kiran Grandhi", font = font_b12)
+        self.add_line(frame, text = "Department of Aerospace Engineering", font = font_reg)
+        self.add_line(frame, text = "Indian Institute of Technology", font = font_reg)
+        self.add_line(frame, text = "Kharagpur - 721302", font = font_reg)
+        self.add_line(frame, text = "West Bengal, India", font = font_reg)
+        self.add_line(frame, text = "rajkiran@aero.iitkgp.ernet.in", font = font_email)
+        url = self.add_line(frame, text = "http://ezeplot.example.com", pady = 8,
+                font = font_url, cursor = 'hand2')
+        url.bind('<Button>', lambda *args: webbrowser.open(url['text']))
+        #text = tk.Label(self, bg = 'black', fg = 'yellow', text = contents, justify = tk.CENTER)
+        #text.grid(columnspan = 2)
         self.title('About Ezeplot')
         self.protocol('WM_DELETE_WINDOW', self.destroy)
         self.bind('<Escape>', lambda *args: self.destroy())
@@ -125,23 +146,34 @@ http://ezeplot.example.com
         if splash:
             self.center_on_screen()
         else:
-            btn = tk.Label(self, text = "License", bg = 'black', fg = 'blue', pady = 5)
+            btn = tk.Label(self, text = "License", font = font_b12, cursor = 'hand1',
+                    bg = 'black', fg = 'white', pady = 10)
             btn.bind('<Button>', lambda arg: license_dialog(self))
-            btn.grid()
-            btn_close = tk.Label(self, text = "Close", bg = 'black', fg = 'blue', pady = 5)
+            btn.grid(row = 3, column = 0)
+            btn_close = tk.Label(self, text = "Close", font = font_b12, cursor = 'hand1',
+                    bg = 'black', fg = 'white', pady = 10)
             btn_close.bind('<Button>', lambda *args: self.destroy())
-            btn_close.grid(row = 2, column = 1)
+            btn_close.grid(row = 3, column = 1)
             self.center_on_parent(master)
             self.wait_window(self)
 
+    def add_line(self, master, text, **kwargs):
+        #font = Font(**kwargs)
+        label = tk.Label(master, text = text, bg = 'black', fg = 'gray90',
+                **kwargs)
+        label.grid(sticky = tk.W + tk.E)
+        return label
+
     def center_on_screen(self):
-        w = h = 280
+        w = 250
+        h = 360
         pw = self.winfo_screenwidth()
         ph = self.winfo_screenheight()
         self.geometry("%+d%+d" % ((pw-w)//2, (ph-h)//2))
 
     def center_on_parent(self, parent):
-        w = h = 280
+        w = 250
+        h = 400
         pw = parent.winfo_width()
         ph = parent.winfo_height()
         px = parent.winfo_rootx()
@@ -366,5 +398,5 @@ def dsf_test():
 if __name__ == '__main__':
     root = tk.Tk()
     ad = AboutDialog(root)
-    import IPython
-    IPython.embed()
+    #import IPython
+    #IPython.embed()
