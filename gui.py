@@ -95,10 +95,10 @@ class AppWindow():
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
         self.controls['system']._load_preset('User defined')
-        self.controls['system']._load_preset('Lorentz attractor')
+        #self.controls['system']._load_preset('Lorentz attractor')
 
         self._init_keybindings()
-        #self.show_about()
+        self.show_about()
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -533,7 +533,8 @@ class AppWindow():
         viewmenu.add_command(label = "Poincare", command = self.show_poincare_dialog)
         helpmenu = tk.Menu(menubar, tearoff = False)
         menubar.add_cascade(label = 'Help', menu=helpmenu)
-        helpmenu.add_command(label = 'About', command = self.show_about)
+        helpmenu.add_command(label = 'About Ezeplot', command = self.show_about)
+        helpmenu.add_command(label = 'License', command = lambda: license_dialog(self.root))
         return menubar
 
     def save(self):

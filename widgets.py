@@ -22,8 +22,10 @@
 
 try:
     import tkinter as tk
+    from tkinter.messagebox import showinfo
 except:
     import Tkinter as tk
+    from tkMessageBox import showinfo
 
 import matplotlib.widgets
 import dynsystem
@@ -70,54 +72,65 @@ class VEntry(tk.Entry):
             if self.debug:
                 logging.error("%s" % self.errmsg.get())
 
+def license_dialog(master):
+    license_text = """
+Ezeplot is free software: you can
+redistribute it and/or modify it under
+the terms of the GNU General Public
+License as published by the Free
+Software Foundation, either version 3 of
+the License, or (at your option) any
+later version.
+
+This program is distributed in the hope
+that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the
+GNU General Public License along with
+this program.  If not, see
+<http://www.gnu.org/licenses/>.
+    """
+    return showinfo("Ezeplot license", message = "Ezeplot 1.0", detail = license_text,
+            parent = master)
+
 class AboutDialog(tk.Toplevel):
     def __init__(self, master):
-        tk.Toplevel.__init__(self, master)
+        tk.Toplevel.__init__(self, master, bg = 'black')
         contents="""Ezeplot 1.0
-
-   Ezeplot is a tool for visualising non-linear autonomous dynamical systems.
-   It is intended to be used as an educational aid for studying non-linear
-   dynamics.
-
-Author:
-   Raj Kiran Grandhi, Aerospace Engineering, IIT Kharagpur.
-
-Email:
-   rajkiran@aero.iitkgp.ernet.in
-
-Website:
-   http://ezeplot.example.com
-
-License:
-   Ezeplot is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Raj Kiran Grandhi,
+Dept. of Aerospace Engineering
+IIT Kharagpur - 721302
+West Bengal
+rajkiran@aero.iitkgp.ernet.in
+http://ezeplot.example.com
 """
-        #contents = open('ABOUT.md').read()
-        text = tk.Label(self, text = contents, justify = tk.LEFT)
-        text.pack(side = tk.TOP)
-        btn = tk.Button(self, text = "Close", padx = 8, pady = 8, command = self.destroy)
-        btn.pack()
+        icon = tk.PhotoImage(file = 'icon-crop.png')
+        img = tk.Label(self, image = icon, bg = 'black')
+        img.grid(columnspan = 2)
+        text = tk.Label(self, bg = 'black', fg = 'yellow', text = contents, justify = tk.CENTER)
+        text.grid(columnspan = 2)
+        btn = tk.Label(self, text = "License", bg = 'black', fg = 'blue', pady = 5)
+        btn.bind('<Button>', lambda arg: license_dialog(self))
+        btn.grid()
+        btn_close = tk.Label(self, text = "Close", bg = 'black', fg = 'blue', pady = 5)
+        btn_close.bind('<Button>', lambda *args: self.destroy())
+        btn_close.grid(row = 2, column = 1)
         self.title('About Ezeplot')
         self.transient(master)
         self.protocol('WM_DELETE_WINDOW', self.destroy)
         self.bind('<Escape>', lambda *args: self.destroy())
+        img.bind('<Button>', lambda *args: self.destroy())
         self.focus_set()
         self.grab_set()
         self.center_on_parent(master)
         self.wait_window(self)
 
     def center_on_parent(self, parent):
-        w = h = 480
+        w = h = 280
         pw = parent.winfo_width()
         ph = parent.winfo_height()
         px = parent.winfo_rootx()
