@@ -21,8 +21,10 @@
 ##############################################################################
 try:
     import tkinter as tk
+    from tkinter.filedialog import asksaveasfilename
 except:
     import Tkinter as tk
+    from tkFileDialog import asksaveasfilename
 import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -197,6 +199,8 @@ class PWindow(tk.Toplevel):
         cframe = tk.Frame(self)
         cframe.pack(expand = True, fill = tk.Y)
         self.controls = self._add_widgets(cframe)
+        self.menu = self._add_menubar()
+        self.config(menu = self.menu)
         self.protocol('WM_DELETE_WINDOW', self.destroy)
         self.grab_set()
         self._update()
@@ -263,6 +267,24 @@ class PWindow(tk.Toplevel):
         close_btn.grid(columnspan = 2, sticky = tk.S)
         frame.rowconfigure(close_btn.grid_info()['row'], weight = 1)
         return controls
+
+    def _add_menubar(self):
+        menubar = tk.Menu(self)
+        filemenu = tk.Menu(menubar, tearoff = False)
+        menubar.add_cascade(label = 'File', menu=filemenu)
+        filemenu.add_command(label = 'Print', command = self.save)
+        filemenu.add_command(label = 'Close', command = self.destroy)
+        return menubar
+
+    def save(self):
+        f = asksaveasfilename(defaultextension = ".pdf",
+                parent = self, title = "Save as", initialfile = 'figure',
+                filetypes = [("PDF files", "*.pdf")])
+        f = str(f)
+        if not f.endswith('.pdf'):
+            return
+        print("Saving to", f, type(f))
+        self.fig.savefig(f)
 
     def _plane_preset(self):
         direction = self.plane_direction.get()

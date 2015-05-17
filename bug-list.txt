@@ -11,7 +11,7 @@ Done	5. Remove starting marker for all traj.
 Done	6. Put User defined as last in list. Greyed entries should be zero.
 Done	7. Shift location of rmax to upwards in polar and remove all other
 	   coordinate ranges.
-	8. Print option in Poincare section.
+Done	8. Print option in Poincare section.
 Done	9. "Location of plane". Keep show plane option and show traj option as
 	   ON by default.
 Done	10. Pressing clear and update should replot default initial condition
