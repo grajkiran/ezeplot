@@ -108,7 +108,7 @@ West Bengal
 rajkiran@aero.iitkgp.ernet.in
 http://ezeplot.example.com
 """
-        self.icon = tk.PhotoImage(file = 'icon-crop.png')
+        self.icon = tk.PhotoImage(file = 'icon.png')
         img = tk.Label(self, image = self.icon, bg = 'black')
         img.grid(columnspan = 2)
         text = tk.Label(self, bg = 'black', fg = 'yellow', text = contents, justify = tk.CENTER)
