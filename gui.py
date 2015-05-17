@@ -428,7 +428,7 @@ class AppWindow():
         row = 0
         f = tk.Frame(f_controls)
         f.grid(row=row, columnspan=2)
-        tk.Label(f, text = "Projection",
+        tk.Label(f, text = "Coordinates",
                 anchor = tk.E).grid(row=0, column = 0, sticky = tk.E)
         optmenu = tk.OptionMenu(f, self.opts.projection,
                 *PROJECTIONS.keys(), command = self._set_proj)
