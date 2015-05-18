@@ -280,7 +280,9 @@ class PWindow(tk.Toplevel):
         menubar = tk.Menu(self)
         filemenu = tk.Menu(menubar, tearoff = False)
         menubar.add_cascade(label = 'File', menu=filemenu)
+        filemenu.add_command(label = 'Save section...', command = self.save_section)
         filemenu.add_command(label = 'Print', command = self.save)
+        filemenu.add_separator()
         filemenu.add_command(label = 'Close', command = self.destroy)
         return menubar
 
@@ -293,6 +295,25 @@ class PWindow(tk.Toplevel):
             return
         logging.info("Saving to", f, type(f))
         self.fig.savefig(f)
+
+    def save_section(self):
+        f = asksaveasfilename(defaultextension = ".txt",
+                parent = self, title = "Save as", initialfile = 'poincare',
+                filetypes = [("Text files", "*.txt")])
+        f = str(f)
+        if not f.endswith('.txt'):
+            return
+        logging.info("Saving Poincare secion to %s" % f)
+        with open(f, "w") as out:
+            top, bottom = self.crossings
+            out.write("%In the direction of plane normal\n")
+            out.write("%X\tY\tZ\n")
+            for x, y, z in bottom:
+                out.write("%lf\t%lf\t%lf\n" % (x, y, z))
+            out.write("\n\n%In the direction opposite to plane normal\n")
+            out.write("%X\tY\tZ\n")
+            for x, y, z in top:
+                out.write("%lf\t%lf\t%lf\n" % (x, y, z))
 
     def _plane_preset(self):
         direction = self.plane_direction.get()
@@ -372,7 +393,7 @@ class PWindow(tk.Toplevel):
         coeffs[self.plane_direction.get()] = 1.0
         plane = PSection(*coeffs)
         self.plane_eqn.set(str(plane))
-        from_top, from_bot = plane.compute_crossings(t)
+        self.crossings = from_top, from_bot = plane.compute_crossings(t)
         if self.first_returns.get():
             self._update_first_returns(from_top, from_bot)
         xlim, ylim, zlim = self.limits
