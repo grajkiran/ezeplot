@@ -295,6 +295,9 @@ class AppWindow():
                 l[0].disable()
                 l[1].disable()
             self.controls['limits'][1][1].enable()
+        elif proj.lower() == 'rect':
+            zlims[0].disable()
+            zlims[1].disable()
         self.fig.set_proj(proj, self.opts.temporal.get())
         self._update_system_limits()
         self.update_fig()
