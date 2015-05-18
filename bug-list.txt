@@ -2,8 +2,17 @@ Eighth round:
 ~~~~~~~~~~~~~
 	1. Save timeseries
 	2. Save fixed point locations
-	3. On changing User-defined model, it should not use previous initial
+Done	3. On changing User-defined model, it should not use previous initial
 	   condition values but re-start with same popup message.
+	4. Save Poincare section data: x,y,z,direction index
+	5. Misc stuff
+		- Let Lorenz be default
+		- Disallow Tstep >= Tmax
+		Header in Matlab format:
+		%*********************
+		%Header here
+		%******************
+		5.54545455        454545454.5454        5454545.
 
 Seventh round:
 ~~~~~~~~~~~~~~
