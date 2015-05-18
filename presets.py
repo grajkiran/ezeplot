@@ -96,10 +96,9 @@ systems["User defined"] = {
             "z": "0",
             "xlim": [-5, 5],
             "ylim": [-5, 5],
-            "zlim": [-5, 5],
             "tmax": 25.0,
             "dt": 0.05,
-            "projection": "3D",
+            "projection": "2D",
             }
 #systems["Duffing oscillator"] = {
 #                "x": "y",
