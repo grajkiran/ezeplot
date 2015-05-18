@@ -163,6 +163,7 @@ class AppWindow():
             else:
                 opts[opt].set(defaults[opt])
         self._set_limits()
+        self.update_fixed_points()
         self._reset_fig()
         self._set_proj()
         if 'locations' in preset:
@@ -170,9 +171,7 @@ class AppWindow():
                 self.add_location(pos)
         #self.update_trajectories()
 
-    def _update_system_limits(self, evt = None, prompt = False):
-        if prompt:
-            limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
+    def _get_limits(self):
         limits = self.opts.limits
         xmin = limits.xmin.get()
         xmax = limits.xmax.get()
@@ -180,8 +179,14 @@ class AppWindow():
         ymax = limits.ymax.get()
         zmin = limits.zmin.get()
         zmax = limits.zmax.get()
+        return [(xmin, xmax), (ymin, ymax), (zmin, zmax)]
+
+    def _update_system_limits(self, evt = None, prompt = False):
+        limits = self.opts.limits
+        if prompt:
+            limits_dialog = PlotLimits(self.root, self.fig, self.opts.limits)
         factor = limits.factor.get()
-        plot_limits = [(xmin, xmax), (ymin, ymax), (zmin, zmax)]
+        plot_limits = self._get_limits()
         periodic = [limits.per_x.get(), limits.per_y.get(), limits.per_z.get()]
         self.fig.set_limits(*plot_limits)
         #self.fig.draw(force = True)
@@ -202,13 +207,15 @@ class AppWindow():
             logging.warn("No trajectories present.")
             return
         self.stop_traj_animation()
-        l = self.opts.limits
-        x1, x2 = l.xmin.get(), l.xmax.get()
-        y1, y2 = l.ymin.get(), l.ymax.get()
-        z1, z2 = l.zmin.get(), l.zmax.get()
         w = PWindow(self.root, self.trajectories[self.last_loc],
-                ((x1, x2), (y1, y2), (z1, z2)),
+                self._get_limits(),
                 geometry = self.root.winfo_geometry(), icon = self.icon)
+
+    def update_fixed_points(self):
+        xlim, ylim, zlim = self._get_limits()
+        if PROJECTIONS[self.opts.projection.get()].lower() != '3d':
+            zlim = 0.0, 0.0
+        self.fixed_points = self.system.locate_fixed_points((xlim, ylim, zlim))
 
     def update_trajectories(self, *args):
         picked = list(self.trajectories.keys())
@@ -218,27 +225,24 @@ class AppWindow():
             if 'locations' in preset:
                 picked = preset['locations']
         if len(picked) == 0:
-            showinfo(title = "No trajectories!", message = "No trajectories to update.", detail = "Change x_dot, y_dot and z_dot as needed and click on the phase portrait to add a trajectory.", parent = self.root)
+            showinfo(title = "No trajectories!",
+                    message = "No trajectories to update",
+                    detail = "Please click on the phase portrait to add a trajectory.", parent = self.root)
             return
         self.trajectories.clear()
-        self.fixed_points.clear()
         self.anim_tmax = 0.0
+        self.update_fixed_points()
         self.update_fig()
         for pos in picked:
             self.add_location(pos)
 
     def update_fig(self, *args):
         self.fig.clear(tmax = self.opts.tmax.get())
-        x1 = self.opts.limits.xmin.get()
-        x2 = self.opts.limits.xmax.get()
-        y1 = self.opts.limits.ymin.get()
-        y2 = self.opts.limits.ymax.get()
+        (x1, x2), (y1, y2), (z1, z2) = self._get_limits()
         x, y = np.meshgrid(np.linspace(x1, x2, 100), np.linspace(y1, y2, 100))
         u, v, w = self.system((x,y))
         field = x, y, u, v
         field_quiv = [f[::4, ::4] for f in field]
-        z1 = self.opts.limits.zmin.get()
-        z2 = self.opts.limits.zmax.get()
         x3d, y3d, z3d = np.meshgrid(np.linspace(x1, x2, 10), np.linspace(y1, y2, 10), np.linspace(z1, z2, 10))
         u3d, v3d, w3d = self.system((x3d,y3d,z3d))
         field_quiv3d = x3d, y3d, z3d, u3d, v3d, w3d
@@ -263,7 +267,7 @@ class AppWindow():
     def _reset_fig(self, *args):
         self.stop_traj_animation(update = False)
         self.trajectories.clear()
-        self.fixed_points.clear()
+        #self.fixed_points.clear()
         self.anim_tmax = 0.0
         self.fig.clear(tmax = self.opts.tmax.get())
         self.update_fig()
@@ -337,15 +341,15 @@ class AppWindow():
             pos = pos[0], pos[1], 0.0
         pos = tuple(pos)
         #Search for a fixed point
-        fp = self.system.find_fp(pos, threshold = 1e-4)
-        if fp is not None:
-            fp_clean = tuple(np.round(fp, 3))
-            if not fp_clean in self.fixed_points:
-                self.fixed_points.add(fp_clean)
-                self.fig.draw_fp(fp_clean)
-                self.update_fig()
-                vel = self.system(fp_clean)
-                logging.info("Found a fixed point:\n", fp_clean, vel)
+        ## fp = self.system.find_fp(pos, threshold = 1e-4)
+        ## if fp is not None:
+        ##     fp_clean = tuple(np.round(fp, 3))
+        ##     if not fp_clean in self.fixed_points:
+        ##         self.fixed_points.add(fp_clean)
+        ##         self.fig.draw_fp(fp_clean)
+        ##         self.update_fig()
+        ##         vel = self.system(fp_clean)
+        ##         logging.info("Found a fixed point:\n", fp_clean, vel)
         if pos in self.trajectories:
             logging.warn("Trajectory already exists.")
             return
