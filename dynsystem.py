@@ -198,13 +198,14 @@ class DynamicSystem:
     def locate_fixed_points(self, limits):
         (x1, x2), (y1, y2), (z1, z2) = limits
         coords = [None, None, None]
+        n_coords = [10, 10, 3]
         fixed_points = set()
         for direction in 0, 1, 2:
             min, max = limits[direction]
             if min == max:
                 coords[direction] = np.array([min])
             else:
-                coords[direction] = np.linspace(min, max, 5)
+                coords[direction] = np.linspace(min, max, n_coords[direction])
         points = [(x, y, z) for x in coords[0] for y in coords[1] for z in coords[2]]
         for pos in points:
             fp = self.__find_fp(pos, threshold = 1e-4)

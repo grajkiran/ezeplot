@@ -98,7 +98,7 @@ class AppWindow():
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
         self.controls['system']._load_preset('User defined')
-        #self.controls['system']._load_preset('Lorentz attractor')
+        self.controls['system']._load_preset('Lorentz attractor')
 
         self._init_keybindings()
         #self.show_about()
