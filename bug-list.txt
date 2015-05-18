@@ -1,3 +1,10 @@
+Eighth round:
+~~~~~~~~~~~~~
+	1. Save timeseries
+	2. Save fixed point locations
+	3. On changing User-defined model, it should not use previous initial
+	   condition values but re-start with same popup message.
+
 Seventh round:
 ~~~~~~~~~~~~~~
 Done	1. Only have "theta r" and show in time series. Only have "XY" and in
@@ -19,6 +26,7 @@ Done	5. Poincare section put permanent message below buttons
 	   Red: Opposite to plane normal
 	   Blue: Direction of plane normal
 Done	6. Change "Projection" to "Coordinates"
+	7. Fix logging errors
 
 Sixth round:
 ~~~~~~~~~~~~
