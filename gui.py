@@ -536,6 +536,7 @@ class AppWindow():
         menubar.add_cascade(label = 'File', menu=filemenu)
         filemenu.add_command(label = 'Save figure', command = self.save_figure)
         filemenu.add_command(label = 'Save fixed points', command = self.save_fixed_points)
+        filemenu.add_command(label = 'Save trajectories', command = self.save_trajectories)
         filemenu.add_separator()
         filemenu.add_command(label = 'Quit', command = self.root.quit)
         viewmenu = tk.Menu(menubar, tearoff = False)
@@ -588,7 +589,30 @@ class AppWindow():
         with open(f, "w") as out:
             self.print_info(out)
             for fp in self.fixed_points:
-                out.write("%0.4f, %0.4f, %0.4f\n" % fp)
+                out.write("%s, %s, %s\n" % fp)
+
+
+    def save_trajectories(self):
+        if len(self.trajectories) == 0:
+            showinfo(title = "Save trajectories",
+                    message = "No trajectories to save",
+                    parent = self.root)
+            return
+        f = asksaveasfilename(defaultextension = ".txt",
+                parent = self.root, title = "Save as", initialfile = 'trajectories',
+                filetypes = [("Text files", "*.txt")])
+        f = str(f)
+        if not f.endswith('.txt'):
+            return
+        logging.info("Saving trajectories to %s" % f)
+        with open(f, "w") as out:
+            self.print_info(out)
+            for traj in self.trajectories.values():
+                start = traj.startidx
+                out.write("\n\n%% Trajectory start location: %s\n" % str(traj.points[start]))
+                out.write("%Time\tX\tY\tZ\n")
+                for t, s, x, y, z in traj.data[start:]:
+                    out.write("%g\t%lf\t%lf\t%lf\n" % (t, x, y, z))
 
     def print_info(self, out):
         out.write("Dynamical system: %s\n" % self.controls['system'].preset.get())
