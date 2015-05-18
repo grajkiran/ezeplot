@@ -188,12 +188,31 @@ class DynamicSystem:
         z_dot *= eval(self.__code_z, f_params, params or self.params)
         return np.array([x_dot, y_dot, z_dot])
 
-    def find_fp(self, start, threshold = 1e-4):
+    def __find_fp(self, start, threshold):
         guess = [0.0, 0.0, 0.0]
         guess[:len(start)] = start
         sol = root(self, start, tol = threshold)
         if sol.success:
             return sol.x
+
+    def locate_fixed_points(self, limits):
+        (x1, x2), (y1, y2), (z1, z2) = limits
+        coords = [None, None, None]
+        fixed_points = set()
+        for direction in 0, 1, 2:
+            min, max = limits[direction]
+            if min == max:
+                coords[direction] = np.array([min])
+            else:
+                coords[direction] = np.linspace(min, max, 5)
+        points = [(x, y, z) for x in coords[0] for y in coords[1] for z in coords[2]]
+        for pos in points:
+            fp = self.__find_fp(pos, threshold = 1e-4)
+            if fp is not None and helpers.is_inside(fp, limits):
+                fp_clean = tuple(np.round(fp, 3))
+                if fp_clean not in fixed_points:
+                    fixed_points.add(fp_clean)
+        return list(fixed_points)
 
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,
             bidirectional = True, **kwargs):
@@ -289,6 +308,9 @@ def main():
 
 if __name__ == '__main__':
     d = DynamicSystem('y', 'sin(x)')
-    sol = d.find_fp([1,1,0])
-    import IPython
-    IPython.embed()
+    #sol = d.find_fp([1,1,0])
+    fps = d.locate_fixed_points(([-5*np.pi, 5*np.pi], [-5, 5], [1,2]))
+    fps_sorted = sorted([tuple(p) for p in fps])
+    #for p in fps_sorted:
+    #    print(p)
+    print(len(fps_sorted))
