@@ -5,7 +5,7 @@ Eighth round:
 Done	3. On changing User-defined model, it should not use previous initial
 	   condition values but re-start with same popup message.
 	4. Save Poincare section data: x,y,z,direction index
-	5. Misc stuff
+Done	5. Misc stuff
 		- Let Lorenz be default
 		- Disallow Tstep >= Tmax
 		Header in Matlab format:

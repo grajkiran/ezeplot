@@ -464,9 +464,20 @@ class AppWindow():
         controls['temporal'] = btn_temporal
         controls['fp'] = btn_fp
 
+        def check_tmax(val):
+            val = float(val)
+            if val <= 0:
+                raise ValueError("Tmax must be positive.")
+        def check_dt(val):
+            val = float(val)
+            if val <= 0:
+                raise ValueError("Tstep must be positive.")
+            elif val > self.opts.tmax.get()/10:
+                raise ValueError("Tstep is too large.")
+
         row += 1
-        PEntry(f_controls, "Tstep", self.opts.dt).grid(row = row, column = 0)
-        PEntry(f_controls, 'Tmax', self.opts.tmax).grid(row = row, column = 1)
+        PEntry(f_controls, "Tstep", self.opts.dt, validator = check_dt).grid(row = row, column = 0)
+        PEntry(f_controls, 'Tmax', self.opts.tmax, validator = check_tmax).grid(row = row, column = 1)
 
         row += 1
         limits = self.opts.limits
