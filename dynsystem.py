@@ -198,7 +198,7 @@ class DynamicSystem:
     def locate_fixed_points(self, limits):
         (x1, x2), (y1, y2), (z1, z2) = limits
         coords = [None, None, None]
-        n_coords = [10, 10, 3]
+        n_coords = [9, 9, 9]
         fixed_points = set()
         for direction in 0, 1, 2:
             min, max = limits[direction]
@@ -207,12 +207,21 @@ class DynamicSystem:
             else:
                 coords[direction] = np.linspace(min, max, n_coords[direction])
         points = [(x, y, z) for x in coords[0] for y in coords[1] for z in coords[2]]
+        failed = 0
+        found = 0
+        crossed = 0
         for pos in points:
-            fp = self.__find_fp(pos, threshold = 1e-4)
-            if fp is not None and helpers.is_inside(fp, limits):
-                fp_clean = tuple(np.round(fp, 3))
+            fp = self.__find_fp(pos, threshold = 1e-6)
+            if fp is None:
+                failed += 1
+            elif helpers.is_inside(fp, limits):
+                fp_clean = tuple(np.round(fp, 5))
+                found += 1
                 if fp_clean not in fixed_points:
                     fixed_points.add(fp_clean)
+            else:
+                crossed += 1
+        print("%d found, %d failed, %d crossed" % (found, failed, crossed))
         return list(fixed_points)
 
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,
