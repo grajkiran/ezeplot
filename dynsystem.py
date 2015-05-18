@@ -211,11 +211,11 @@ class DynamicSystem:
         found = 0
         crossed = 0
         for pos in points:
-            fp = self.__find_fp(pos, threshold = 1e-6)
+            fp = self.__find_fp(pos, threshold = 1e-7)
             if fp is None:
                 failed += 1
             elif helpers.is_inside(fp, limits):
-                fp_clean = tuple(np.round(fp, 5))
+                fp_clean = tuple(np.round(fp, 6))
                 found += 1
                 if fp_clean not in fixed_points:
                     fixed_points.add(fp_clean)

@@ -1,10 +1,10 @@
 Eighth round:
 ~~~~~~~~~~~~~
-	1. Save timeseries
-	2. Save fixed point locations
+Done	1. Save timeseries
+Done	2. Save fixed point locations
 Done	3. On changing User-defined model, it should not use previous initial
 	   condition values but re-start with same popup message.
-	4. Save Poincare section data: x,y,z,direction index
+Done	4. Save Poincare section data: x,y,z,direction index
 Done	5. Misc stuff
 		- Let Lorenz be default
 		- Disallow Tstep >= Tmax
