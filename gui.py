@@ -100,7 +100,7 @@ class AppWindow():
         self.controls['system']._load_preset('User defined')
         self.controls['system']._load_preset('Lorentz attractor')
 
-        self._init_keybindings()
+        #self._init_keybindings()
         #self.show_about()
 
     def _init_options(self, fname = None):
@@ -218,23 +218,24 @@ class AppWindow():
         self.fixed_points = self.system.locate_fixed_points((xlim, ylim, zlim))
 
     def update_trajectories(self, *args):
-        picked = list(self.trajectories.keys())
+        #picked = list(self.trajectories.keys())
+        picked = []
         if len(picked) == 0:
             preset_name = self.controls['system'].preset.get()
             preset = presets.systems[preset_name]
             if 'locations' in preset:
                 picked = preset['locations']
-        if len(picked) == 0:
-            showinfo(title = "No trajectories!",
-                    message = "No trajectories to update",
-                    detail = "Please click on the phase portrait to add a trajectory.", parent = self.root)
-            return
         self.trajectories.clear()
         self.anim_tmax = 0.0
         self.update_fixed_points()
         self.update_fig()
-        for pos in picked:
-            self.add_location(pos)
+        if len(picked) == 0:
+            showinfo(title = "No trajectories!",
+                    message = "No trajectories to update",
+                    detail = "Please click on the phase portrait to add a trajectory.", parent = self.root)
+        else:
+            for pos in picked:
+                self.add_location(pos)
 
     def update_fig(self, *args):
         self.fig.clear(tmax = self.opts.tmax.get())
@@ -522,7 +523,9 @@ class AppWindow():
         menubar = tk.Menu(self.root)
         filemenu = tk.Menu(menubar, tearoff = False)
         menubar.add_cascade(label = 'File', menu=filemenu)
-        filemenu.add_command(label = 'Print', command = self.save)
+        filemenu.add_command(label = 'Save figure', command = self.save_figure)
+        filemenu.add_command(label = 'Save fixed points', command = self.save_fixed_points)
+        filemenu.add_separator()
         filemenu.add_command(label = 'Quit', command = self.root.quit)
         viewmenu = tk.Menu(menubar, tearoff = False)
         menubar.add_cascade(label = 'View', menu=viewmenu)
@@ -548,7 +551,7 @@ class AppWindow():
         helpmenu.add_command(label = 'License', command = lambda: license_dialog(self.root, self.icon))
         return menubar
 
-    def save(self):
+    def save_figure(self):
         f = asksaveasfilename(defaultextension = ".pdf",
                 parent = self.root, title = "Save as", initialfile = 'figure',
                 filetypes = [("PDF files", "*.pdf")])
@@ -558,9 +561,30 @@ class AppWindow():
         logging.info("Saving to", f, type(f))
         self.fig.fig.savefig(f)
 
+    def save_fixed_points(self):
+        if len(self.fixed_points) == 0:
+            showinfo(title = "Save fixed points",
+                    message = "No fixed points to save",
+                    parent = self.root)
+            return
+        f = asksaveasfilename(defaultextension = ".txt",
+                parent = self.root, title = "Save as", initialfile = 'fixed-points',
+                filetypes = [("Text files", "*.txt")])
+        f = str(f)
+        if not f.endswith('.txt'):
+            return
+        logging.info("Saving fixed points to %s" % f)
+        with open(f, "w") as out:
+            self.print_info(out)
+            for fp in self.fixed_points:
+                out.write("%0.4f, %0.4f, %0.4f\n" % fp)
+
+    def print_info(self, out):
+        out.write("Dynamical system: %s\n" % self.controls['system'].preset.get())
+
     def _init_keybindings(self):
-        self.root.bind_all('<Control-KeyPress-p>', lambda *args: self.save())
-        self.root.bind_all('<Control-KeyPress-s>', lambda *args: self.save())
+        self.root.bind_all('<Control-KeyPress-p>', lambda *args: self.save_figure())
+        self.root.bind_all('<Control-KeyPress-s>', lambda *args: self.save_figure())
         self.root.bind_all('<Control-KeyPress-q>', lambda *args: self.root.quit())
 
 
