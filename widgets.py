@@ -228,12 +228,6 @@ class PlotLimits(tk.Toplevel):
         self.limits.zmin.set(zmin)
         self.limits.zmax.set(zmax)
 
-def PEntry1(master, name, variable, command = None):
-    p = Param(master, name, value = variable.get(), validator = variable.set,
-            command = command)
-    variable.trace('w', lambda *args:p.set(variable.get()))
-    return p
-
 class PEntry(tk.Frame):
     def __init__(self, master, name, textvariable = None, validator = None,
             command = None, value = 1.0):
@@ -259,44 +253,6 @@ class PEntry(tk.Frame):
     def disable(self):
         self.label.grid_forget()
         self.entry.grid_forget()
-
-class Param(tk.Frame):
-    def __init__(self, master, name, value = 1.0, validator = None,
-            command = None):
-        tk.Frame.__init__(self, master)
-        self.name = name
-        self.var = tk.DoubleVar(self, value)
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.label = tk.Label(self, text = name, width = 6)
-        self.entry = VEntry(self, self.var, width = 6, validator = validator,
-                command = command)
-        self.label.grid(sticky = tk.E + tk.W)
-        self.entry.grid(row = 0, column = 1, sticky = tk.E+tk.W)
-        self.get = self.var.get
-        self.set = self.var.set
-    def enable(self, name = None, value = None):
-        self.label.configure(state = tk.NORMAL)
-        if name is None:
-            name = self.name
-        self.label.configure(text = name)
-        self.entry.configure(state = tk.NORMAL)
-        if value is not None:
-            self.var.set(value)
-    def disable(self):
-        self.label.configure(state = tk.DISABLED, text = "")
-        self.entry.configure(state = tk.DISABLED)
-
-class LSelect(matplotlib.widgets.Lasso):
-    def onrelease(self, event):
-        if self.ignore(event):
-            return
-        if self.verts is not None:
-            self.verts.append((event.xdata, event.ydata))
-            self.callback(self.verts)
-            self.ax.lines.remove(self.line)
-        self.verts = None
-        self.disconnect_events()
 
 class DSFrame(tk.LabelFrame):
     def __init__(self, master, system, command = None, n_params = 10, preset_cmd = None, **kwargs):
