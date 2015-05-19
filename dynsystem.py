@@ -265,7 +265,7 @@ class DynamicSystem:
                 s_cum = s_old - s
             traj[i][1] = s_cum
             traj[i][2:] = pos
-            if not helpers.is_inside(pos, self.limits):
+            if not helpers.is_inside(pos, self.limits, strict = False):
                 logging.debug("Crossed domain - stopping integration.")
                 return traj
             # Check if we are within threshold of a fixed point.
@@ -294,7 +294,7 @@ class DynamicSystem:
             else:
                 s_cum = s_old - s
             traj.append([t, s_cum] + pos_norm)
-            if not helpers.is_inside(pos_norm, self.limits):
+            if not helpers.is_inside(pos_norm, self.limits, strict = False):
                 logging.debug("Crossed domain - stopping integration.")
                 return -1
             # Check if we are within threshold of a fixed point.
