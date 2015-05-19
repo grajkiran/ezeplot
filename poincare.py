@@ -139,8 +139,8 @@ class Plane:
             if abs(coeff) == 1.0:
                 val += "%s" % var
             else:
-                val += "%0.3g%s" % (abs(coeff), var)
-        val += " = %0.3g" % -d
+                val += "%r%s" % (abs(coeff), var)
+        val += " = %r" % -d
         return "\n\t".join(wrap(val.strip().lstrip('+'), 36))
 
 class PSection(Plane):
@@ -165,14 +165,15 @@ class PSection(Plane):
         return np.array(top2bot), np.array(bot2top)
 
 class PWindow(tk.Toplevel):
-    def __init__(self, master, trajectory, limits, geometry, icon = None):
-        tk.Toplevel.__init__(self, master)
-        if icon is not None:
-            self.tk.call("wm", "iconphoto", self._w, icon)
-        self.geometry(geometry)
-        self.transient(master)
+    def __init__(self, app):
+        tk.Toplevel.__init__(self, app.root)
+        if app.icon is not None:
+            self.tk.call("wm", "iconphoto", self._w, app.icon)
+        self.app = app
+        self.geometry(app.root.geometry())
+        self.transient(app.root)
         self.title("EzePlot - Poincare section")
-        self.trajectory = trajectory
+        self.trajectory = app.trajectories[app.last_loc]
         self.fig = matplotlib.figure.Figure()
         self.canvas = FigureCanvasTkAgg(self.fig, master = self)
         #toolbar = NavigationToolbar2TkAgg(self.canvas, self)
@@ -185,7 +186,7 @@ class PWindow(tk.Toplevel):
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False)
         self.mode = 1
         self.set_mode(1)
-        self.limits = limits
+        self.limits = app._get_limits()
         self.p0_str = tk.StringVar(self, "0 0 0")
         self.p1_str = tk.StringVar(self, "0 0 1")
         self.factor = tk.DoubleVar(self, 0.5)
@@ -207,6 +208,7 @@ class PWindow(tk.Toplevel):
         self.grab_set()
         self._update()
         self._plane_preset()
+        self.save_section('poincare.txt')
         self.wait_window(self)
 
     def _add_widgets(self, frame):
@@ -280,7 +282,7 @@ class PWindow(tk.Toplevel):
         menubar = tk.Menu(self)
         filemenu = tk.Menu(menubar, tearoff = False)
         menubar.add_cascade(label = 'File', menu=filemenu)
-        filemenu.add_command(label = 'Save section...', command = self.save_section)
+        filemenu.add_command(label = 'Save Poincare section data', command = self.save_section)
         filemenu.add_command(label = 'Print', command = self.save)
         filemenu.add_separator()
         filemenu.add_command(label = 'Close', command = self.destroy)
@@ -296,24 +298,29 @@ class PWindow(tk.Toplevel):
         logging.info("Saving to %s" % f)
         self.fig.savefig(f)
 
-    def save_section(self):
-        f = asksaveasfilename(defaultextension = ".txt",
-                parent = self, title = "Save as", initialfile = 'poincare',
-                filetypes = [("Text files", "*.txt")])
-        f = str(f)
-        if not f.endswith('.txt'):
-            return
-        logging.info("Saving Poincare secion to %s" % f)
-        with open(f, "w") as out:
+    def save_section(self, fname = None):
+        if fname is None:
+            f = asksaveasfilename(defaultextension = ".txt",
+                    parent = self, title = "Save as", initialfile = 'poincare',
+                    filetypes = [("Text files", "*.txt")])
+            fname = str(f)
+            if not fname.endswith('.txt'):
+                return
+        logging.info("Saving Poincare secion to %s" % fname)
+        with open(fname, "w") as out:
+            out.write("% Poincare section data\n")
+            self.app.print_info(out)
+            out.write("% Equation of the intersecting plane:\n")
+            out.write("%%%30s\n" % (self.plane_eqn.get()))
             top, bottom = self.crossings
-            out.write("%In the direction of plane normal\n")
-            out.write("%X\tY\tZ\n")
+            out.write("% Points in the direction of plane normal\n")
+            out.write("%% %-21s\t%-23s\t%-23s\n%%\n" % ("X", "Y", "Z"))
             for x, y, z in bottom:
-                out.write("%lf\t%lf\t%lf\n" % (x, y, z))
-            out.write("\n\n%In the direction opposite to plane normal\n")
-            out.write("%X\tY\tZ\n")
+                out.write("%-23r\t%-23r\t%-23r\n" % (x, y, z))
+            out.write("%\n%\n% Points in the direction opposite to plane normal\n")
+            out.write("%% %-21s\t%-23s\t%-23s\n%%\n" % ("X", "Y", "Z"))
             for x, y, z in top:
-                out.write("%lf\t%lf\t%lf\n" % (x, y, z))
+                out.write("%-23r\t%-23r\t%-23r\n" % (x, y, z))
 
     def _plane_preset(self):
         direction = self.plane_direction.get()

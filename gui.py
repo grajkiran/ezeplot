@@ -101,6 +101,7 @@ class AppWindow():
         self.controls['system']._load_preset('Lorentz attractor')
         self.save_trajectories('trajectories.txt')
         self.save_fixed_points('fixed-points.txt')
+        self.show_poincare_dialog()
 
         #self._init_keybindings()
         #self.show_about()
@@ -209,9 +210,10 @@ class AppWindow():
             logging.warning("No trajectories present.")
             return
         self.stop_traj_animation()
-        w = PWindow(self.root, self.trajectories[self.last_loc],
-                self._get_limits(),
-                geometry = self.root.winfo_geometry(), icon = self.icon)
+        w = PWindow(self)
+        #w = PWindow(self.root, self.trajectories[self.last_loc],
+        #        self._get_limits(),
+        #        geometry = self.root.winfo_geometry(), icon = self.icon)
 
     def update_fixed_points(self):
         xlim, ylim, zlim = self._get_limits()
@@ -596,7 +598,7 @@ class AppWindow():
         with open(fname, "w") as out:
             out.write("% List of fixed points\n")
             self.print_info(out)
-            out.write("%%%-22s\t%-23s\t%-23s\n%%\n" % ("X", "Y", "Z"))
+            out.write("%% %-21s\t%-23s\t%-23s\n%%\n" % ("X", "Y", "Z"))
             for x, y, z in self.fixed_points:
                 out.write("%-23r\t%-23r\t%-23r\n" % (x, y, z))
 

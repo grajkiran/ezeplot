@@ -7,13 +7,13 @@ Done	2. Trajectories output: put % on all blank line and line break after
 	3. Allow entry of  "Initial values: X_0, Y_0,Z_0" or "X_0,Y_0" or
 	   "theta_0, r_0"
 	4. For User defined, keep 3d as default.
-	5. Change "Section" change as "Save Poincare Section data"
+Done	5. Change "Section" change as "Save Poincare Section data"
 	6. Title "Poincare Section" for graph
 	7. Keep bound as Tstep <= Tmax
 	8. For anything but User-defined, calculate all fixed points. For
 	   User-defined, allow for entry of "Initial values: X_0,Y_0,Z_0". Do
 	   not compute fixed points until option is clicked.
-	9. Remove unnecessary stuff like LSelect(Lasso) etc.
+Done	9. Remove unnecessary stuff like LSelect(Lasso) etc.
 
 Eighth round:
 ~~~~~~~~~~~~~
@@ -30,10 +30,10 @@ Done	5. Misc stuff
 		%Header here
 		%******************
 		5.54545455        454545454.5454        5454545.
-	6. Add headers to saved files:
-	6a Time series data
-	6b Fixed points
-	6c Poincare section
+Done	6. Add headers to saved files:
+Done	6a Time series data
+Done	6b Fixed points
+Done	6c Poincare section
 	7. Reading icon fails if not in current directory
 
 Seventh round:
