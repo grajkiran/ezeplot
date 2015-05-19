@@ -93,9 +93,9 @@ systems["Rossler attractor"] = {
             "locations": [(-10.5, 10.5), (-10.5, 10.6)],
             }
 systems["User defined"] = {
-            "x": "0",
-            "y": "0",
-            "z": "0",
+            "x": "y",
+            "y": "-x",
+            "z": "-z",
             "xlim": [-5, 5],
             "ylim": [-5, 5],
             "tmax": 25.0,
