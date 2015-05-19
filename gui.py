@@ -619,7 +619,8 @@ class AppWindow():
                     out.write("%g\t%lf\t%lf\t%lf\n" % (t, x, y, z))
 
     def print_info(self, out):
-        out.write("Dynamical system: %s\n" % self.controls['system'].preset.get())
+        sysgui = self.controls['system']
+        out.write("Dynamical system: %s\n" % sysgui.preset.get())
 
     def _init_keybindings(self):
         self.root.bind_all('<Control-KeyPress-p>', lambda *args: self.save_figure())
