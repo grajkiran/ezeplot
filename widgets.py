@@ -32,7 +32,7 @@ except:
 import matplotlib.widgets
 import dynsystem
 import numpy as np
-import sys
+import sys, traceback
 import presets
 import logging
 import webbrowser
@@ -72,8 +72,8 @@ class VEntry(tk.Entry):
         except BaseException as e:
             self['bg'] = '#ff5555'
             self.errmsg.set(str(e))
-            if self.debug:
-                logging.error("%s" % self.errmsg.get())
+            logging.error("%s" % self.errmsg.get())
+            logging.debug(traceback.format_exc())
 
 def license_dialog(master, icon = None):
     license_text = """

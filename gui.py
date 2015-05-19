@@ -19,7 +19,7 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.    #
 #                                                                            #
 ##############################################################################
-import sys
+import sys, traceback
 
 try:
     import tkinter as tk
@@ -51,9 +51,9 @@ class AppWindow():
         self.system = system
         self.root = root
         self.icon = icon
-        logging.debug(uptime.uptime(), "Creating figure window...")
+        logging.debug("%g: Creating figure window..." % uptime.uptime())
         self.fig = plotting.Figure(root, blit = blit)
-        logging.debug(uptime.uptime(), "Initializing options...")
+        logging.debug("%g: Initializing options..." % uptime.uptime())
         self.opts = self._init_options()
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
         self.anim_info    = tk.StringVar(self.root, "")
@@ -77,13 +77,13 @@ class AppWindow():
                 relief = tk.SUNKEN,)
         cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
         self.menu = self._add_menubar()
-        logging.debug(uptime.uptime(), "Creating widgets...")
+        logging.debug("%g: Creating widgets..." % uptime.uptime())
         self.controls = self._add_widgets(cframe)
-        logging.debug(uptime.uptime(), "Updating figure...")
+        logging.debug("%g: Updating figure..." % uptime.uptime())
         self._update_system_limits()
         self.update_fig()
 
-        logging.debug(uptime.uptime(), "Finishing...")
+        logging.debug("%g: Finishing..." % uptime.uptime())
         self.root.rowconfigure(1, weight = 1)
         self.root.columnconfigure(0, weight = 1)
         self.root.config(menu = self.menu)
@@ -94,7 +94,7 @@ class AppWindow():
         #pinfo_label.pack(side = tk.BOTTOM, fill = tk.X)
         #cframe.pack(fill = tk.Y, expand = 1)
 
-        logging.debug(uptime.uptime(), "Loading presets...")
+        logging.debug("%g: Loading presets..." % uptime.uptime())
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
         self.controls['system']._load_preset('User defined')
@@ -204,7 +204,7 @@ class AppWindow():
 
     def show_poincare_dialog(self, *args):
         if len(self.trajectories) == 0:
-            logging.warn("No trajectories present.")
+            logging.warning("No trajectories present.")
             return
         self.stop_traj_animation()
         w = PWindow(self.root, self.trajectories[self.last_loc],
@@ -251,7 +251,7 @@ class AppWindow():
             self.fig.draw_nullclines(field, linestyles = "dashed")
         if self.opts.quiver.get():
             if PROJECTIONS[self.opts.projection.get()] == '3d':
-                logging.warn("Quiver in 3d is disabled.")
+                logging.warning("Quiver in 3d is disabled.")
                 #self.fig.draw_quiver3d(field_quiv3d, width = 0.001, headwidth = 5, scale = 50)
             else:
                 self.fig.draw_quiver(field_quiv, width = 0.001, headwidth = 5, scale = 50)
@@ -353,9 +353,9 @@ class AppWindow():
         ##         self.fig.draw_fp(fp_clean)
         ##         self.update_fig()
         ##         vel = self.system(fp_clean)
-        ##         logging.info("Found a fixed point:\n", fp_clean, vel)
+        ##         logging.info("Found a fixed point: %s %s\n" % (str(fp_clean), str(vel)))
         if pos in self.trajectories:
-            logging.warn("Trajectory already exists.")
+            logging.warning("Trajectory already exists.")
             return
         try:
             t = Timer()
@@ -367,7 +367,8 @@ class AppWindow():
             logging.debug("Computing trajectory (%d points) took %g seconds" % (len(traj.x), t.seconds()))
         except:
             pos_str = ", ".join(map(str, pos))
-            logging.warn("Could not compute trajectory from: %s" % pos_str)
+            logging.warning("Could not compute trajectory from: %s" % pos_str)
+            logging.debug(traceback.format_exc())
             return
         if traj.dist[-1] < 10*threshold:
             return
@@ -417,10 +418,10 @@ class AppWindow():
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
             x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
         pos = x, y, z
-        #logging.debug("Position:", pos)
-        #logging.debug("Limits:", self.fig.get_limits())
+        #logging.debug("Position: %s" % str(pos))
+        #logging.debug("Limits: %s" % str(self.fig.get_limits()))
         #if not helpers.is_inside(pos, self.fig.get_limits()):
-        #    logging.warn("Position outside limits.")
+        #    logging.warning("Position outside limits.")
         #    return
         self.add_location(pos)
 
@@ -573,7 +574,7 @@ class AppWindow():
         f = str(f)
         if not f.endswith('.pdf'):
             return
-        logging.info("Saving to", f, type(f))
+        logging.info("Saving to %s" % str(f))
         self.fig.fig.savefig(f)
 
     def save_fixed_points(self):

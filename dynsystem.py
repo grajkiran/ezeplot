@@ -28,6 +28,7 @@ from math import isinf
 import helpers
 import logging
 from numpy import *
+from timer import Timer
 abs = absolute
 
 MAX_CHARS = 6
@@ -308,8 +309,11 @@ class DynamicSystem:
         rk4 = ode(lambda t, pos: self(pos)).set_integrator('dopri5', **kwargs)
         rk4.set_solout(accumulate)
         rk4.set_initial_value(start, 0.0)
+        t = Timer()
+        t.start()
         rk4.integrate(tmax)
-        #logging.debug("Integration took %g seconds" % t.seconds())
+        t.stop()
+        logging.debug("Integration took %g seconds" % t.seconds())
         return np.array(traj)
 
 def main():

@@ -293,7 +293,7 @@ class PWindow(tk.Toplevel):
         f = str(f)
         if not f.endswith('.pdf'):
             return
-        logging.info("Saving to", f, type(f))
+        logging.info("Saving to %s" % f)
         self.fig.savefig(f)
 
     def save_section(self):
