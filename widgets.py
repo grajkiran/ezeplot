@@ -39,7 +39,7 @@ import webbrowser
 
 class VEntry(tk.Entry):
     """A Validating Entry widget."""
-    def __init__(self, master, textvariable, validator = None,
+    def __init__(self, master, textvariable, validator = None, errvariable = None,
             debug = True, command = None, **kwargs):
         """
         textvariable should be a tk.IntVar, tk.DoubleVar or tk.StringVar
@@ -48,7 +48,7 @@ class VEntry(tk.Entry):
         self.var = textvariable
         tk.Entry.__init__(self, master, textvariable = self.var, **kwargs)
         self.validator = validator
-        self.errmsg = tk.StringVar(self, "")
+        self.errvariable = errvariable or tk.StringVar(self, "")
         self.debug = debug
         self.trace_id = self.var.trace('w', self.__validate)
         self.bind('<Destroy>', self.__on_destroy)
@@ -68,11 +68,11 @@ class VEntry(tk.Entry):
             else:
                 self.var.get()
             self['bg'] = self.default_bg
-            self.errmsg.set("")
+            self.errvariable.set("")
         except BaseException as e:
             self['bg'] = '#ff5555'
-            self.errmsg.set(str(e))
-            logging.error("%s" % self.errmsg.get())
+            self.errvariable.set(str(e))
+            logging.error("%s" % self.errvariable.get())
             logging.debug(traceback.format_exc())
 
 def license_dialog(master, icon = None):
@@ -338,6 +338,18 @@ class DSFrame(tk.LabelFrame):
         for pe in self.params[len(items):]:
             pe.name = ""
             pe.disable()
+
+class StatusLabel(tk.Label):
+    def error(self, message):
+        self.configure(text = message)
+
+    def normal(self, message):
+        self.configure(text = message)
+        self['fg'] = "black"
+
+    def clear(self):
+        self.configure(text = "")
+        self['fg'] = '#ff5555'
 
 def dsf_test():
     root = tk.Tk()
