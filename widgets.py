@@ -340,16 +340,29 @@ class DSFrame(tk.LabelFrame):
             pe.disable()
 
 class StatusLabel(tk.Label):
-    def error(self, message):
+    def __set_message(self, message):
         self.configure(text = message)
+        self.update_idletasks()
 
-    def normal(self, message):
-        self.configure(text = message)
+    def error(self, message):
+        self['fg'] = "#ff5555"
+        self.__set_message(message)
+
+    def warn(self, message):
+        self['fg'] = "#ff5555"
+        self.__set_message(message)
+
+    def info(self, message):
         self['fg'] = "black"
+        self.__set_message(message)
+
+    def ready(self):
+        self['fg'] = "black"
+        self.__set_message("Ready.")
 
     def clear(self):
-        self.configure(text = "")
-        self['fg'] = '#ff5555'
+        self['fg'] = 'black'
+        self.__set_message("")
 
 def dsf_test():
     root = tk.Tk()

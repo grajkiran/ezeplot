@@ -48,11 +48,22 @@ class Options(dict):
 
 class AppWindow():
     def __init__(self, root, system, blit = True, icon = None):#, embedded = False):
-        self.system = system
         self.root = root
+        self.system = system
         self.icon = icon
+        self.root.rowconfigure(1, weight = 1)
+        self.root.columnconfigure(0, weight = 1)
         logging.debug("%g: Creating figure window..." % uptime.uptime())
         self.fig = plotting.Figure(root, blit = blit)
+        self.fig.canvas.get_tk_widget().grid(row = 1, column = 0, sticky = tk.NE + tk.SW)
+        cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
+        cframe.grid(row = 1, column = 1, rowspan = 2, sticky = tk.N + tk.S)
+        self.statusbar = tk.Frame(self.root, relief = tk.SUNKEN, bd = 1)
+        self.statusbar.columnconfigure(1, weight=1)
+        self.statusbar.grid(row = 2, column = 0, sticky = tk.E + tk.W)
+        self.status = StatusLabel(self.statusbar)
+        self.status.grid(row = 0, column = 1, sticky = tk.E)
+
         logging.debug("%g: Initializing options..." % uptime.uptime())
         self.opts = self._init_options()
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
@@ -73,38 +84,30 @@ class AppWindow():
         self.fig.bind('button_release_event', self.button_release)
         self.fig.bind('motion_notify_event', self.mouse_move)
         self.fig.bind('resize_event', self._handle_resize)
-        pinfo_label = tk.Label(self.root, textvariable = self.pointer_info, anchor = tk.W,
-                relief = tk.SUNKEN,)
-        cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
+        pinfo_label = tk.Label(self.statusbar, textvariable = self.pointer_info, anchor = tk.W)
+        pinfo_label.grid(row = 0, column = 0, sticky = tk.W)
         self.menu = self._add_menubar()
+        self.root.config(menu = self.menu)
         logging.debug("%g: Creating widgets..." % uptime.uptime())
         self.controls = self._add_widgets(cframe)
         logging.debug("%g: Updating figure..." % uptime.uptime())
+        self.status.info("Creating figure...")
         self._update_system_limits()
         self.update_fig()
 
         logging.debug("%g: Finishing..." % uptime.uptime())
-        self.root.rowconfigure(1, weight = 1)
-        self.root.columnconfigure(0, weight = 1)
-        self.root.config(menu = self.menu)
-        self.fig.canvas.get_tk_widget().grid(row = 1, column = 0, sticky = tk.NE + tk.SW)
-        pinfo_label.grid(row = 2, column = 0, sticky = tk.E + tk.W)
-        cframe.grid(row = 1, column = 1, rowspan = 2, sticky = tk.N + tk.S)
         #self.fig.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         #pinfo_label.pack(side = tk.BOTTOM, fill = tk.X)
         #cframe.pack(fill = tk.Y, expand = 1)
 
+        self.status.info("Loading preset...")
         logging.debug("%g: Loading presets..." % uptime.uptime())
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
-        self.controls['system']._load_preset('User defined')
+        #self.controls['system']._load_preset('User defined')
+        self.status.info("Loading preset (Lorentz attractor)...")
         self.controls['system']._load_preset('Lorentz attractor')
-        self.save_trajectories('trajectories.txt')
-        self.save_fixed_points('fixed-points.txt')
-        self.show_poincare_dialog()
-
-        #self._init_keybindings()
-        #self.show_about()
+        self.status.ready()
 
     def _init_options(self, fname = None):
         opts = Options()
@@ -157,6 +160,7 @@ class AppWindow():
         self.root.after_idle(self.update_fig)
 
     def _load_preset(self, name):
+        self.status.info("Loading preset (%s)..." % name)
         opts = self.opts
         preset = presets.systems[name]
         defaults = dict(tmax = 25, dt = 0.05, projection = '2D', reverse = False)
@@ -173,6 +177,7 @@ class AppWindow():
             for pos in preset['locations']:
                 self.add_location(pos)
         #self.update_trajectories()
+        self.status.clear()
 
     def _get_limits(self):
         limits = self.opts.limits
@@ -216,10 +221,12 @@ class AppWindow():
         #        geometry = self.root.winfo_geometry(), icon = self.icon)
 
     def update_fixed_points(self):
+        self.status.info("Searching for fixed points")
         xlim, ylim, zlim = self._get_limits()
         if PROJECTIONS[self.opts.projection.get()].lower() != '3d':
             zlim = 0.0, 0.0
         self.fixed_points = self.system.locate_fixed_points((xlim, ylim, zlim))
+        self.status.clear()
 
     def update_trajectories(self, *args):
         #picked = list(self.trajectories.keys())
@@ -360,7 +367,9 @@ class AppWindow():
         ##         logging.info("Found a fixed point: %s %s\n" % (str(fp_clean), str(vel)))
         if pos in self.trajectories:
             logging.warning("Trajectory already exists.")
+            self.status.info("Trajectory already exists.")
             return
+        self.status.info("Computing trajectory...")
         try:
             t = Timer()
             t.start()
@@ -381,7 +390,9 @@ class AppWindow():
             self.anim_tmax = traj.t[-1]
         style = (len(self.trajectories) - 1) % len(styles)
         traj.style = styles[style]
+        self.status.info("Drawing trajectory...")
         self.fig.add_trajectory(traj)
+        self.status.clear()
         #self.fig.draw_trajectory(traj)
         self.fig.draw()
         self.last_loc = pos
@@ -471,14 +482,12 @@ class AppWindow():
 
         def check_tmax(val):
             val = float(val)
-            if val <= 0:
-                raise ValueError("Tmax must be positive.")
+            if val < self.opts.dt.get():
+                raise ValueError("Tmax must not be less than Tstep.")
         def check_dt(val):
             val = float(val)
-            if val <= 0:
-                raise ValueError("Tstep must be positive.")
-            elif val > self.opts.tmax.get()/10:
-                raise ValueError("Tstep is too large.")
+            if val <= 0 or val > self.opts.tmax.get():
+                raise ValueError("Tstep must be between 0 and Tmax.")
 
         row += 1
         PEntry(f_controls, "Tstep", self.opts.dt, validator = check_dt).grid(row = row, column = 0)
