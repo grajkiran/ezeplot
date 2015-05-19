@@ -34,7 +34,11 @@ def scale_domain(d, factor, about = None):
     delta_r = factor * (upper - about)
     return about - delta_l, about + delta_r
 
-def is_inside(p, limits):
+def is_inside(p, limits, strict = True):
+    """If strict is True, then this function returns True only if all the
+    limits are satisfied. Otherwise it returns True if any one limits is
+    satisfied"""
+    n_outside = 0
     if limits is None:
         return True
     for i in range(len(p)):
@@ -43,8 +47,11 @@ def is_inside(p, limits):
         lower = min(limits[i])
         upper = max(limits[i])
         if p[i] < lower or p[i] > upper:
-            return False
-    return True
+            n_outside += 1
+    if strict:
+        return n_outside == 0
+    else:
+        return n_outside < len(p)
 
 def freq_domain(times, amplitudes):
     """Perform and fft and return amplitude vs frequency."""
