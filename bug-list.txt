@@ -1,8 +1,8 @@
 Ninth round:
 ~~~~~~~~~~~~
-	1. Fixed points output: put % on all blank line and line break. Use
+Done	1. Fixed points output: put % on all blank line and line break. Use
 	   number tab number format to full precision
-	2. Trajectories output: put % on all blank line and line break after
+Done	2. Trajectories output: put % on all blank line and line break after
 	   comments end
 	3. Allow entry of  "Initial values: X_0, Y_0,Z_0" or "X_0,Y_0" or
 	   "theta_0, r_0"

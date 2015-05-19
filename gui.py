@@ -99,6 +99,8 @@ class AppWindow():
         # updated from some reason.
         self.controls['system']._load_preset('User defined')
         self.controls['system']._load_preset('Lorentz attractor')
+        self.save_trajectories('trajectories.txt')
+        self.save_fixed_points('fixed-points.txt')
 
         #self._init_keybindings()
         #self.show_about()
@@ -577,50 +579,72 @@ class AppWindow():
         logging.info("Saving to %s" % str(f))
         self.fig.fig.savefig(f)
 
-    def save_fixed_points(self):
+    def save_fixed_points(self, fname = None):
         if len(self.fixed_points) == 0:
             showinfo(title = "Save fixed points",
                     message = "No fixed points to save",
                     parent = self.root)
             return
-        f = asksaveasfilename(defaultextension = ".txt",
-                parent = self.root, title = "Save as", initialfile = 'fixed-points',
-                filetypes = [("Text files", "*.txt")])
-        f = str(f)
-        if not f.endswith('.txt'):
-            return
-        logging.info("Saving fixed points to %s" % f)
-        with open(f, "w") as out:
+        if fname is None:
+            f = asksaveasfilename(defaultextension = ".txt",
+                    parent = self.root, title = "Save as", initialfile = 'fixed-points',
+                    filetypes = [("Text files", "*.txt")])
+            fname = str(f)
+            if not fname.endswith('.txt'):
+                return
+        logging.info("Saving fixed points to %s" % fname)
+        with open(fname, "w") as out:
+            out.write("% List of fixed points\n")
             self.print_info(out)
-            for fp in self.fixed_points:
-                out.write("%s, %s, %s\n" % fp)
+            out.write("%%%-22s\t%-23s\t%-23s\n%%\n" % ("X", "Y", "Z"))
+            for x, y, z in self.fixed_points:
+                out.write("%-23r\t%-23r\t%-23r\n" % (x, y, z))
 
 
-    def save_trajectories(self):
+    def save_trajectories(self, fname = None):
         if len(self.trajectories) == 0:
             showinfo(title = "Save trajectories",
                     message = "No trajectories to save",
                     parent = self.root)
             return
-        f = asksaveasfilename(defaultextension = ".txt",
-                parent = self.root, title = "Save as", initialfile = 'trajectories',
-                filetypes = [("Text files", "*.txt")])
-        f = str(f)
-        if not f.endswith('.txt'):
-            return
-        logging.info("Saving trajectories to %s" % f)
-        with open(f, "w") as out:
+        if fname is None:
+            f = asksaveasfilename(defaultextension = ".txt",
+                    parent = self.root, title = "Save as", initialfile = 'trajectories',
+                    filetypes = [("Text files", "*.txt")])
+            fname = str(f)
+            if not fname.endswith('.txt'):
+                return
+        logging.info("Saving trajectories to %s" % fname)
+        with open(fname, "w") as out:
+            out.write("% Time series data of the trajectories\n")
             self.print_info(out)
-            for traj in self.trajectories.values():
+            for i, traj in enumerate(self.trajectories.values()):
                 start = traj.startidx
-                out.write("\n\n%% Trajectory start location: %s\n" % str(traj.points[start]))
-                out.write("%Time\tX\tY\tZ\n")
+                out.write("%%\n%% Trajectory %d\n" % (i+1))
+                out.write("%% Start location: (%r, %r, %r)\n" % tuple(traj.points[start]))
+                out.write("%%%-22s\t%-23s\t%-23s\t%-23s\n%%\n" % ("Time", "X", "Y", "Z"))
                 for t, s, x, y, z in traj.data[start:]:
-                    out.write("%g\t%lf\t%lf\t%lf\n" % (t, x, y, z))
+                    out.write("%-23r\t%-23r\t%-23r\t%-23r\n" % (t, x, y, z))
 
     def print_info(self, out):
         sysgui = self.controls['system']
-        out.write("Dynamical system: %s\n" % sysgui.preset.get())
+        out.write("%\n")
+        out.write("%% Dynamical system: %s\n" % sysgui.preset.get())
+        out.write("%%\tx_dot: %s\n" % sysgui.eqn_x.get())
+        out.write("%%\ty_dot: %s\n" % sysgui.eqn_y.get())
+        out.write("%%\tz_dot: %s\n" % sysgui.eqn_z.get())
+        out.write("% Parameters:\n")
+        for p in sysgui.params:
+            if p.name != "":
+                out.write("%%\t%s: %r\n" % (p.name, p.get()))
+        out.write("% Options:\n")
+        out.write("%%\tTime step: %r\n" % self.opts.dt.get())
+        out.write("%%\tTmax: %r\n" % self.opts.tmax.get())
+        xlim, ylim, zlim = self._get_limits()
+        out.write("% Plot limits:\n")
+        out.write("%%\tx-limits: %s\n" % repr(xlim))
+        out.write("%%\ty-limits: %s\n" % repr(ylim))
+        out.write("%%\tz-limits: %s\n" % repr(zlim))
 
     def _init_keybindings(self):
         self.root.bind_all('<Control-KeyPress-p>', lambda *args: self.save_figure())
