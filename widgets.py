@@ -38,6 +38,9 @@ import logging
 import webbrowser
 
 class VEntry(tk.Entry):
+    # status is a static attribute that should be set to a StatusLabel widget
+    # in the application code.
+    status = None
     """A Validating Entry widget."""
     def __init__(self, master, textvariable, validator = None, errvariable = None,
             debug = True, command = None, **kwargs):
@@ -69,9 +72,13 @@ class VEntry(tk.Entry):
                 self.var.get()
             self['bg'] = self.default_bg
             self.errvariable.set("")
+            if self.status is not None:
+                self.status.clear()
         except BaseException as e:
             self['bg'] = '#ff5555'
             self.errvariable.set(str(e))
+            if self.status is not None:
+                self.status.error(self.errvariable.get())
             logging.error("%s" % self.errvariable.get())
             logging.debug(traceback.format_exc())
 
