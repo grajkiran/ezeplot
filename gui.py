@@ -77,7 +77,7 @@ class AppWindow():
         self.anim_timer.add_callback(self.anim_update)
         self.pointer_info = tk.StringVar(self.root, "")
         self.trajectories = dict()
-        self.fixed_points = set()
+        self.fixed_points = list()
         self.last_loc = 0.0, 0.0, 0.0
         self.press_loc = 0.0, 0.0
         # Used for manually adding a point.
@@ -173,7 +173,7 @@ class AppWindow():
             else:
                 opts[opt].set(defaults[opt])
         self._set_limits()
-        self.fixed_points.clear()
+        self.fixed_points[:] = []
         self.opts.fixed_points.set(False)
         self._reset_fig()
         self._set_proj()
@@ -244,7 +244,7 @@ class AppWindow():
                 picked = preset['locations']
         self.trajectories.clear()
         self.anim_tmax = 0.0
-        self.fixed_points.clear()
+        self.fixed_points[:] = []
         self.opts.fixed_points.set(False)
         self.update_fig()
         if len(picked) == 0:
@@ -286,7 +286,6 @@ class AppWindow():
     def _reset_fig(self, *args):
         self.stop_traj_animation(update = False)
         self.trajectories.clear()
-        #self.fixed_points.clear()
         self.anim_tmax = 0.0
         self.fig.clear(tmax = self.opts.tmax.get())
         self.update_fig()
