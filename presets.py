@@ -100,7 +100,7 @@ systems["User defined"] = {
             "ylim": [-5, 5],
             "tmax": 25.0,
             "dt": 0.05,
-            "projection": "2D",
+            "projection": "3D",
             }
 #systems["Duffing oscillator"] = {
 #                "x": "y",

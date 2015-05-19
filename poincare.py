@@ -405,6 +405,8 @@ class PWindow(tk.Toplevel):
             self._update_first_returns(from_top, from_bot)
         xlim, ylim, zlim = self.limits
         self.ax.clear()
+        self.ax.text2D(0.5, 1.05, "Poincare section", size = 16, weight = 'bold',
+                transform = self.ax.transAxes, ha = 'center')
         self.ax.set_frame_on(False)
         self.ax.grid(False)
         self.ax.mouse_init(zoom_btn = [], rotate_btn = [1])

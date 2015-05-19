@@ -6,9 +6,9 @@ Done	2. Trajectories output: put % on all blank line and line break after
 	   comments end
 	3. Allow entry of  "Initial values: X_0, Y_0,Z_0" or "X_0,Y_0" or
 	   "theta_0, r_0"
-	4. For User defined, keep 3d as default.
+Done	4. For User defined, keep 3d as default.
 Done	5. Change "Section" change as "Save Poincare Section data"
-	6. Title "Poincare Section" for graph
+Done	6. Title "Poincare Section" for graph
 	7. Keep bound as Tstep <= Tmax
 	8. For anything but User-defined, calculate all fixed points. For
 	   User-defined, allow for entry of "Initial values: X_0,Y_0,Z_0". Do
