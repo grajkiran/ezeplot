@@ -10,7 +10,7 @@ Done	4. For User defined, keep 3d as default.
 Done	5. Change "Section" change as "Save Poincare Section data"
 Done	6. Title "Poincare Section" for graph
 Done	7. Keep bound as Tstep <= Tmax
-	8. For anything but User-defined, calculate all fixed points. For
+*fixed*	8. For anything but User-defined, calculate all fixed points. For
 	   User-defined, allow for entry of "Initial values: X_0,Y_0,Z_0". Do
 	   not compute fixed points until option is clicked.
 Done	9. Remove unnecessary stuff like LSelect(Lasso) etc.
@@ -66,8 +66,6 @@ Done	2. rtheta messed up symbol.
 Done	3. Disable range check in 3d.
 Done	4. Fixed points option should not be enabled by default. Is it working
 	   in 3d?
-	4a. Single click for new traj should be disabled when
-	    fixed point option is ON
 Done	5. Remove starting marker for all traj.
 Done	6. Put User defined as last in list. Greyed entries should be zero.
 Done	7. Shift location of rmax to upwards in polar and remove all other
