@@ -36,6 +36,7 @@ import sys, traceback
 import presets
 import logging
 import webbrowser
+import os.path
 
 class VEntry(tk.Entry):
     # status is a static attribute that should be set to a StatusLabel widget
@@ -120,7 +121,8 @@ West Bengal
 rajkiran@aero.iitkgp.ernet.in
 http://ezeplot.example.com
 """
-        self.icon = tk.PhotoImage(file = 'icon.ppm')
+        icon_file = os.path.join(os.path.dirname(__file__), 'icon.ppm')
+        self.icon = tk.PhotoImage(file = icon_file)
         img = tk.Label(self, image = self.icon, bg = 'black')
         img.grid(columnspan = 2)
         frame = tk.Frame(self, bg = 'black')

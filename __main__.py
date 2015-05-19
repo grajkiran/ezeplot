@@ -53,8 +53,12 @@ logging.debug("%g: Creating root window..." % uptime.uptime())
 root = tk.Tk()
 root.title("EzePlot - Dynamical systems visualization")
 root.protocol('WM_DELETE_WINDOW', root.quit)
-icon = tk.PhotoImage(file = 'icon-e.ppm')
-root.tk.call("wm", "iconphoto", root._w, icon)
+try:
+    icon_file = os.path.join(os.path.dirname(__file__), 'icon-e.ppm')
+    icon = tk.PhotoImage(file = icon_file)
+    root.tk.call("wm", "iconphoto", root._w, icon)
+except:
+    icon = None
 #ad = AboutDialog(root, splash = True)
 #root.attributes('-fullscreen', True)
 #root.attributes('-zoomed', True)

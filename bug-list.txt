@@ -34,7 +34,7 @@ Done	6. Add headers to saved files:
 Done	6a Time series data
 Done	6b Fixed points
 Done	6c Poincare section
-	7. Reading icon fails if not in current directory
+Done	7. Reading icon fails if not in current directory
 
 Seventh round:
 ~~~~~~~~~~~~~~
