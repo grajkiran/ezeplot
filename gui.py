@@ -156,7 +156,7 @@ class AppWindow():
     def _load_preset(self, name):
         opts = self.opts
         preset = presets.systems[name]
-        defaults = dict(tmax = 25, dt = 0.05, projection = '2D', reverse = True)
+        defaults = dict(tmax = 25, dt = 0.05, projection = '2D', reverse = False)
         for opt in ('tmax', 'dt', 'projection', 'reverse'):
             if opt in preset:
                 opts[opt].set(preset[opt])
