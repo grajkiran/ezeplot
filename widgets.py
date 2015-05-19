@@ -352,7 +352,7 @@ class StatusLabel(tk.Label):
         self.update_idletasks()
 
     def error(self, message):
-        self['fg'] = "#ff5555"
+        self['fg'] = "#aa0000"
         self.__set_message(message)
 
     def warn(self, message):
