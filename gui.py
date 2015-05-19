@@ -352,12 +352,15 @@ class AppWindow():
             self.anim_running.set(True)
             self.controls['anim'].configure(text = 'Pause')
 
-    def add_location(self, pos):
+    def add_location(self, pos = None):
+        if pos is None:
+            pos = helpers.parse_coords(self.location_str.get())
         styles = ["b", "g", "r", "c", "m", "y", "k"]
         threshold = 1e-4
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
         pos = tuple(pos)
+        self.location_str.set("%0.4g, %0.4g, %0.4g" % pos)
         #Search for a fixed point
         ## fp = self.system.find_fp(pos, threshold = 1e-4)
         ## if fp is not None:
@@ -511,6 +514,12 @@ class AppWindow():
                 command = self._update_system_limits).grid(row = row, column = 0)
         tk.Button(f_controls, text = 'Defaults',
                 command = self._set_limits).grid(row = row, column = 1)
+
+        f_location = tk.LabelFrame(frame, text = "Starting coordinates")
+        f_location.columnconfigure(0, weight = 1)
+        VEntry(f_location, textvariable = self.location_str, validator = helpers.parse_coords).grid(row = 0, column = 0, sticky = tk.E + tk.W)
+        tk.Button(f_location, text = "Add", command = self.add_location).grid(row = 0, column = 1)
+        f_location.grid(sticky = tk.E + tk.W)
 
         f_anim = tk.LabelFrame(frame, text = 'Animation')
         f_anim.columnconfigure(0, weight=1)

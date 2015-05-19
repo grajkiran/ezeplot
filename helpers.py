@@ -101,7 +101,7 @@ def curve_resample(x, y, count = 0, delta = 0.0, indices = False):
     return np.array(ind_zero, dtype = 'int'), x_out, y_out
 
 def parse_coords(string):
-    coords = list(map(float, string.split()))
+    coords = list(map(float, string.replace(",", " ").split()))
     if len(coords) > 3:
         raise ValueError("Too many values.")
     coords.extend([0.0, 0.0, 0.0])
