@@ -173,7 +173,8 @@ class AppWindow():
             else:
                 opts[opt].set(defaults[opt])
         self._set_limits()
-        self.update_fixed_points()
+        self.fixed_points.clear()
+        self.opts.fixed_points.set(False)
         self._reset_fig()
         self._set_proj()
         if 'locations' in preset:
@@ -224,16 +225,18 @@ class AppWindow():
         #        geometry = self.root.winfo_geometry(), icon = self.icon)
 
     def update_fixed_points(self):
-        self.status.info("Searching for fixed points")
-        xlim, ylim, zlim = self._get_limits()
-        if PROJECTIONS[self.opts.projection.get()].lower() != '3d':
-            zlim = 0.0, 0.0
-        self.fixed_points = self.system.locate_fixed_points((xlim, ylim, zlim))
-        self.status.clear()
+        if self.opts.fixed_points.get() and len(self.fixed_points) == 0:
+            self.status.info("Searching for fixed points")
+            xlim, ylim, zlim = self._get_limits()
+            if PROJECTIONS[self.opts.projection.get()].lower() != '3d':
+                zlim = 0.0, 0.0
+            self.fixed_points = self.system.locate_fixed_points((xlim, ylim, zlim))
+            self.status.clear()
+        self.update_fig()
 
     def update_trajectories(self, *args):
-        #picked = list(self.trajectories.keys())
-        picked = []
+        picked = list(self.trajectories.keys())
+        #picked = []
         if len(picked) == 0:
             preset_name = self.controls['system'].preset.get()
             preset = presets.systems[preset_name]
@@ -241,7 +244,8 @@ class AppWindow():
                 picked = preset['locations']
         self.trajectories.clear()
         self.anim_tmax = 0.0
-        self.update_fixed_points()
+        self.fixed_points.clear()
+        self.opts.fixed_points.set(False)
         self.update_fig()
         if len(picked) == 0:
             showinfo(title = "No trajectories!",
@@ -481,7 +485,7 @@ class AppWindow():
                 variable = self.opts.temporal, command = self._set_temporal)
         btn_temporal.grid(row=row, column=0, sticky = tk.W)
         btn_fp = tk.Checkbutton(f_controls, text = "Fixed Points",
-                variable = self.opts.fixed_points, command = self.update_fig)
+                variable = self.opts.fixed_points, command = self.update_fixed_points)
         btn_fp.grid(row = row, column = 1, sticky = tk.W)
         controls['temporal'] = btn_temporal
         controls['fp'] = btn_fp
@@ -515,7 +519,13 @@ class AppWindow():
         tk.Button(f_controls, text = 'Defaults',
                 command = self._set_limits).grid(row = row, column = 1)
 
-        f_location = tk.LabelFrame(frame, text = "Starting coordinates")
+        #f_fp = tk.LabelFrame(frame, text = "Fixed points")
+        #f_fp.grid(sticky = tk.E + tk.W)
+        #f_fp.columnconfigure(0, weight = 1)
+        #PEntry(f_fp, name = "Initial guess").grid(row = 0, column = 0, sticky = tk.E + tk.W)
+        #tk.Button(f_fp, text = "Pick").grid(row = 0, column = 1)
+        #tk.Button(f_fp, text = "Update").grid(row = 1, column = 0)
+        f_location = tk.LabelFrame(frame, text = "Initial coordinates")
         f_location.columnconfigure(0, weight = 1)
         VEntry(f_location, textvariable = self.location_str, validator = helpers.parse_coords).grid(row = 0, column = 0, sticky = tk.E + tk.W)
         tk.Button(f_location, text = "Add", command = self.add_location).grid(row = 0, column = 1)
