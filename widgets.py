@@ -249,9 +249,9 @@ class PEntry(tk.Frame):
         self.set = self.var.set
         self.enable()
     def enable(self, name = None, value = None):
-        if name is None:
-            name = self.name
-        self.label.configure(text = name)
+        if name is not None:
+            self.name = name
+        self.label.configure(text = self.name)
         if value is not None:
             self.var.set(value)
         self.label.grid(sticky = tk.E + tk.W)
@@ -370,7 +370,7 @@ class DSFrame(tk.LabelFrame):
 
     def _update_system_params(self, *args):
         for pe in self.params:
-            name = pe.label.cget('text')
+            name = pe.name
             value = pe.get()
             if name in self.system.params:
                 self.system.params[name] = value
@@ -380,6 +380,7 @@ class DSFrame(tk.LabelFrame):
         for i in range(len(items)):
             self.params[i].enable(name = items[i][0], value = items[i][1])
         for pe in self.params[len(items):]:
+            pe.name = ""
             pe.disable()
 
 def dsf_test():
