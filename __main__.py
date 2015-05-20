@@ -69,3 +69,4 @@ app = AppWindow(root, system, blit = opts.blit, icon = icon)#, embedded = opts.e
 logging.debug("%g: Entering mainloop..." % uptime.uptime())
 #ad.destroy()
 root.mainloop()
+root.destroy()
