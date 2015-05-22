@@ -21,22 +21,24 @@
 ##############################################################################
 from collections import OrderedDict
 
+PI = 3.141592653589793
+
 systems = OrderedDict()
 systems["Simple pendulum"] = {
             "x": "y",
             "y": "sin(x)",
             "z": "0",
-            "locations": [(0.5, 0.5), (0.5, -0.5), (2, 1), (-2, 1)],
-            "xlim": [-5, 5],
+            "locations": [(2.0, 1.0), (-2.0, 1.0), (6.7, -0.414), (-6.7, 0.414)],
+            "xlim": [-2.1*PI, 2.1*PI],
             "ylim": [-5, 5],
-            "tmax": 25.0,
+            "tmax": 30.0,
             "projection": "2D",
             }
 systems["Linear damped oscillator"] = {
             "x": "y",
             "y": "-omega * x - c * y",
             "z": "0",
-            "params": {"c": 0.5, "omega": 1.0},
+            "params": {"c": 0.4, "omega": 2.0},
             "locations": [(4, 2), (-4, -2)],
             "xlim": [-5, 5],
             "ylim": [-5, 5],
