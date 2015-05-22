@@ -144,7 +144,7 @@ class Plane:
         return "\n\t".join(wrap(val.strip().lstrip('+'), 36))
 
 class PSection(Plane):
-    def compute_crossings(self, trajectory):
+    def compute_crossings(self, trajectory, limits = None):
         top2bot = []
         bot2top = []
         x, y, z = trajectory.x, trajectory.y, trajectory.z
@@ -156,10 +156,11 @@ class PSection(Plane):
             s = sign(self.dot(p))
             if s_prev != s:
                 p_int = self.intersection(p_prev, p)
-                if s_prev > 0:
-                     top2bot.append(p_int)
-                else:
-                     bot2top.append(p_int)
+                if helpers.is_inside(p_int, limits, strict = True):
+                    if s_prev > 0:
+                         top2bot.append(p_int)
+                    else:
+                         bot2top.append(p_int)
             p_prev = p
             s_prev = s
         return np.array(top2bot), np.array(bot2top)
@@ -400,7 +401,7 @@ class PWindow(tk.Toplevel):
         coeffs[self.plane_direction.get()] = 1.0
         plane = PSection(*coeffs)
         self.plane_eqn.set(str(plane))
-        self.crossings = from_top, from_bot = plane.compute_crossings(t)
+        self.crossings = from_top, from_bot = plane.compute_crossings(t, limits = self.limits)
         if self.first_returns.get():
             self._update_first_returns(from_top, from_bot)
         xlim, ylim, zlim = self.limits
