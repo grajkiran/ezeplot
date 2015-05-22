@@ -22,7 +22,6 @@
 from collections import OrderedDict
 import numpy as np
 from scipy.integrate import ode
-from scipy.interpolate import interp1d
 from scipy.optimize import root
 from math import isinf
 import helpers

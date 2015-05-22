@@ -37,6 +37,7 @@ import presets
 import logging
 import webbrowser
 import os.path
+import icons
 
 class VEntry(tk.Entry):
     # status is a static attribute that should be set to a StatusLabel widget
@@ -122,8 +123,7 @@ rajkiran@aero.iitkgp.ernet.in
 http://ezeplot.example.com
 """
         try:
-            icon_file = os.path.join(os.path.dirname(__file__), 'icon.ppm')
-            self.icon = tk.PhotoImage(file = icon_file)
+            self.icon = tk.PhotoImage(data = icons.icon_main)
         except:
             self.icon = tk.PhotoImage()
         img = tk.Label(self, image = self.icon, bg = 'black')
