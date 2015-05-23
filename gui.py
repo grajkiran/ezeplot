@@ -392,8 +392,8 @@ class AppWindow():
             logging.warning("Could not compute trajectory from: %s" % pos_str)
             logging.debug(traceback.format_exc())
             return
-        if traj.dist[-1] < 10*threshold:
-            return
+        #if traj.dist[-1] < 10*threshold:
+        #    return
         self.trajectories[pos] = traj
         if traj.t[-1] > self.anim_tmax:
             self.anim_tmax = traj.t[-1]

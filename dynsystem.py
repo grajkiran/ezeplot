@@ -286,24 +286,25 @@ class DynamicSystem:
             if len(traj) == 0:
                 traj.append([t, 0.0] + pos_norm)
                 return 0
-            s_old = traj[-1][1]
-            pos_old = traj[-1][2:]
-            s = helpers.distance(pos_old, pos)
-            if tmax > 0:
-                s_cum = s_old + s
-            else:
-                s_cum = s_old - s
+            #s_old = traj[-1][1]
+            #pos_old = traj[-1][2:]
+            #s = helpers.distance(pos_old, pos)
+            #if tmax > 0:
+            #    s_cum = s_old + s
+            #else:
+            #    s_cum = s_old - s
+            s_cum = 0.0
             traj.append([t, s_cum] + pos_norm)
             if not helpers.is_inside(pos_norm, self.limits, strict = False):
                 logging.debug("Crossed domain - stopping integration.")
                 return -1
             # Check if we are within threshold of a fixed point.
             # We are if our velocity is decreasing and we have not moved much.
-            v_old = helpers.mag(self(pos_old))
-            v = helpers.mag(self(pos_norm))
-            if s < threshold and v < v_old and len(traj) > 10:
-                logging.debug("No significant change - stopping integration.")
-                return -1
+            #v_old = helpers.mag(self(pos_old))
+            #v = helpers.mag(self(pos_norm))
+            #if s < threshold and v < v_old and len(traj) > 10:
+            #    logging.debug("No significant change - stopping integration.")
+            #    return -1
             return 0
         rk4 = ode(lambda t, pos: self(pos)).set_integrator('dopri5', **kwargs)
         rk4.set_solout(accumulate)
