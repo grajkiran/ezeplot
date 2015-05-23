@@ -42,6 +42,7 @@ matplotlib.rc('font', family = 'serif')
 class Figure:
     def __init__(self, master, temporal = False, blit = True):
         self.fig = matplotlib.figure.Figure()
+        self.fig.set_facecolor('white')
         self.canvas = FigureCanvasTkAgg(self.fig, master = master)
         #self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         self._blit = blit and self.fig.canvas.supports_blit

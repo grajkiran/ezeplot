@@ -176,6 +176,7 @@ class PWindow(tk.Toplevel):
         self.title("EzePlot - Poincare section")
         self.trajectory = app.trajectories[app.last_loc]
         self.fig = matplotlib.figure.Figure()
+        self.fig.set_facecolor('white')
         self.canvas = FigureCanvasTkAgg(self.fig, master = self)
         #toolbar = NavigationToolbar2TkAgg(self.canvas, self)
         #toolbar.update()
