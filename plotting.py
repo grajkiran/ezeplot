@@ -347,6 +347,7 @@ class Figure:
         # Draw only the relevant artists
         self._draw_artist(traj.line[0])
         self._draw_artist(traj.marker[0])
+        self._draw_artist(traj.marker['start'])
         if self.temporal:
             for axis, axes in zip((1,2,3), (self.ax_x, self.ax_y, self.ax_z)):
                 self._draw_artist(traj.line[axis], axes)
@@ -365,9 +366,11 @@ class Figure:
         if self._3d:
             traj.line[0], = self.ax_main.plot(traj.x, traj.y, traj.z, style)
             traj.marker[0], = self.ax_main.plot([traj.start[0]], [traj.start[1]], [traj.start[2]], marker)
+            traj.marker['start'], = self.ax_main.plot([traj.start[0]], [traj.start[1]], [traj.start[2]], 'ko', mfc = 'none')
         else:
             traj.line[0], = self.ax_main.plot(traj.x, traj.y, style)
             traj.marker[0], = self.ax_main.plot([traj.start[0]], [traj.start[1]], marker)
+            traj.marker['start'], = self.ax_main.plot([traj.start[0]], [traj.start[1]], 'ko', mfc = 'none')
         traj.line[1], = self.ax_x.plot(traj.t, traj.x, style)
         traj.line[2], = self.ax_y.plot(traj.t, traj.y, style)
         traj.line[3], = self.ax_z.plot(traj.t, traj.z, style)
