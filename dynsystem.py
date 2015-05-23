@@ -221,7 +221,7 @@ class DynamicSystem:
                     fixed_points.add(fp_clean)
             else:
                 crossed += 1
-        print("%d found, %d failed, %d crossed" % (found, failed, crossed))
+        logging.debug("%d found, %d failed, %d crossed" % (found, failed, crossed))
         return list(fixed_points)
 
     def trajectory(self, start, tmax, limits = None, threshold = 0.0,

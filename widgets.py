@@ -166,6 +166,7 @@ http://ezeplot.example.com
                     bg = 'black', fg = 'white', pady = 10)
             btn_close.bind('<Button>', lambda *args: self.destroy())
             btn_close.grid(row = 3, column = 1)
+            self.update()
             self.center_on_parent(master)
             self.wait_window(self)
 
@@ -177,15 +178,15 @@ http://ezeplot.example.com
         return label
 
     def center_on_screen(self):
-        w = 250
-        h = 360
+        w = self.winfo_width()
+        h = self.winfo_height()
         pw = self.winfo_screenwidth()
         ph = self.winfo_screenheight()
         self.geometry("%+d%+d" % ((pw-w)//2, (ph-h)//2))
 
     def center_on_parent(self, parent):
-        w = 250
-        h = 400
+        w = self.winfo_width()
+        h = self.winfo_height()
         pw = parent.winfo_width()
         ph = parent.winfo_height()
         px = parent.winfo_rootx()
