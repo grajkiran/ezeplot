@@ -23,12 +23,10 @@ import sys, traceback
 
 try:
     import tkinter as tk
-    from tkinter import ttk
     from tkinter.filedialog import asksaveasfilename
     from tkinter.messagebox import showinfo
 except:
     import Tkinter as tk
-    import ttk
     from tkFileDialog import asksaveasfilename
     from tkMessageBox import showinfo
 import logging
