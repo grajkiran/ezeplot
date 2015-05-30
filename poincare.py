@@ -210,7 +210,6 @@ class PWindow(tk.Toplevel):
         self.grab_set()
         self._update()
         self._plane_preset()
-        self.save_section('poincare.txt')
         self.wait_window(self)
 
     def _add_widgets(self, frame):
