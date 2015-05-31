@@ -37,7 +37,6 @@ from plotting import Figure
 from gui import AppWindow
 from dynsystem import DynamicSystem
 from widgets import AboutDialog
-import icons
 
 parser = OptionParser()
 #parser.add_option("-e", "--embed", action = "store_true", default = True)
@@ -52,10 +51,10 @@ system = DynamicSystem('y', '-x + mu * (1 - x*x)*y', params = dict(mu = 1.0))
 #fig = Figure(blit = opts.blit)
 logging.debug("%g: Creating root window..." % uptime.uptime())
 root = tk.Tk()
-root.title("EzePlot - Dynamical systems visualization")
+root.title("Ezeplot - Dynamical systems visualization")
 root.protocol('WM_DELETE_WINDOW', root.quit)
 try:
-    icon = tk.PhotoImage(data = icons.icon_win)
+    icon = tk.PhotoImage(file = os.path.join(os.path.dirname(__file__), 'icon-win.ppm'))
     root.tk.call("wm", "iconphoto", root._w, icon)
 except:
     icon = None

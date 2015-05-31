@@ -173,7 +173,7 @@ class PWindow(tk.Toplevel):
         self.app = app
         self.geometry(app.root.geometry())
         self.transient(app.root)
-        self.title("EzePlot - Poincare section")
+        self.title("Ezeplot - Poincare section")
         self.trajectory = app.trajectories[app.last_loc]
         self.fig = matplotlib.figure.Figure()
         self.fig.set_facecolor('white')
