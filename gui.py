@@ -528,17 +528,21 @@ class AppWindow():
         tk.Button(f_location, text = "Add", command = self.add_location).grid(row = 0, column = 1)
         f_location.grid(sticky = tk.E + tk.W)
 
+        fgcolor = "white"
+        if sys.platform == 'darwin':
+            fgcolor = "black"
+
         f_anim = tk.LabelFrame(frame, text = 'Animation')
         f_anim.columnconfigure(0, weight=1)
         f_anim.grid(sticky = tk.E + tk.W)
         b_toggle = tk.Button(f_anim, text = "Animate", command = self.toggle_traj_animation,
                 background = "#0000aa", activebackground = "#3333ff",
-                foreground = "white", activeforeground = "white", font = "sans 16 bold",
+                foreground = fgcolor, activeforeground = fgcolor, font = "sans 16 bold",
                 height = 1, width = 6)
         b_toggle.grid(row = 0, rowspan = 2, column = 0)
         b_stop = tk.Button(f_anim, text = "Stop", command = self.stop_traj_animation, font = "sans 10 bold",
                 background = "#aa0000", activebackground = "#ff5555",
-                foreground = "white", activeforeground = "white")
+                foreground = fgcolor, activeforeground = fgcolor)
         b_stop.grid(row = 0, rowspan=2, column = 1)
         controls['anim'] = b_toggle
 
@@ -551,12 +555,12 @@ class AppWindow():
         f_update.rowconfigure(0, weight=1)
         tk.Button(f_system, text = "Update", command = self.update_trajectories,
                 background = "#0000aa", activebackground = "#3333ff",
-                foreground = "white", activeforeground = "white", font = "sans 16 bold",
+                foreground = fgcolor, activeforeground = fgcolor, font = "sans 16 bold",
                 height = 1, width = 6).grid(
                         columnspan=2, sticky = tk.S+tk.W+tk.E)
         tk.Button(f_update, text = "Clear", command = self._reset_fig, font = "sans 10 bold",
                 background = "#aa0000", activebackground = "#ff5555",
-                foreground = "white", activeforeground = "white").grid(
+                foreground = fgcolor, activeforeground = fgcolor).grid(
                         row = 0, columnspan = 2, sticky = tk.S)
         return controls
 
