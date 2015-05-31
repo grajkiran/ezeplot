@@ -39,8 +39,6 @@ from dynsystem import DynamicSystem
 from widgets import AboutDialog
 
 parser = OptionParser()
-#parser.add_option("-e", "--embed", action = "store_true", default = True)
-#parser.add_option("-w", "--windowed", action = "store_false", dest = 'embed')
 parser.add_option("-b", "--blit", action = "store_true", default = True)
 parser.add_option("-n", "--no-blit", action = "store_false", dest = "blit")
 opts, args = parser.parse_args()
@@ -48,7 +46,6 @@ opts, args = parser.parse_args()
 logging.basicConfig(level = logging.DEBUG)
 
 system = DynamicSystem('y', '-x + mu * (1 - x*x)*y', params = dict(mu = 1.0))
-#fig = Figure(blit = opts.blit)
 logging.debug("%g: Creating root window..." % uptime.uptime())
 root = tk.Tk()
 root.title("Ezeplot - Dynamical systems visualization")
@@ -58,14 +55,10 @@ try:
     root.tk.call("wm", "iconphoto", root._w, icon)
 except:
     icon = None
-#ad = AboutDialog(root, splash = True)
-#root.attributes('-fullscreen', True)
-#root.attributes('-zoomed', True)
-#fig.bind('close_event', lambda evt: root.quit())
 logging.debug("%g: Creating application..." % uptime.uptime())
-app = AppWindow(root, system, blit = opts.blit, icon = icon)#, embedded = opts.embed)
-# TODO: Set the geometry of the control window and figure windows
+app = AppWindow(root, system, blit = opts.blit, icon = icon)
 logging.debug("%g: Entering mainloop..." % uptime.uptime())
-#ad.destroy()
+root.call('wm', 'attributes', '.', '-topmost', '1')
+root.call('wm', 'attributes', '.', '-topmost', '0')
 root.mainloop()
 root.destroy()
