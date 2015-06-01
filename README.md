@@ -13,38 +13,44 @@ Main features
 * Detecting fixed points based on user-input
 * Plotting Poincare sections
 
-Obtaining Ezeplot
------------------
+Obtaining and running Ezeplot
+-----------------------------
 
 ### Minimal package
-The minimal package is very small (< 200KB) and consists of just the Ezeplot code. Download this package if you already have recent versions of python (2.7 or 3.4), matplotlib (>=1.3.1), numpy(>=1.8.1) and scipy(>=0.13.3) installed on your computer.
-Download the minimal set of files and run.
+The minimal package is very small (< 200KB) and consists of just the Ezeplot
+code as a set of [python](https://www.python.org) programs.
+Download this package if you already have recent versions of the following
+software already installed on your computer:
+* python (2.7 or 3.4)
+* matplotlib (>=1.3.1)
+* numpy(>=1.8.1)
+* scipy(>=0.13.3)
 
-[ezeplot-1.0-minimal.zip](https://www.dropbox.com/s/48u1268ug92wyzv/ezeplot-1.0-minimal.zip?dl=1)
+You need to open the file `__main__.py` with your system's python executable.
+On Windows, if python is associated with `*.py` files, opening `__main__.py` should work.
 
-### Fully self-contained standalone package
-The standalone package is much larger (~ 40MB) and includes Ezeplot bundled
-along with python and the necessary libraries. Download, unzip and run - no
-installation required.
-|Platform | System requirements | Download |
-|---------|---------------------|--------- |
-|Windows  | Windows XP and above|[ezeplot-1.0-win64.zip](https://www.dropbox.com/s/7jqz1y8m6g7bv4j/ezeplot-1.0-win64.zip?dl=1)|
-|Mac OS X | OS X 10.9 and above |[ezeplot-1.0-osx64.zip](https://www.dropbox.com/s/8c3jzdeb1h95fh5/ezeplot-1.0-osx64.zip?dl=1)|
-|Linux    | Kernel 3.0 and above|[ezeplot-1.0-linux64.zip](https://www.dropbox.com/s/yt6ppi72rpnztfx/ezeplot-1.0-linux64.zip?dl=1)|
-
-Running Ezeplot
----------------
-### Minimal package
-For the minimal package, you need to open the file __main__.py with your system's python executable.
-On Windows, if python is associated with .py files, simply double clicking __main__.py is sufficient.
-On Mac OS X and linux, change to the extracted directory, and type:
+On Mac OS X and linux, change to the extracted directory, and type (in terminal):
 
     python __main__.py
 
-### Standalone package
-For the standalone package, extract the contents of the zip file and run
-ezeplot.bat, ezeplot.command or ezeplot.sh for windows, mac and linux
-respectively.
+Download the minimal package here: [ezeplot-1.0-minimal.zip](https://www.dropbox.com/s/48u1268ug92wyzv/ezeplot-1.0-minimal.zip?dl=1)
+
+### Fully self-contained standalone package
+The standalone package is much larger (~ 40MB) and includes Ezeplot bundled
+along with python and the necessary libraries. This package requires no
+installation and can also be run from a portable USB flash drive. 
+
+#### Windows (Windows XP or above)
+Download [ezeplot-1.0-win64.zip](https://www.dropbox.com/s/7jqz1y8m6g7bv4j/ezeplot-1.0-win64.zip?dl=1),
+extract and run ezeplot.bat
+
+#### Mac OS X (OS X 10.9 or above)
+Download [ezeplot-1.0-osx64.zip](https://www.dropbox.com/s/8c3jzdeb1h95fh5/ezeplot-1.0-osx64.zip?dl=1),
+extract and run ezeplot.command
+
+#### Linux (Kernel 3.0 and above)
+Download [ezeplot-1.0-linux64.zip](https://www.dropbox.com/s/yt6ppi72rpnztfx/ezeplot-1.0-linux64.zip?dl=1),
+extract and run ezeplot.sh
 
 Screenshots
 -----------
@@ -64,11 +70,14 @@ For beta-testing.
 
 License
 -------
-Ezeplot is distributed under the GNU General Public License. See the file LICENSE for more details.
+Ezeplot is distributed under the [GNU General Public License](https://www.gnu.org/licenses/gpl.html). See the file LICENSE for more details.
 
 Links
 -----
 [Ezeplot](http://grajkiran.github.io/ezeplot)
+
 [Python](https://www.python.org/)
+
 [Matplotlib](http://matplotlib.org/)
+
 [Scipy](http://scipy.org)
