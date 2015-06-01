@@ -54,9 +54,9 @@ extract and run ezeplot.sh
 
 Screenshots
 -----------
-[Lorentz attractor](http://i.imgur.com/Il9b2sf.png)
-[Lorentz attractor - Time series](http://i.imgur.com/zAUQFlY.png)
-[Lorentz attractor - Poincare section](http://i.imgur.com/BMeTMp2.png)
+![Lorentz attractor](http://i.imgur.com/Il9b2sf.png)
+![Lorentz attractor - Time series](http://i.imgur.com/zAUQFlY.png)
+![Lorentz attractor - Poincare section](http://i.imgur.com/BMeTMp2.png)
 
 Credits
 -------
