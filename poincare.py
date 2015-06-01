@@ -35,6 +35,7 @@ from textwrap import wrap
 import logging
 from functools import partial
 import helpers
+import sys
 
 def sign(x):
     if x > 0: return 1
@@ -271,9 +272,13 @@ class PWindow(tk.Toplevel):
         tk.Label(frame, text = "Red: Opposite to\n        plane normal", fg = "red",
                 justify = tk.LEFT).grid()
 
+        fgcolor = "white"
+        if sys.platform == 'darwin':
+            fgcolor = "black"
+
         close_btn = tk.Button(frame, text = "Close", command = self.destroy, font = "sans 10 bold",
                 background = "#aa0000", activebackground = "#ff5555",
-                foreground = "white", activeforeground = "white")
+                foreground = fgcolor, activeforeground = fgcolor)
         close_btn.grid(columnspan = 2, sticky = tk.S)
         frame.rowconfigure(close_btn.grid_info()['row'], weight = 1)
 
