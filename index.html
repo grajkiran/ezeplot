@@ -1,43 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Ezeplot by grajkiran</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-dark.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Ezeplot : Dynamical systems visualisation">
 
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Ezeplot</title>
   </head>
+
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/grajkiran/ezeplot">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/grajkiran/ezeplot/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/grajkiran/ezeplot/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
 
-    <div class="wrapper">
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/grajkiran/ezeplot">View on GitHub</a>
 
-      <section>
-        <div id="title">
-          <h1>Ezeplot</h1>
-          <p>Dynamical systems visualisation</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/grajkiran">grajkiran</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
+          <h1 id="project_title">Ezeplot</h1>
+          <h2 id="project_tagline">Dynamical systems visualisation</h2>
 
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/grajkiran/ezeplot/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/grajkiran/ezeplot/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <p><img src="http://i.imgur.com/VAgBgLU.png" alt="Ezeplot"></p>
 
 <h1>
@@ -57,47 +50,57 @@
 </ul>
 
 <h2>
-<a id="obtaining-ezeplot" class="anchor" href="#obtaining-ezeplot" aria-hidden="true"><span class="octicon octicon-link"></span></a>Obtaining Ezeplot</h2>
+<a id="obtaining-and-running-ezeplot" class="anchor" href="#obtaining-and-running-ezeplot" aria-hidden="true"><span class="octicon octicon-link"></span></a>Obtaining and running Ezeplot</h2>
 
 <h3>
 <a id="minimal-package" class="anchor" href="#minimal-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Minimal package</h3>
 
-<p>The minimal package is very small (&lt; 200KB) and consists of just the Ezeplot code. Download this package if you already have recent versions of python (2.7 or 3.4), matplotlib (&gt;=1.3.1), numpy(&gt;=1.8.1) and scipy(&gt;=0.13.3) installed on your computer.
-Download the minimal set of files and run.</p>
+<p>The minimal package is very small (&lt; 200KB) and consists of just the Ezeplot
+code as a set of <a href="https://www.python.org">python</a> programs.
+Download this package if you already have recent versions of the following
+software already installed on your computer:</p>
 
-<p><a href="https://www.dropbox.com/s/48u1268ug92wyzv/ezeplot-1.0-minimal.zip?dl=1">ezeplot-1.0-minimal.zip</a></p>
+<ul>
+<li>python (2.7 or 3.4)</li>
+<li>matplotlib (&gt;=1.3.1)</li>
+<li>numpy(&gt;=1.8.1)</li>
+<li>scipy(&gt;=0.13.3)</li>
+</ul>
+
+<p>You need to open the file <code>__main__.py</code> with your system's python executable.
+On Windows, if python is associated with <code>*.py</code> files, opening <code>__main__.py</code> should work.</p>
+
+<p>On Mac OS X and linux, change to the extracted directory, and type (in terminal):</p>
+
+<pre><code>python __main__.py
+</code></pre>
+
+<p>Download the minimal package here: <a href="https://www.dropbox.com/s/48u1268ug92wyzv/ezeplot-1.0-minimal.zip?dl=1">ezeplot-1.0-minimal.zip</a></p>
 
 <h3>
 <a id="fully-self-contained-standalone-package" class="anchor" href="#fully-self-contained-standalone-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fully self-contained standalone package</h3>
 
 <p>The standalone package is much larger (~ 40MB) and includes Ezeplot bundled
-along with python and the necessary libraries. Download, unzip and run - no
-installation required.
-|Platform | System requirements | Download |
-|---------|---------------------|--------- |
-|Windows  | Windows XP and above|<a href="https://www.dropbox.com/s/7jqz1y8m6g7bv4j/ezeplot-1.0-win64.zip?dl=1">ezeplot-1.0-win64.zip</a>|
-|Mac OS X | OS X 10.9 and above |<a href="https://www.dropbox.com/s/8c3jzdeb1h95fh5/ezeplot-1.0-osx64.zip?dl=1">ezeplot-1.0-osx64.zip</a>|
-|Linux    | Kernel 3.0 and above|<a href="https://www.dropbox.com/s/yt6ppi72rpnztfx/ezeplot-1.0-linux64.zip?dl=1">ezeplot-1.0-linux64.zip</a>|</p>
+along with python and the necessary libraries. This package requires no
+installation and can also be run from a portable USB flash drive. </p>
 
-<h2>
-<a id="running-ezeplot" class="anchor" href="#running-ezeplot" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running Ezeplot</h2>
+<h4>
+<a id="windows-windows-xp-or-above" class="anchor" href="#windows-windows-xp-or-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Windows (Windows XP or above)</h4>
 
-<h3>
-<a id="minimal-package-1" class="anchor" href="#minimal-package-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Minimal package</h3>
+<p>Download <a href="https://www.dropbox.com/s/7jqz1y8m6g7bv4j/ezeplot-1.0-win64.zip?dl=1">ezeplot-1.0-win64.zip</a>,
+extract and run ezeplot.bat</p>
 
-<p>For the minimal package, you need to open the file <strong>main</strong>.py with your system's python executable.
-On Windows, if python is associated with .py files, simply double clicking <strong>main</strong>.py is sufficient.
-On Mac OS X and linux, change to the extracted directory, and type:</p>
+<h4>
+<a id="mac-os-x-os-x-109-or-above" class="anchor" href="#mac-os-x-os-x-109-or-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mac OS X (OS X 10.9 or above)</h4>
 
-<pre><code>python __main__.py
-</code></pre>
+<p>Download <a href="https://www.dropbox.com/s/8c3jzdeb1h95fh5/ezeplot-1.0-osx64.zip?dl=1">ezeplot-1.0-osx64.zip</a>,
+extract and run ezeplot.command</p>
 
-<h3>
-<a id="standalone-package" class="anchor" href="#standalone-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Standalone package</h3>
+<h4>
+<a id="linux-kernel-30-and-above" class="anchor" href="#linux-kernel-30-and-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux (Kernel 3.0 and above)</h4>
 
-<p>For the standalone package, extract the contents of the zip file and run
-ezeplot.bat, ezeplot.command or ezeplot.sh for windows, mac and linux
-respectively.</p>
+<p>Download <a href="https://www.dropbox.com/s/yt6ppi72rpnztfx/ezeplot-1.0-linux64.zip?dl=1">ezeplot-1.0-linux64.zip</a>,
+extract and run ezeplot.sh</p>
 
 <h2>
 <a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshots</h2>
@@ -125,19 +128,30 @@ respectively.</p>
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
 
-<p>Ezeplot is distributed under the GNU General Public License. See the file LICENSE for more details.</p>
+<p>Ezeplot is distributed under the <a href="https://www.gnu.org/licenses/gpl.html">GNU General Public License</a>. See the file LICENSE for more details.</p>
 
 <h2>
 <a id="links" class="anchor" href="#links" aria-hidden="true"><span class="octicon octicon-link"></span></a>Links</h2>
 
-<p><a href="http://grajkiran.github.io/ezeplot">Ezeplot</a>
-<a href="https://www.python.org/">Python</a>
-<a href="http://matplotlib.org/">Matplotlib</a>
-<a href="http://scipy.org">Scipy</a></p>
-      </section>
+<p><a href="http://grajkiran.github.io/ezeplot">Ezeplot</a></p>
 
+<p><a href="https://www.python.org/">Python</a></p>
+
+<p><a href="http://matplotlib.org/">Matplotlib</a></p>
+
+<p><a href="http://scipy.org">Scipy</a></p>
+      </section>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Ezeplot maintained by <a href="https://github.com/grajkiran">grajkiran</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
     
+
   </body>
 </html>
