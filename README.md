@@ -5,7 +5,7 @@ Ezeplot - Dynamical systems visualisation (v1.0)
 
 Ezeplot is a tool for visualising autonomous dynamical systems. It can be used as an educational aid for studying non-linear dynamics.
 
-Main features
+Features
 ------------
 * Plotting and animating trajectories of (1d, 2d, 3d) autonomous dynamical systems
 * 2d, 3d and polar modes
@@ -29,7 +29,7 @@ software already installed on your computer:
 You need to open the file `__main__.py` with your system's python executable.
 On Windows, if python is associated with `*.py` files, opening `__main__.py` should work.
 
-On Mac OS X and linux, change to the extracted directory, and type (in terminal):
+On Mac OSX and linux, change to the extracted directory, and type (in the terminal window):
 
     python __main__.py
 
@@ -44,7 +44,7 @@ installation and can also be run from a portable USB flash drive.
 Download [ezeplot-1.0-win64.zip](https://www.dropbox.com/s/7jqz1y8m6g7bv4j/ezeplot-1.0-win64.zip?dl=1),
 extract and run ezeplot.bat
 
-#### Mac OS X (OS X 10.9 or above)
+#### Mac OSX (OSX 10.9 or above)
 Download [ezeplot-1.0-osx64.zip](https://www.dropbox.com/s/8c3jzdeb1h95fh5/ezeplot-1.0-osx64.zip?dl=1),
 extract and run ezeplot.command
 
