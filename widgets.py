@@ -148,11 +148,11 @@ class AboutDialog(tk.Toplevel):
         if splash:
             self.center_on_screen()
         else:
-            btn = tk.Label(self, text = "License", font = font_b12, cursor = 'hand1',
+            btn = tk.Label(self, text = "License", font = font_b12, #cursor = 'hand1',
                     bg = 'black', fg = 'white', pady = 10)
             btn.bind('<Button>', lambda arg: license_dialog(self))
             btn.grid(row = 3, column = 0)
-            btn_close = tk.Label(self, text = "Close", font = font_b12, cursor = 'hand1',
+            btn_close = tk.Label(self, text = "Close", font = font_b12, #cursor = 'hand1',
                     bg = 'black', fg = 'white', pady = 10)
             btn_close.bind('<Button>', lambda *args: self.destroy())
             btn_close.grid(row = 3, column = 1)
