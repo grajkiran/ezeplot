@@ -113,14 +113,6 @@ class AboutDialog(tk.Toplevel):
         tk.Toplevel.__init__(self, master, bg = 'black')
         if icon is not None:
             self.tk.call("wm", "iconphoto", self._w, icon)
-        contents="""Ezeplot 1.0
-Raj Kiran Grandhi,
-Dept. of Aerospace Engineering
-IIT Kharagpur - 721302
-West Bengal
-rajkiran@aero.iitkgp.ernet.in
-http://ezeplot.example.com
-"""
         try:
             self.icon = tk.PhotoImage(file = os.path.join(os.path.dirname(__file__), 'icon-main.ppm'))
         except:
@@ -142,10 +134,9 @@ http://ezeplot.example.com
         self.add_line(frame, text = "Kharagpur - 721302", font = font_reg)
         self.add_line(frame, text = "West Bengal, India", font = font_reg)
         self.add_line(frame, text = "rajkiran@aero.iitkgp.ernet.in", font = font_email)
-        url = self.add_line(frame, text = "http://ezeplot.example.com", pady = 8,
+        url = self.add_line(frame, text = "http://grajkiran.github.io/ezeplot/", pady = 8,
                 font = font_url, cursor = 'hand2')
         url.bind('<Button>', lambda *args: webbrowser.open(url['text']))
-        #text = tk.Label(self, bg = 'black', fg = 'yellow', text = contents, justify = tk.CENTER)
         #text.grid(columnspan = 2)
         self.title('About Ezeplot')
         self.protocol('WM_DELETE_WINDOW', self.destroy)
