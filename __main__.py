@@ -39,11 +39,16 @@ from dynsystem import DynamicSystem
 from widgets import AboutDialog
 
 parser = OptionParser()
+parser.set_defaults(loglevel = logging.WARNING)
 parser.add_option("-b", "--blit", action = "store_true", default = True)
 parser.add_option("-n", "--no-blit", action = "store_false", dest = "blit")
+parser.add_option("-v", "--verbose", action = "store_const", dest = "loglevel",
+        const = logging.INFO)
+parser.add_option("-d", "--debug", action = "store_const", dest = "loglevel",
+        const = logging.DEBUG)
 opts, args = parser.parse_args()
 
-logging.basicConfig(level = logging.DEBUG)
+logging.basicConfig(level = opts.loglevel)
 
 system = DynamicSystem('y', '-x + mu * (1 - x*x)*y', params = dict(mu = 1.0))
 logging.debug("%g: Creating root window..." % uptime.uptime())
