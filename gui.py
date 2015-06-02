@@ -541,6 +541,7 @@ class AppWindow():
                 height = 1, width = 6)
         b_toggle.grid(row = 0, rowspan = 2, column = 0)
         b_stop = tk.Button(f_anim, text = "Stop", command = self.stop_traj_animation, font = "sans 10 bold",
+                width = 5,
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = fgcolor, activeforeground = fgcolor)
         b_stop.grid(row = 0, rowspan=2, column = 1)
@@ -559,6 +560,7 @@ class AppWindow():
                 height = 1, width = 6).grid(
                         columnspan=2, sticky = tk.S+tk.W+tk.E)
         tk.Button(f_update, text = "Clear", command = self._reset_fig, font = "sans 10 bold",
+                width = 5,
                 background = "#aa0000", activebackground = "#ff5555",
                 foreground = fgcolor, activeforeground = fgcolor).grid(
                         row = 0, columnspan = 2, sticky = tk.S)

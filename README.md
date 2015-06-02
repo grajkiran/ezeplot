@@ -48,7 +48,7 @@ extract and run ezeplot.bat
 Download [ezeplot-1.0-osx64.zip](https://www.dropbox.com/s/8c3jzdeb1h95fh5/ezeplot-1.0-osx64.zip?dl=1),
 extract and run ezeplot.command
 
-#### Linux (Kernel 3.0 and above)
+#### Linux (Kernel 3.0 or above)
 Download [ezeplot-1.0-linux64.zip](https://www.dropbox.com/s/yt6ppi72rpnztfx/ezeplot-1.0-linux64.zip?dl=1),
 extract and run ezeplot.sh
 
