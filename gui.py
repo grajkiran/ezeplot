@@ -179,6 +179,7 @@ class AppWindow():
             for pos in preset['locations']:
                 self.add_location(pos)
         #self.update_trajectories()
+        self.location_str.set("")
         self.status.clear()
 
     def _get_limits(self):
