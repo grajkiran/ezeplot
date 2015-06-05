@@ -356,12 +356,16 @@ class AppWindow():
     def add_location(self, pos = None):
         if pos is None:
             pos = helpers.parse_coords(self.location_str.get())
+        pos = tuple(pos)
         styles = ["b", "g", "r", "c", "m", "y", "k"]
         threshold = 1e-4
         if len(pos) == 2:
             pos = pos[0], pos[1], 0.0
-        pos = tuple(pos)
-        self.location_str.set("%0.4g, %0.4g, %0.4g" % pos)
+        if PROJECTIONS[self.opts.projection.get()] != '3d':
+            pos = pos[0], pos[1], 0.0
+            self.location_str.set("%0.4g, %0.4g" % (pos[0], pos[1]))
+        else:
+            self.location_str.set("%0.4g, %0.4g, %0.4g" % pos)
         #Search for a fixed point
         ## fp = self.system.find_fp(pos, threshold = 1e-4)
         ## if fp is not None:
