@@ -25,7 +25,7 @@
       <section id="main_content" class="inner">
 
 <h1>
-<a id="ezeplot---dynamical-systems-visualisation-v10" class="anchor" href="#ezeplot---dynamical-systems-visualisation-v10" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ezeplot - Dynamical systems visualisation (v1.0)</h1>
+<a id="ezeplot---dynamical-systems-visualisation-v10" class="anchor" href="#ezeplot---dynamical-systems-visualisation-v10" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ezeplot - Dynamical systems visualisation (v1.0.1)</h1>
 
 <p>Ezeplot is a tool for visualising autonomous dynamical systems. It can be used as an educational aid for studying non-linear dynamics.</p>
 
@@ -43,21 +43,69 @@
 <h2>
 <a id="obtaining-and-running-ezeplot" class="anchor" href="#obtaining-and-running-ezeplot" aria-hidden="true"><span class="octicon octicon-link"></span></a>Obtaining and running Ezeplot</h2>
 
+<p>Ezeplot is written in <a href="https://www.python.org">Python</a> using the <a href="http://matplotlib.org/">matplotlib</a> plotting library. It should run on any platform that has recent versions of the following packages:
+<ul>
+<li><a href="https://www.python.org">python</a> (2.7 or 3.4)</li>
+<li><a href="http://matplotlib.org/">matplotlib</a> (&gt;=1.3.1)</li>
+<li><a href="http://www.numpy.org/">numpy</a> (&gt;=1.8.1)</li>
+<li><a href="http://scipy.org/">scipy</a> (&gt;=0.13.3)</li>
+</ul>
+
+<!--
+<p>A standalone package containing all these dependencies is provided for Windows, Mac OSX and Linux platforms.</p>
+-->
+
+<h3>
+<a id="fully-self-contained-standalone-package" class="anchor" href="#fully-self-contained-standalone-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fully self-contained standalone package</h3>
+
+<p>The standalone package includes Ezeplot bundled
+along with python and the necessary libraries. This package requires no
+installation and can also be run from a portable USB flash drive. </p>
+
+<h4>
+<a id="windows-windows-xp-or-above" class="anchor" href="#windows-windows-xp-or-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Windows (Windows XP or above)</h4>
+
+<p>Download 
+<a href="https://www.dropbox.com/sh/ex0d2e2ft9ofxz5/AACouPJGtCj_CWRiotOBxplza?dl=1">
+  ezeplot-windows.zip
+</a>,
+extract and run ezeplot.bat</p>
+
+<h4>
+<a id="mac-os-x-os-x-109-or-above" class="anchor" href="#mac-os-x-os-x-109-or-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mac OSX (OSX 10.9 or above)</h4>
+
+<p>Download 
+<a href="https://www.dropbox.com/sh/evnwa13ydugqiep/AAA_Yrt2V1fYUjdoEHUzLrCCa?dl=1">
+  ezeplot-osx.zip
+</a>,
+extract and run ezeplot.command</p>
+
+<h4>
+<a id="linux-kernel-30-and-above" class="anchor" href="#linux-kernel-30-and-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux (Kernel 3.0 or above)</h4>
+
+<p>Download
+<a href="https://www.dropbox.com/sh/hwtocpy5twy71rp/AADh-SX5P9t7hPfxf8dEvJaNa?dl=1">
+  ezeplot-linux.zip
+</a>,
+extract and run ezeplot.sh</p>
+
+
 <h3>
 <a id="minimal-package" class="anchor" href="#minimal-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Minimal package</h3>
 
 <p>The minimal package is very small (&lt; 200KB) and consists of just the Ezeplot
-code as a set of <a href="https://www.python.org">python</a> programs.
-Download this package if you already have recent versions of the following
-software already installed on your computer:</p>
+program.
+Download this package if you already have all the dependencies 
+installed on your computer or if you have already downloaded one of the
+standalone packages and wish to update without redownloading the entire
+package.</p>
 
-<ul>
-<li>python (2.7 or 3.4)</li>
-<li>matplotlib (&gt;=1.3.1)</li>
-<li>numpy (&gt;=1.8.1)</li>
-<li>scipy (&gt;=0.13.3)</li>
-</ul>
+<p>Download
+<a href="https://www.dropbox.com/sh/bqu2u3nwlg9p7yk/AAClsGyd7I4gjI86oDWgGE4ba?dl=1">
+  ezeplot-minimal.zip
+</a> and extract.</p>
 
+<h4>Executing</h4>
 <p>You need to open the file <code>__main__.py</code> with your system's python executable.
 On Windows, if python is associated with <code>*.py</code> files, opening <code>__main__.py</code> should work.</p>
 
@@ -66,32 +114,25 @@ On Windows, if python is associated with <code>*.py</code> files, opening <code>
 <pre><code>python __main__.py
 </code></pre>
 
-<p>Download the minimal package here: <a href="https://www.dropbox.com/s/48u1268ug92wyzv/ezeplot-1.0-minimal.zip?dl=1">ezeplot-1.0-minimal.zip</a></p>
+<p>Alternatively, if you had already downloaded and extracted one of the
+standalone packages and are just updating, delete the <code>ezeplot</code> folder from the older installation and copy the newly extracted folder to its place.</p>
 
-<h3>
-<a id="fully-self-contained-standalone-package" class="anchor" href="#fully-self-contained-standalone-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fully self-contained standalone package</h3>
-
-<p>The standalone package is much larger (~ 40MB) and includes Ezeplot bundled
-along with python and the necessary libraries. This package requires no
-installation and can also be run from a portable USB flash drive. </p>
-
-<h4>
-<a id="windows-windows-xp-or-above" class="anchor" href="#windows-windows-xp-or-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Windows (Windows XP or above)</h4>
-
-<p>Download <a href="https://www.dropbox.com/s/7jqz1y8m6g7bv4j/ezeplot-1.0-win64.zip?dl=1">ezeplot-1.0-win64.zip</a>,
-extract and run ezeplot.bat</p>
-
-<h4>
-<a id="mac-os-x-os-x-109-or-above" class="anchor" href="#mac-os-x-os-x-109-or-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mac OSX (OSX 10.9 or above)</h4>
-
-<p>Download <a href="https://www.dropbox.com/s/8c3jzdeb1h95fh5/ezeplot-1.0-osx64.zip?dl=1">ezeplot-1.0-osx64.zip</a>,
-extract and run ezeplot.command</p>
-
-<h4>
-<a id="linux-kernel-30-and-above" class="anchor" href="#linux-kernel-30-and-above" aria-hidden="true"><span class="octicon octicon-link"></span></a>Linux (Kernel 3.0 or above)</h4>
-
-<p>Download <a href="https://www.dropbox.com/s/yt6ppi72rpnztfx/ezeplot-1.0-linux64.zip?dl=1">ezeplot-1.0-linux64.zip</a>,
-extract and run ezeplot.sh</p>
+<h3>Release history</h3>
+<table>
+  <tr><th>Version</th><th>Date</th><th>Description</th><th>Download</th></tr>
+  <tr>
+    <td>1.0.1</td>
+    <td>June 7, 2015</td>
+    <td>Minor bugfixes</td>
+    <td><a href="https://www.dropbox.com/sh/bqu2u3nwlg9p7yk/AAClsGyd7I4gjI86oDWgGE4ba?dl=1">ezeplot-minimal.zip</a></td>
+  </tr>
+  <tr>
+    <td>1.0</td>
+    <td>May 31, 2015</td>
+    <td>Initial release</td>
+    <td><a href="https://www.dropbox.com/s/48u1268ug92wyzv/ezeplot-1.0-minimal.zip?dl=1">ezeplot-1.0-minimal.zip</a></td>
+  </tr>
+</table>
 
 <h2>
 <a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"><span class="octicon octicon-link"></span></a>Screenshots</h2>
