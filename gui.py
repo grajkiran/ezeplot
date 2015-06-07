@@ -36,8 +36,7 @@ import helpers
 import plotting
 from poincare import PWindow
 import presets
-import uptime
-from timer import Timer
+from timer import Timer, uptime
 PROJECTIONS = dict({'2D': 'rect', u'Polar (x≡θ, y≡r)': 'polar', '3D': '3d'})
 
 class Options(dict):
@@ -51,7 +50,7 @@ class AppWindow():
         self.icon = icon
         self.root.rowconfigure(1, weight = 1)
         self.root.columnconfigure(0, weight = 1)
-        logging.debug("%g: Creating figure window..." % uptime.uptime())
+        logging.debug("%g: Creating figure window..." % uptime())
         self.fig = plotting.Figure(root, blit = blit)
         self.fig.canvas.get_tk_widget().grid(row = 1, column = 0, sticky = tk.NE + tk.SW)
         cframe = tk.Frame(self.root, bd = 0, relief = tk.RIDGE)
@@ -65,7 +64,7 @@ class AppWindow():
         # status bar.
         VEntry.status = self.status
 
-        logging.debug("%g: Initializing options..." % uptime.uptime())
+        logging.debug("%g: Initializing options..." % uptime())
         self.opts = self._init_options()
         self.anim_timer   = self.fig.canvas.new_timer(interval = 5)
         self.anim_info    = tk.StringVar(self.root, "")
@@ -89,20 +88,20 @@ class AppWindow():
         pinfo_label.grid(row = 0, column = 0, sticky = tk.W)
         self.menu = self._add_menubar()
         self.root.config(menu = self.menu)
-        logging.debug("%g: Creating widgets..." % uptime.uptime())
+        logging.debug("%g: Creating widgets..." % uptime())
         self.controls = self._add_widgets(cframe)
-        logging.debug("%g: Updating figure..." % uptime.uptime())
+        logging.debug("%g: Updating figure..." % uptime())
         self.status.info("Creating figure...")
         self._update_system_limits()
         self.update_fig()
 
-        logging.debug("%g: Finishing..." % uptime.uptime())
+        logging.debug("%g: Finishing..." % uptime())
         #self.fig.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         #pinfo_label.pack(side = tk.BOTTOM, fill = tk.X)
         #cframe.pack(fill = tk.Y, expand = 1)
 
         self.status.info("Loading preset...")
-        logging.debug("%g: Loading presets..." % uptime.uptime())
+        logging.debug("%g: Loading presets..." % uptime())
         #FIXME: The first time preset is loaded, tmax, limits etc are not being
         # updated from some reason.
         #self.controls['system']._load_preset('User defined')

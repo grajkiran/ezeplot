@@ -20,7 +20,6 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.    #
 #                                                                            #
 ##############################################################################
-import uptime
 try:
     import tkinter as tk
 except ImportError:
@@ -37,6 +36,7 @@ from plotting import Figure
 from gui import AppWindow
 from dynsystem import DynamicSystem
 from widgets import AboutDialog
+from timer import uptime
 
 parser = OptionParser()
 parser.set_defaults(loglevel = logging.WARNING)
@@ -51,7 +51,7 @@ opts, args = parser.parse_args()
 logging.basicConfig(level = opts.loglevel)
 
 system = DynamicSystem('y', '-x + mu * (1 - x*x)*y', params = dict(mu = 1.0))
-logging.debug("%g: Creating root window..." % uptime.uptime())
+logging.debug("%g: Creating root window..." % uptime())
 root = tk.Tk()
 root.title("Ezeplot - Dynamical systems visualization")
 root.protocol('WM_DELETE_WINDOW', root.quit)
@@ -60,9 +60,9 @@ try:
     root.tk.call("wm", "iconphoto", root._w, icon)
 except:
     icon = None
-logging.debug("%g: Creating application..." % uptime.uptime())
+logging.debug("%g: Creating application..." % uptime())
 app = AppWindow(root, system, blit = opts.blit, icon = icon)
-logging.debug("%g: Entering mainloop..." % uptime.uptime())
+logging.debug("%g: Entering mainloop..." % uptime())
 root.call('wm', 'attributes', '.', '-topmost', '1')
 root.call('wm', 'attributes', '.', '-topmost', '0')
 root.mainloop()

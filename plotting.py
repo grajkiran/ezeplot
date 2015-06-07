@@ -31,8 +31,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import logging
 import numpy as np
 import helpers
+from timer import uptime
 
-import uptime
 matplotlib.rcParams['toolbar'] = 'None'
 matplotlib.rc('font', family = 'serif')
 #matplotlib.rc('text', usetex = True)
@@ -47,12 +47,12 @@ class Figure:
         #self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         self._blit = blit and self.fig.canvas.supports_blit
         #self.canvas.mpl_connect('scroll_event', self.scale_view)
-        logging.debug("%g: Creating subplots main..." % uptime.uptime())
+        logging.debug("%g: Creating subplots main..." % uptime())
         self.ax_rect = self.fig.add_subplot(111, label = 'rect', xlim = (-5, 5), ylim=(-5, 5))
         self.ax_3d = self.fig.add_subplot(111, label = '3d', projection = '3d', zlim = (-1, 1))
         self.ax_polar = self.fig.add_subplot(111, label = 'polar', projection = 'polar')
         self.ax_main = self.ax_rect
-        logging.debug("%g: Creating subplots time series..." % uptime.uptime())
+        logging.debug("%g: Creating subplots time series..." % uptime())
         self.ax_x = self.fig.add_subplot(222, label = 'x', visible = False)
         self.ax_y = self.fig.add_subplot(223, label = 'y', visible = False, sharex = self.ax_x)
         self.ax_z = self.fig.add_subplot(224, label = 'z', visible = False, sharex = self.ax_x)
@@ -60,9 +60,9 @@ class Figure:
         self.temporal = temporal
         self.bg = dict()
         #self.trajectories = []
-        logging.debug("%g: Setting mode..." % uptime.uptime())
+        logging.debug("%g: Setting mode..." % uptime())
         #self.set_mode(temporal)
-        logging.debug("%g: Setting projection..." % uptime.uptime())
+        logging.debug("%g: Setting projection..." % uptime())
         self.set_proj('rect', temporal)
 
     def get_diagonal(self):
