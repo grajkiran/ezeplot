@@ -37,6 +37,7 @@ import presets
 import logging
 import webbrowser
 import os.path
+from version import EZEPLOT_VERSION
 
 class VEntry(tk.Entry):
     # status is a static attribute that should be set to a StatusLabel widget
@@ -105,7 +106,7 @@ GNU General Public License along with
 this program.  If not, see
 <http://www.gnu.org/licenses/>.
     """
-    return showinfo("Ezeplot license", message = "Ezeplot 1.0", detail = license_text,
+    return showinfo("Ezeplot license", message = "Ezeplot %s" % EZEPLOT_VERSION, detail = license_text,
             parent = master)
 
 class AboutDialog(tk.Toplevel):
@@ -127,7 +128,7 @@ class AboutDialog(tk.Toplevel):
         font_reg = Font(size = 10)
         font_url = Font(size = 12, slant = 'italic', underline = 1)
         font_email = Font(size = 12, slant = 'italic')
-        self.add_line(frame, text = "Ezeplot 1.0", font = font_b15)
+        self.add_line(frame, text = "Ezeplot %s" % EZEPLOT_VERSION, font = font_b15)
         self.add_line(frame, text = "Raj Kiran Grandhi", font = font_b12)
         self.add_line(frame, text = "Department of Aerospace Engineering", font = font_reg)
         self.add_line(frame, text = "Indian Institute of Technology", font = font_reg)
