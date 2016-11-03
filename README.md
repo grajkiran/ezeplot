@@ -41,15 +41,15 @@ along with python and the necessary libraries. This package requires no
 installation and can also be run from a portable USB flash drive. 
 
 #### Windows (Windows XP or above)
-Download [ezeplot-1.0-win64.zip](https://www.dropbox.com/s/7jqz1y8m6g7bv4j/ezeplot-1.0-win64.zip?dl=1),
+Download [ezeplot-windows.zip](https://www.dropbox.com/s/3ztkqm9xzhtzmw4/ezeplot-windows.zip?dl=1),
 extract and run ezeplot.bat
 
 #### Mac OSX (OSX 10.9 or above)
-Download [ezeplot-1.0-osx64.zip](https://www.dropbox.com/s/8c3jzdeb1h95fh5/ezeplot-1.0-osx64.zip?dl=1),
+Download [ezeplot-osx.zip](https://www.dropbox.com/s/kmfstauqalyr5xb/ezeplot-osx.zip?dl=1),
 extract and run ezeplot.command
 
 #### Linux (Kernel 3.0 or above)
-Download [ezeplot-1.0-linux64.zip](https://www.dropbox.com/s/yt6ppi72rpnztfx/ezeplot-1.0-linux64.zip?dl=1),
+Download [ezeplot-linux.zip](https://www.dropbox.com/s/rbdtg0dayz6iacm/ezeplot-linux.zip?dl=1),
 extract and run ezeplot.sh
 
 Screenshots
