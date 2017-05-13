@@ -186,7 +186,10 @@ class DynamicSystem:
         x_dot *= eval(self.__code_x, f_params, params or self.params)
         y_dot *= eval(self.__code_y, f_params, params or self.params)
         z_dot *= eval(self.__code_z, f_params, params or self.params)
-        return np.array([x_dot, y_dot, z_dot])
+        res = np.array([x_dot, y_dot, z_dot])
+        return res
+        #res_norm = res/np.sqrt(x_dot*x_dot+y_dot*y_dot+z_dot*z_dot)
+        #return res_norm
 
     def __find_fp(self, start, threshold):
         guess = [0.0, 0.0, 0.0]
