@@ -303,7 +303,7 @@ class Figure:
             traj.line[0].set_xdata(traj.x)
             traj.line[0].set_ydata(traj.y)
             if self._3d:
-                traj.line[0].set_3d_properties(traj.z)
+                traj.line[0].set_data_3d(traj.x, traj.y, traj.z)
             for l in 1, 2, 3:
                 traj.line[l].set_xdata(traj.t)
                 traj.line[l].set_ydata(traj.points[:,l-1])
@@ -321,7 +321,7 @@ class Figure:
             traj.line[0].set_xdata(xdata)
             traj.line[0].set_ydata(ydata)
             if self._3d:
-                traj.line[0].set_3d_properties(zdata)
+                traj.line[0].set_data_3d(xdata, ydata, zdata)
             for l in 1, 2, 3:
                 traj.line[l].set_xdata(tdata)
             if self.ax_main is self.ax_polar:
@@ -341,7 +341,7 @@ class Figure:
             traj.marker[2].set_ydata([y])
             traj.marker[3].set_ydata([z])
             if self._3d:
-                traj.marker[0].set_3d_properties([z])
+                traj.marker[0].set_data_3d([x], [y], [z])
             for m in range(4):
                 traj.marker[m].set_visible(True)
         # Draw only the relevant artists

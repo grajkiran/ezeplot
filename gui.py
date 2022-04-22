@@ -421,7 +421,7 @@ class AppWindow():
         elif evt.inaxes == self.fig.ax_3d:
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
             if evt.button is None:
-                x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
+                x, y, z = [float(c.split('=')[-1]) for c in s.replace('−', '-').split(',')]
                 s = "x = %0.3f, y = %0.3f, z = %0.3f" % (x, y, z)
         self.pointer_info.set(s)
 
@@ -441,7 +441,7 @@ class AppWindow():
         x, y, z = evt.xdata, evt.ydata, 0.0
         if self.fig.ax_main is self.fig.ax_3d:
             s = evt.inaxes.format_coord(evt.xdata, evt.ydata)
-            x, y, z = [float(c.split('=')[-1]) for c in s.split(',')]
+            x, y, z = [float(c.split('=')[-1]) for c in s.replace('−', '-').split(',')]
         pos = x, y, z
         #logging.debug("Position: %s" % str(pos))
         #logging.debug("Limits: %s" % str(self.fig.get_limits()))
