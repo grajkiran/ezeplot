@@ -28,7 +28,6 @@ except:
 import matplotlib
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 from widgets import VEntry
 import numpy as np
 from textwrap import wrap
@@ -179,8 +178,6 @@ class PWindow(tk.Toplevel):
         self.fig = matplotlib.figure.Figure()
         self.fig.set_facecolor('white')
         self.canvas = FigureCanvasTkAgg(self.fig, master = self)
-        #toolbar = NavigationToolbar2TkAgg(self.canvas, self)
-        #toolbar.update()
         self.canvas.get_tk_widget().pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         #self.fig.subplots_adjust(left = 0.0, right = 1.0, bottom = 0.0, top = 1.0)
         self.ax = self.fig.add_subplot(111, projection = '3d')
